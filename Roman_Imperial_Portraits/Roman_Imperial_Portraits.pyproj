@@ -30,6 +30,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="manage.py" />
+    <Compile Include="ripdapp\admin.py" />
+    <Compile Include="ripdapp\apps.py" />
+    <Compile Include="ripdapp\migrations\__init__.py" />
+    <Compile Include="ripdapp\models.py" />
+    <Compile Include="ripdapp\tests.py" />
+    <Compile Include="ripdapp\views.py" />
+    <Compile Include="ripdapp\__init__.py" />
     <Compile Include="Roman_Imperial_Portraits\__init__.py" />
     <Compile Include="Roman_Imperial_Portraits\settings.py" />
     <Compile Include="Roman_Imperial_Portraits\urls.py" />
@@ -37,8 +44,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="ripdapp\templates\ripdapp\index.html" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ripdapp\" />
+    <Folder Include="ripdapp\migrations\" />
+    <Folder Include="ripdapp\templates\" />
+    <Folder Include="ripdapp\templates\ripdapp\" />
     <Folder Include="Roman_Imperial_Portraits\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Django.targets" />
