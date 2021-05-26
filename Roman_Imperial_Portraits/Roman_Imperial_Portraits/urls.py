@@ -1,0 +1,21 @@
+"""
+Definition of urls for Roman_Imperial_Portraits.
+"""
+
+from django.conf.urls import include, url
+
+# Uncomment the next two lines to enable the admin:
+# from django.contrib import admin
+# admin.autodiscover()
+
+urlpatterns = [
+    # Examples:
+    # url(r'^$', Roman_Imperial_Portraits.views.home, name='home'),
+    # url(r'^Roman_Imperial_Portraits/', include('Roman_Imperial_Portraits.Roman_Imperial_Portraits.urls')),
+
+    # Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+    # Uncomment the next line to enable the admin:
+    # url(r'^admin/', include(admin.site.urls)),
+]
