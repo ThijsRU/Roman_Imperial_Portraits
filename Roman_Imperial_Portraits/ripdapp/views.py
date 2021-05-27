@@ -4,11 +4,12 @@ Definition of views for the RIPD app.
 
 from django.contrib import admin
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from datetime import datetime
 
 from ripdapp.models import *
+from ripdapp.forms import SignUpForm
 
 def index(request):
     """Show the homepage"""
@@ -62,7 +63,7 @@ def nlogin(request):
                     'message':'Radboud University RIPD utility.',
                     'year': datetime.now().year,}
 
-    return render(request,'ripdapp/nlogin.html', context)
+    return render(request,'nlogin.html', context)
 
 def signup(request):
     """Provide basic sign up and validation of it """
@@ -88,7 +89,7 @@ def signup(request):
             return redirect('home')
     else:
         form = SignUpForm()
-    return render(request, 'ripdapp/signup.html', {'form': form})
+    return render(request, 'signup.html', {'form': form})
 
 
 

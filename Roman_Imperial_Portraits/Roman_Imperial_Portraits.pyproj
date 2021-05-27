@@ -6,6 +6,7 @@
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
     <InterpreterId>MSBuild|portraits|$(MSBuildProjectFullPath)</InterpreterId>
+    <WebBrowserPort>6789</WebBrowserPort>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>

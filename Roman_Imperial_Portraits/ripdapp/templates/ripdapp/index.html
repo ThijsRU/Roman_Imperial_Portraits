@@ -6,14 +6,27 @@
   <strong>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</strong> on {{current_time}}
 </div>
 
-{% if user.is_superuser %}
-  <div>
-    <p>Since you are superuser, {{user.username}}, you have one more priviledge.</p>
+{% if user.is_authenticated %}
+  <div>Welkom {{user.username}}</div>
+  <div>(Of wilt u <a href="{% url 'logout' %}">uitloggen</a>?</div>
 
-    <form action="{% url 'tools_update' %}">
-      <input type="submit" value="Update from Excel" />
-    </form>
+  {% if user.is_superuser %}
+    <div>
+      <p>Since you are superuser, {{user.username}}, you have one more priviledge.</p>
+
+      <form action="{% url 'tools_update' %}">
+        <input type="submit" value="Update from Excel" />
+      </form>
+    </div>
+  {% endif %}
+
+{% else %}
+  <div>
+    Bepaalde zaken zijn alleen te bereiken na <a href="{% url 'login' %}">inloggen</a> 
+    (Mogelijkerwijze wilt u misschien eerst <a href="{% url 'signup' %}">registreren</a>?)
   </div>
+
+
 {% endif %}
 
 {% endblock %}
