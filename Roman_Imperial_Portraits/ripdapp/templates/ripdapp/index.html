@@ -1,9 +1,19 @@
-<html>
-<head><title></title></head>
+{% extends "layout.html" %}
 
-<body>
+{% block content %}
 
-{{ content }}
+<div>
+  <strong>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</strong> on {{current_time}}
+</div>
 
-</body>
-</html>
+{% if user.is_superuser %}
+  <div>
+    <p>Since you are superuser, {{user.username}}, you have one more priviledge.</p>
+
+    <form action="{% url 'tools_update' %}">
+      <input type="submit" value="Update from Excel" />
+    </form>
+  </div>
+{% endif %}
+
+{% endblock %}
