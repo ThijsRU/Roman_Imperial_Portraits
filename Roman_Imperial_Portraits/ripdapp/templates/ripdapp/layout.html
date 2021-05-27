@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>{{ title }}</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="../../static/site.css" />
+</head>
+
+<body>
+    <div class="navbar">
+       <a href="/" class="navbar-brand">Roman Imperial Portraits Database</a>
+       <a href="{% url 'home' %}" class="navbar-item">Home</a>
+       <a href="{% url 'welcome' %}" class="navbar-item">Welcome</a>
+       <a href="{% url 'about' %}" class="navbar-item">About</a>
+       <a href="{% url 'browse' %}" class="navbar-item">Browse</a>
+       <a href="{% url 'advsearch' %}" class="navbar-item">Advanced search</a>
+       <a href="{% url 'reflinks' %}" class="navbar-item">References and links</a>
+    </div>
+
+    <div class="body-content">
+{% block content %}{% endblock %}
+        <hr/>
+        <footer>
+            <p>&copy; 2021</p>
+        </footer>
+    </div>
+</body>
+</html>
