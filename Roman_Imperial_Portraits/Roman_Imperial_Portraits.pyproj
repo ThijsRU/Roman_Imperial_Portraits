@@ -3,6 +3,9 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <Name>Roman_Imperial_Portraits</Name>
     <RootNamespace>Roman_Imperial_Portraits</RootNamespace>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
+    <InterpreterId>MSBuild|portraits|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -32,6 +35,9 @@
     <Compile Include="manage.py" />
     <Compile Include="ripdapp\admin.py" />
     <Compile Include="ripdapp\apps.py" />
+    <Compile Include="ripdapp\forms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ripdapp\migrations\__init__.py" />
     <Compile Include="ripdapp\models.py" />
     <Compile Include="ripdapp\tests.py" />
@@ -44,22 +50,29 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="ripdapp\static\site.css" />
-    <Content Include="ripdapp\templates\ripdapp\advsearch.html" />
-    <Content Include="ripdapp\templates\ripdapp\browse.html" />
+    <Content Include="ripdapp\templates\layout.html" />
+    <Content Include="ripdapp\templates\login.html" />
+    <Content Include="ripdapp\templates\nlogin.html" />
     <Content Include="ripdapp\templates\ripdapp\index.html" />
-    <Content Include="ripdapp\templates\ripdapp\about.html" />
-    <Content Include="ripdapp\templates\ripdapp\layout.html" />
-    <Content Include="ripdapp\templates\ripdapp\reflinks.html" />
-    <Content Include="ripdapp\templates\ripdapp\welcome.html" />
+    <Content Include="ripdapp\templates\signup.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ripdapp\" />
     <Folder Include="ripdapp\migrations\" />
-    <Folder Include="ripdapp\static\" />
     <Folder Include="ripdapp\templates\" />
     <Folder Include="ripdapp\templates\ripdapp\" />
     <Folder Include="Roman_Imperial_Portraits\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="..\..\..\..\..\env\portraits\">
+      <Id>portraits</Id>
+      <Version>3.7</Version>
+      <Description>portraits (Python 3.7 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Django.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 

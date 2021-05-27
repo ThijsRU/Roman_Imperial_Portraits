@@ -15,6 +15,8 @@ import posixpath
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WRITABLE_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../writable/database/"))
+MEDIA_DIR = os.path.abspath(os.path.join(WRITABLE_DIR, "../media/"))
 
 
 # Quick-start development settings - unsuitable for production
@@ -81,7 +83,8 @@ WSGI_APPLICATION = 'Roman_Imperial_Portraits.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'ripd.db'),
+        # ORIGINAL: 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(WRITABLE_DIR, 'ripd.db'),
     }
 }
 

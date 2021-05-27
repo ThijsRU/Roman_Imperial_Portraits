@@ -1,77 +1,105 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+"""
+Definition of views for the RIPD app.
+"""
+
+from django.contrib import admin
+from django.contrib.auth import login, authenticate
+from django.shortcuts import render, reverse
+from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from datetime import datetime
 
-def index(request):
-    now = datetime.now()
+from ripdapp.models import *
 
-    return render(
-        request,
-        "ripdapp/index.html",  # Relative path from the 'templates' folder to the template file
-        # "index.html", # Use this code for VS 2017 15.7 and earlier
-        {
-            'title' : "Roman Imperial Portraits Database",
-            'message' : "Roman Imperial Portraits Database",
-            'content' : " on " + now.strftime("%A, %d %B, %Y at %X"),
-            'message2': "This website is made by Thijs Hermsen"
-            #'content': "<strong>Roman Imperial Portraits Database</strong> on " + now.strftime("%A, %d %B, %Y at %X")
-        }
-    )
-    #html_content = "<html><head><title>Roman Imperial Portraits Database</title></head><body>"
-    #html_content += "<strong>Roman Imperial Portraits Database</strong> on " + now.strftime("%A, %d %B, %Y at %X")
+def index(request):
+    """Show the homepage"""
+
+    assert isinstance(request, HttpRequest)
+
+    # Specify the template
+    template_name = "ripdapp/index.html"
+    # Define the initial context
+    context =  {'title':'RIPD',
+                'year': datetime.now().year,
+                'current_time': datetime.now().strftime("%A, %d %B, %Y at %X"),
+                'pfx': '',
+                'site_url': admin.site.site_url}
+    # OLD CODE
+    # now = datetime.now()
+    #
+    #html_content = "<html><head><title>Hello, Django</title></head><body>"
+    #html_content += "<strong>Hello Django!</strong> on " + now.strftime("%A, %d %B, %Y at %X")
     #html_content += "</body></html>"
 
     #return HttpResponse(html_content)
 
-def about(request):
-    return render(
-        request,
-        "ripdapp/about.html",
-        {
-            'title' : "About Roman Imperial Portraits Database",
-            'content' : "Example app page for Django. This app was developed for the project....",
-            'content2': "Second Example app page for Django. This app was developed for the project...."
-        }
-    )
+    # Render and return the page
+    return render(request, template_name, context)
 
 
-def welcome(request):
-    return render(
-        request,
-        "ripdapp/welcome.html",
-        {
-            'title' : "Welcome Roman Imperial Portraits Database",
-            'content' : "This is the welcome page of the RIPD ",
-            'year':datetime.now().year
-        }
-    )
+def login_as_user(request, user_id):
+    assert isinstance(request, HttpRequest)
 
-def browse(request):
-    return render(
-        request,
-        "ripdapp/browse.html",
-        {
-            'title' : "Browse Roman Imperial Portraits Database",
-            'content' : "This is the browse page of the RIPD "            
-        }
-    )
+    # Find out who I am
+    supername = request.user.username
+    super = User.objects.filter(username__iexact=supername).first()
+    if super == None:
+        return nlogin(request)
 
-def advsearch(request):
-    return render(
-        request,
-        "ripdapp/advsearch.html",
-        {
-            'title' : "Advanced search Roman Imperial Portraits Database",
-            'content' : "This is the advanced search page of the RIPD "            
-        }
-    )
+    # Make sure that I am superuser
+    if super.is_staff and super.is_superuser:
+        user = User.objects.filter(username__iexact=user_id).first()
+        if user != None:
+            # Perform the login
+            login(request, user)
+            return HttpResponseRedirect(reverse("home"))
 
-def reflinks(request):
-    return render(
-        request,
-        "ripdapp/reflinks.html",
-        {
-            'title' : "References and links Roman Imperial Portraits Database",
-            'content' : "This is the references and links page of the RIPD "            
-        }
-    )
+    return home(request)
+
+def nlogin(request):
+    """Renders the not-logged-in page."""
+    assert isinstance(request, HttpRequest)
+    context =  {    'title':'Not logged in', 
+                    'message':'Radboud University RIPD utility.',
+                    'year': datetime.now().year,}
+
+    return render(request,'ripdapp/nlogin.html', context)
+
+def signup(request):
+    """Provide basic sign up and validation of it """
+
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            # Save the form
+            form.save()
+            # Create the user
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            # also make sure that the user gets into the STAFF,
+            #      otherwise he/she may not see the admin pages
+            user = authenticate(username=username, 
+                                password=raw_password,
+                                is_staff=True)
+            user.is_staff = True
+            user.save()
+
+            # Log in as the user
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'ripdapp/signup.html', {'form': form})
+
+
+
+
+def update_from_excel(request):
+    """Check if contents can be updated from the MEDIA excel file"""
+
+    # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+    
+    # What we return is simply the home page
+    return reverse('home')
+

@@ -1,19 +1,19 @@
-{% extends "ripdapp/layout.html" %}
+{% extends "layout.html" %}
+
 {% block content %}
-<span class="message">{{ message }}</span>{{ content }}
+
+<div>
+  <strong>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</strong> on {{current_time}}
+</div>
+
+{% if user.is_superuser %}
+  <div>
+    <p>Since you are superuser, {{user.username}}, you have one more priviledge.</p>
+
+    <form action="{% url 'tools_update' %}">
+      <input type="submit" value="Update from Excel" />
+    </form>
+  </div>
+{% endif %}
+
 {% endblock %}
-
-<html>
-    <head>
-        <title>{{ title }}</title>
-        {% load staticfiles %} <!-- Instruct Django to load static files -->
-        <link rel="stylesheet" type="text/css" href="../../static/site.css" />
-    </head>
-    <body>
-        <span class="message">{{ message }}</span>{{ content }}
-        <span class="message2">{{ message2 }}</span>
-    </body>
-<div><a href="about">About</a></div>
-
-</html>
-
