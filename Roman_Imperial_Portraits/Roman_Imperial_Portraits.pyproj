@@ -44,11 +44,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="ripdapp\static\site.css" />
+    <Content Include="ripdapp\templates\ripdapp\advsearch.html" />
+    <Content Include="ripdapp\templates\ripdapp\browse.html" />
     <Content Include="ripdapp\templates\ripdapp\index.html" />
+    <Content Include="ripdapp\templates\ripdapp\about.html" />
+    <Content Include="ripdapp\templates\ripdapp\layout.html" />
+    <Content Include="ripdapp\templates\ripdapp\reflinks.html" />
+    <Content Include="ripdapp\templates\ripdapp\welcome.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ripdapp\" />
     <Folder Include="ripdapp\migrations\" />
+    <Folder Include="ripdapp\static\" />
     <Folder Include="ripdapp\templates\" />
     <Folder Include="ripdapp\templates\ripdapp\" />
     <Folder Include="Roman_Imperial_Portraits\" />

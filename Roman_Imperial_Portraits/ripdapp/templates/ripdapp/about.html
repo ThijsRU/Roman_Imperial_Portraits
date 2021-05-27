@@ -1,0 +1,21 @@
+﻿{% extends "ripdapp/layout.html" %}
+{% block content %}
+{{ content }}
+{% endblock %}
+
+<html>
+    <head>
+        <title>{{ title }}</title>
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="../../static/site.css" />
+    </head>
+    
+
+    <body>
+        <div><a href="home">Home</a></div>
+        <span class="content">{{ content }}</span>
+        <span class="content2">{{ content2 }}</span>
+        
+    </body>
+</html>
+
