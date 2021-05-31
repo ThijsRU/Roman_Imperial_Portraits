@@ -65,10 +65,10 @@
     <Folder Include="Roman_Imperial_Portraits\" />
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="..\..\..\..\..\env\portraits\">
+    <Interpreter Include="D:\env\portraits\">
       <Id>portraits</Id>
-      <Version>3.7</Version>
-      <Description>portraits (Python 3.7 (64-bit))</Description>
+      <Version>3.6</Version>
+      <Description>portraits (Python 3.6 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
