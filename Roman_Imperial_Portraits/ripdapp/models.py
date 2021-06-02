@@ -10,10 +10,20 @@ LONG_STRING=255
 
 # please view legend.txt document
 
+class Emperor(models.Model):
+    """The emperors that are portrayed by the portraits"""
+    # [1] The names of the emperors
+    name = models.CharField("Emperor", max_length=LONG_STRING)
+
+class Context(models.Model):
+    """The contexts (spaces or buildings) in which portraits were found"""
+    # [1] The names of the contexts
+    name = models.CharField("Context", max_length=LONG_STRING, blank=True, null=True)
+
 class Province(models.Model):
     """The names of Roman provinces in which the locations lie where the portraits have been found"""
     # [1] Names of Roman province 
-    name = models.CharField("Province", max_length=LONG_STRING, blank=True, null=True)
+    name = models.CharField("Province", max_length=LONG_STRING, blank=True, null=True) # Is dat laatste nodig
 
 class Location(models.Model): 
     """Table that stores the locations where portraits have been found"""
@@ -26,21 +36,21 @@ class Location(models.Model):
     # The province where the portrait has been found
     province = models.ForeignKey(Province, null=True, blank=True, on_delete = models.SET_NULL, related_name="location_province")
 
-
-
 class Portrait(models.Model):
     """The Portrait table is the core of the database, all other tables are linked (in)directly to this table"""
 
     # [1] Name of the portrait
     name = models.CharField("Name", max_length=LONG_STRING)
+    # [1] Original id of the portrat OLD
+    # orig = models.IntegerField("Original ID", null=True) 
+    # [1] Original id of the portrat STRING
+    origstr = models.CharField("Original ID", max_length=LONG_STRING, null=True, blank=True)
     # [0-1] References of the portrait # TH: maybe different via Zotero?
     reference = models.TextField("Reference", max_length=LONG_STRING, null=True, blank=True)
     # [1] Start date of the portrait
     startdate = models.IntegerField("Start date", null=True) 
     # [1] End date of the portrait
     enddate = models.IntegerField("End date", null=True)
-    # [0-1] Arachne number of the portrait,
-    arachne = models.IntegerField("Arachne number", blank=True, null=True) 
     # [0-1] LSA number of the portrait
     lsa = models.IntegerField("LSA number", blank=True, null=True)
     # [0-1] The height of each portrait
@@ -57,12 +67,18 @@ class Portrait(models.Model):
     # [0-1] The id of the location where the portrait was found
     location = models.ForeignKey(Location, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_location")
 
+    # [0-1] The id of the emperor that is portrayed
+    emperor = models.ForeignKey(Emperor, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_emperor")
+    
+    # [0-1] The id of the emperor that is portrayed
+    context = models.ForeignKey(Context, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_context")
+        
     # Boolean characteristics for each portrait: zie legend.txt
 
     # [1] Whether the portrait is ...
     part_group = models.BooleanField(default=False)
-    # [1] Whether the portrait is ...
-    colossal = models.BooleanField(default=False)
+    # [1] Whether the portrait is ...OLD
+    # colossal = models.BooleanField(default=False)
     # [1] Whether the portrait has ...
     beard = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
@@ -94,7 +110,7 @@ class Portrait(models.Model):
     # [1] Whether the portrait is ...
     seated = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
-    recurved = models.BooleanField(default=False)
+    recarved = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
     terminus_ante_quem = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
@@ -111,6 +127,8 @@ class Portrait(models.Model):
     paludamentum = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
     miniature = models.BooleanField(default=False)
+    # [1] Whether the portrait is ...
+    disputed = models.BooleanField(default=False)
 
  # ============== MANYTOMANY connections for Portrait
  
@@ -126,11 +144,11 @@ class Portrait(models.Model):
     # [m] Many-to-many: one portrait can be made of multiple materials
     material = models.ManyToManyField("Material", through="PortraitMaterial")       
 
-    # [m] Many-to-many: one portrait can have multiple contexts ??
-    context = models.ManyToManyField("Context", through="PortraitContext")
+    ## [m] Many-to-many: one portrait can have multiple contexts ??
+    #context = models.ManyToManyField("Context", through="PortraitContext")
 
     # [m] Many-to-many: one portrait can have multiple recarvings 
-    recarved = models.ManyToManyField("Recarved", through="PortraitRecarved")
+    recarved_from = models.ManyToManyField("Recarved", through="PortraitRecarved")
 
     # [m] Many-to-many: one portrait can have multiple attributes
     attribute = models.ManyToManyField("Attributes", through="PortraitAttributes")
@@ -146,6 +164,13 @@ class Portrait(models.Model):
 
     def __str__(self):
         return self.name
+
+class Arachne(models.Model):
+    """The arachne code(s) that belong to a portrait"""
+    # [0-1] The Arachne id 
+    arachne = models.IntegerField("Arachne number")    
+    # The id of the portrait that belongs to the Arachne code
+    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.SET_NULL, related_name="arachne_portrait")
 
 # Here are the tables with FK's to Portrait
 
@@ -164,10 +189,6 @@ class Material(models.Model):
     # [1] The names of the substances
     name = models.CharField("Material", max_length=LONG_STRING)
 
-class Emperor(models.Model):
-    """The emperors that are portrayed by the portraits"""
-    # [1] The names of the emperors
-    name = models.CharField("Emperor", max_length=LONG_STRING)
 
 class Type(models.Model):
     """The categories of portraits that the object belongs to based on the repetition of certain key features"""
@@ -194,11 +215,7 @@ class Iconography(models.Model):
     # [1] The names of the decorations
     name = models.CharField("Iconography cuirass", max_length=LONG_STRING, blank=True, null=True)
 
-class Context(models.Model):
-    """The contexts (spaces or buildings) in which portraits can be found"""
-    # [1] The names of the contexts
-    name = models.CharField("Context", max_length=LONG_STRING, blank=True, null=True)
-    
+
 class Recarved(models.Model):
     """The former identity/identities of the portrait""" 
     # [1] The names of the identities
@@ -233,13 +250,13 @@ class PortraitTogether(models.Model):
     # [1] The together item
     together = models.ForeignKey(Together, on_delete = models.CASCADE, related_name = "portrait_together")
 
-class PortraitEmperor(models.Model): 
-    """The link between a portrait and emperor item"""
+#class PortraitEmperor(models.Model): OLD
+#    """The link between a portrait and emperor item"""
 
-    # [1] The portrait item
-    portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_emperor")
-    # [1] The emperor that is portrayed by the portrait
-    emperor = models.ForeignKey(Emperor, on_delete = models.CASCADE, related_name = "portrait_emperor")
+#    # [1] The portrait item
+#    portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_emperor")
+#    # [1] The emperor that is portrayed by the portrait
+#    emperor = models.ForeignKey(Emperor, on_delete = models.CASCADE, related_name = "portrait_emperor")
 
 class PortraitType(models.Model):
     """The link between a portrait and a portrait type"""
@@ -273,13 +290,13 @@ class PortraitMaterial(models.Model):
     # [1] The material or materials of which a portrait is made from
     material = models.ForeignKey(Material, on_delete = models.CASCADE,related_name = "portrait_material")
 
-class PortraitContext(models.Model):
-    """The link between a portrait and the context item"""
+#class PortraitContext(models.Model): OLD
+#    """The link between a portrait and the context item"""
     
-    # [1] The portrait item
-    portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_context")
-    # [1] The context in which the portrait is found
-    context = models.ForeignKey(Context, on_delete = models.CASCADE, related_name = "portrait_context")
+#    # [1] The portrait item
+#    portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_context")
+#    # [1] The context in which the portrait is found
+#    context = models.ForeignKey(Context, on_delete = models.CASCADE, related_name = "portrait_context")
     
 class PortraitRecarved(models.Model):
     """The link between a portrait and a recarved item"""
@@ -287,7 +304,7 @@ class PortraitRecarved(models.Model):
     # [1] The portrait item
     portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_recarved")
     # [1] The recarved item or items related to the portrait
-    recarved = models.ForeignKey(Recarved, on_delete = models.CASCADE, related_name = "portrait_recarved")
+    recarved_from = models.ForeignKey(Recarved, on_delete = models.CASCADE, related_name = "portrait_recarved")
 
 class PortraitAttributes(models.Model):
     """The link between a portrait and an attribute item"""

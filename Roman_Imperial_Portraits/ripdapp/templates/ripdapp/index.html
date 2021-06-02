@@ -12,7 +12,7 @@
 
   {% if user.is_superuser %}
     <div>
-      <p>Since you are superuser, {{user.username}}, you have one more priviledge.</p>
+      <p>Since you are superuser, {{user.username}}, you have one more privilege.</p>
 
       <form action="{% url 'tools_update' %}">
         <input type="submit" value="Update from Excel" />
