@@ -10,6 +10,7 @@ from datetime import datetime
 
 from ripdapp.models import *
 from ripdapp.forms import SignUpForm
+from Roman_Imperial_Portraits.settings import MEDIA_DIR
 
 def index(request):
     """Show the homepage"""
@@ -102,5 +103,5 @@ def update_from_excel(request):
         pass
     
     # What we return is simply the home page
-    return reverse('home')
+    return redirect('home')
 
