@@ -45,6 +45,9 @@
     <Compile Include="manage.py" />
     <Compile Include="ripdapp\admin.py" />
     <Compile Include="ripdapp\apps.py" />
+    <Compile Include="ripdapp\viewsbasic.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ripdapp\forms.py">
       <SubType>Code</SubType>
     </Compile>
@@ -98,6 +101,7 @@
     <Content Include="ripdapp\static\ripdapp\scripts\ripd.js" />
     <Content Include="ripdapp\static\ripdapp\scripts\typeahead.bundle.js" />
     <Content Include="ripdapp\static\ripdapp\scripts\xhr2.js" />
+    <Content Include="ripdapp\templates\breadcrumb_list.html" />
     <Content Include="ripdapp\templates\layout.html" />
     <Content Include="ripdapp\templates\login.html" />
     <Content Include="ripdapp\templates\nlogin.html" />
