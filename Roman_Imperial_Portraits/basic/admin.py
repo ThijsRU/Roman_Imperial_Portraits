@@ -5,7 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 from django.forms.widgets import *
 
-from basic.models import UserSearch
+from basic.models import *
 
 
 class UserSearchAdmin(admin.ModelAdmin):
