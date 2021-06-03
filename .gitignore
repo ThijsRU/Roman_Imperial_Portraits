@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /Roman_Imperial_Portraits/ve_portraits
+/Roman_Imperial_Portraits/ripdapp/migrations/__init__.py
