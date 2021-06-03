@@ -4,31 +4,36 @@ Definition of urls for Roman_Imperial_Portraits.
 
 from django.conf.urls import include, url
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.contrib import admin
 import django.contrib.auth.views
+
+from django.views.generic.base import RedirectView
 
 from datetime import datetime
 
+# Imports from the RIPD app
 import ripdapp.views
 import ripdapp.forms
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
+# Non-standard settings
+pfx = ""
+
+admin.autodiscover()
+
+# Set admin stie information
+admin.site.site_header = "Roman Imperial Portraits Database"
+admin.site.site_title = "ripd Admin"
 
 urlpatterns = [
-    # Examples:
-    # url(r'^$', Roman_Imperial_Portraits.views.home, name='home'),
-    # url(r'^Roman_Imperial_Portraits/', include('Roman_Imperial_Portraits.Roman_Imperial_Portraits.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+    # Standard pages
     url(r'^$', ripdapp.views.index, name='index'),
+    url(r'^favicon\.ico$',RedirectView.as_view(url='/static/ripdapp/content/favicon.ico')),
     url(r'^home$', ripdapp.views.index, name='home'),
 
     url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'),
+
+    # Definitions are kind of separate
+    url(r'^definitions$', RedirectView.as_view(url='/'+pfx+'admin/'), name='definitions'),
 
     # Allow signup, login and logout
     url(r'^signup/$', ripdapp.views.signup, name='signup'),
@@ -54,5 +59,10 @@ urlpatterns = [
         },
         name='logout'),
 
+    # Enable admin documentation:
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+
+    # Enable the admin:
+    url(r'^admin/', include(admin.site.urls), name='admin_base'),
 
 ]

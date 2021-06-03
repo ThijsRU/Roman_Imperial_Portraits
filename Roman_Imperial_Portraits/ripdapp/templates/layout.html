@@ -1,16 +1,57 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'ripdapp/content/bootstrap.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ripdapp/content/ru-base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ripdapp/content/ru-form.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ripdapp/content/ru-widgets.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ripdapp/content/site.css' %}" />
+    <script src="{% static 'ripdapp/scripts/modernizr-2.6.2.js' %}"></script>
+    <script src="{% static 'ripdapp/scripts/jquery-1.10.2.js' %}"></script>
+    <script src="{% static 'ripdapp/scripts/bootstrap.js' %}"></script>
+    <script src="{% static 'ripdapp/scripts/respond.js' %}"></script>
+    <script src="{% static 'ripdapp/scripts/typeahead.bundle.js' %}"></script>
+    <script src="{% static 'ripdapp/scripts/xhr2.js' %}"></script>
+
+
+    <!-- Original code -->
+    <script src="{% static 'ripdapp/scripts/ripd.js' %}"></script>
+
 {% block scripts %}{% endblock %}
 
 </head>
 <body>
+{% load i18n %}
+{% include 'topnav.html' %}
+
+{% block breadcrumbs %}{% endblock %}
+
+  <div class="container-fluid body-content">
+    <div id="__baseurl__" class="hidden" url_home="{% url 'home' %}">{% url 'home' %}</div>
+    <div class="hidden" id="__typeaheads__">{{typeaheads}}</div>
+    <div id="__form__" class="hidden"><form></form></div>
+    <!-- room for all errors -->
+    <div id="ripdapp_err"></div>
 
 {% block content %}{% endblock %}
 
+    <hr/>
+  </div>
+
+  <div>
+    <footer>
+      <span>ripd v1.0.0 &copy; jun/2021 </span>
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <span>Developed at: <a href="http://cls.ru.nl">Radboud University Nijmegen</a></span>
+    </footer>
+
+  </div>
+{% block endcontent %}{% endblock %}
 
 </body>
 </html>

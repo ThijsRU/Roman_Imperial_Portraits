@@ -2,31 +2,35 @@
 
 {% block content %}
 
-<div>
-  <strong>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</strong> on {{current_time}}
-</div>
+<div class="container body-content">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <h2>
+        <span>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</span>
+        <span class="pull-right" style="font-size: small;">on {{current_time}}</span>
+      </h2>
 
-{% if user.is_authenticated %}
-  <div>Welkom {{user.username}}</div>
-  <div>(Of wilt u <a href="{% url 'logout' %}">uitloggen</a>?</div>
+      {% if user.is_authenticated %}
+        <div>Welkom {{user.username}}</div>
+        <div>(Of wilt u <a href="{% url 'logout' %}">uitloggen</a>?</div>
 
-  {% if user.is_superuser %}
-    <div>
-      <p>Since you are superuser, {{user.username}}, you have one more privilege.</p>
+        {% if user.is_superuser %}
+          <div>
+            <p>Since you are superuser, {{user.username}}, you have one more privilege: updating from <strong>Excel</strong>.</p>
+            <p>Please see the Extra menu.</p>
+          </div>
+        {% endif %}
 
-      <form action="{% url 'tools_update' %}">
-        <input type="submit" value="Update from Excel" />
-      </form>
+      {% else %}
+        <div>
+          Bepaalde zaken zijn alleen te bereiken na <a href="{% url 'login' %}">inloggen</a> 
+          (Mogelijkerwijze wilt u misschien eerst <a href="{% url 'signup' %}">registreren</a>?)
+        </div>
+
+
+      {% endif %}
     </div>
-  {% endif %}
-
-{% else %}
-  <div>
-    Bepaalde zaken zijn alleen te bereiken na <a href="{% url 'login' %}">inloggen</a> 
-    (Mogelijkerwijze wilt u misschien eerst <a href="{% url 'signup' %}">registreren</a>?)
   </div>
 
-
-{% endif %}
-
+</div>
 {% endblock %}
