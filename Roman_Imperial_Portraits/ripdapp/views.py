@@ -161,7 +161,67 @@ def update_from_excel(request):
             # in case of "Unknown":
             lat = ""
             long = ""
+        
+        # Portrait type
+        porttype = row['Portrait_type']
 
+        # Create empty list to store all alternative names
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        
+        porttype_list = []    
+           
+        if porttype != None and porttype != "":
+            if ";" in porttype: 
+                porttype_list_temp = porttype.split(";")
+                for porttype in porttype_list_temp:
+                    porttype_list.append(porttype.strip())                
+            else:
+                porttype_list.append(porttype)
+        if len(porttype_list)>2:
+            print(porttype_list)
+
+        
+        # Alternative name
+        alternative = row['Alternative_name'] 
+     
+        # Create empty list to store all alternative names
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        alternative_list = []    
+           
+        if alternative != None and alternative != "":
+            if ";" in alternative: 
+                alternative_list_temp = alternative.split(";")
+                for alternative in alternative_list_temp:
+                    alternative_list.append(alternative.strip())                
+            else:
+                alternative_list.append(alternative)
+        if len(alternative_list)>2:
+            print(alternative_list)
+        
+        # Subtype
+        subtype = row['Subtype'] 
+
+        # Create empty list to store all subtype items
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        subtype_list = []    
+           
+        if subtype != None and subtype != "":
+            if ";" in subtype: 
+                subtype_list_temp = subtype.split(";")
+                for subtype in subtype_list_temp:
+                    subtype_list.append(subtype.strip())                
+            else:
+                subtype_list.append(subtype)
+        if len(subtype_list)>2:
+            print(subtype_list)
+
+
+
+        
+        # Material
         material = row['Material'] 
 
         # Create empty list to store all materials 
@@ -245,6 +305,57 @@ def update_from_excel(request):
         # print(iconography_list)
 
         # Additional attributes
+        attributes = row['Additional_attributes']
+
+        # Create empty list to store all other iconography items
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        attributes_list = []    
+           
+        if attributes != None and attributes != "":
+            if ";" in attributes: 
+                attributes_list_temp = attributes.split(";")
+                for attributes in attributes_list_temp:
+                    attributes_list.append(attributes.strip())                
+            else:
+                attributes_list.append(attributes)
+        #print(attributes_list)
+
+        # Recarved statue
+        recarved = row['Recarved_statue']
+
+        # Create empty list to store all other iconography items
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        recarved_list = []    
+           
+        if recarved != None and recarved != "":
+            if ";" in recarved: 
+                recarved_list_temp = recarved.split(";")
+                for recarved in recarved_list_temp:
+                    recarved_list.append(recarved.strip())                
+            else:
+                recarved_list.append(recarved)
+        # print(recarved_list)
+
+        # Together with
+        together = row['Together_with']
+
+        # Create empty list to store all other together items
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        together_list = []    
+           
+        if together != None and together != "":
+            if ";" in together: 
+                together_list_temp = together.split(";")
+                for together in together_list_temp:
+                    together_list.append(together.strip())                
+            else:
+                together_list.append(together)
+        if len(together_list)>2:
+            print(together_list)
+
 
         
         # Boolean fields
@@ -276,6 +387,15 @@ def update_from_excel(request):
             
         # eerst iets gaan bouwen dat alles verwijderd wat aan een reeds ingelezen portrait is gerelateerd, 
         # id db graag behouden, zie A+M deletables verhaal! origstr gebruiken als nieuwe code, voorkomen nieuwe id's
+
+        # gebruik origst
+
+        #manu_obj = Manuscript.objects.filter(idno=manuidno).first()
+        #        if manu_obj == None:
+        #            # Now we can create a completely fresh manuscript
+        #            manu_obj = Manuscript.objects.create() 
+        #            manu_obj.idno = manuidno
+        #        else:
 
         # Now we can create a completely fresh portrait record
         # Wissen oude, zie eigen werk dit klopt nog niet hoor
@@ -366,21 +486,7 @@ def update_from_excel(request):
                 else:
                     # If the name of the context exists only a link should be made to this name from the Portrait table
                     port_obj.context = contextfound
-            # Province, zie example PASSIM?
             
-             # First check if there is a province misschien dit erin zetten
-            if province != None and province != "":
-                # Try to find if the name of the province already exists in the Province table:
-                provincefound = Province.objects.filter(name__iexact=province).first()
-                if provincefound == None:
-                    # If the name does not already exist, it needs to be added to the database
-                    # and later on to the location table
-                    province = Province.objects.create(name = province)
-                # Hier onduidelijk lijkt voor een deel te werken.                 
-                else:
-                    # If the name of the province exists only a link should be made to this name from the Location table
-                    province = provincefound    
-
             # Location
 
             # Here the name of the location and its attributes will be stored if the name does not yet exist
@@ -403,7 +509,8 @@ def update_from_excel(request):
                 # If the name of the location exists only a link should be made to this name from the Portrait table
                 port_obj.location = locationfound
             
-            # Arachne TH: lijkt ok   
+            # Arachne 
+
             if arachne_list != "":
                 for arachne in arachne_list:  
                     # Try to find if the id of the arachne already exists in the Arachne table:
@@ -454,6 +561,13 @@ def update_from_excel(request):
                             # If the wreath already exists, but not the link, than only a link should be 
                             # made between portrait and the wreath
                             PortraitWreathcrown.objects.create(portrait = port_obj, wreathcrown = wreathfound)
+     # Portrait Type
+     # Alternative name
+     # Subtype
+     # Together with
+     # Recarved
+     # Attributes
+     # Iconography
 
       # Save the results
         port_obj.save()
