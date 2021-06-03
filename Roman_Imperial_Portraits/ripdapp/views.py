@@ -8,8 +8,10 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from datetime import datetime
 
-from ripdapp.models import Portrait, Emperor, Context, Location, Province
 from ripdapp.forms import SignUpForm
+
+from ripdapp.models import Portrait, Emperor, Context, Location, Province, Material, PortraitMaterial, Arachne, \
+    Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography
 
 # Import Portrait Database Excel 
 
@@ -160,20 +162,90 @@ def update_from_excel(request):
             lat = ""
             long = ""
 
+        material = row['Material'] 
 
-        arachne = row['Arachne_number'] # process later
+        # Create empty list to store all materials 
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        material_list = []    
+           
+        if material != None and material != "":
+            if ";" in material:
+                material_list_temp = material.split(";")
+                for material in material_list_temp:
+                    material_list.append(material.strip())                
+            else:
+                material_list.append(material)
         
+        # Arachne id
+        arachne = row['Arachne_number']
+        #print(arachne)
+        #print(type(arachne))
+
+        # Create empty list to store all Arachne id's 
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        arachne_list = []    
+           
+        if arachne != None and arachne != "":
+            if ";" in str(arachne): # to make sure it is a string for now, view ID 3
+                arachne_list_temp = arachne.split(";")
+                for arachne in arachne_list_temp:
+                    arachne_list.append(arachne.strip())                
+            else:
+                arachne_list.append(arachne)
+        
+        # LSA id
         lsa = row['LSA_number']
         if lsa == "":
             lsa = None
         
+
+        # Height
         height = row['Height']
         if height == "":
             height = None
-
         heightcom = row['Comment_on_height']
-        group = row['Name_group']
+        
+        # Group
+        groupname = row['Name_group']
         groupref = row['Reference_statue_group']
+
+        # Other wreath or crown
+        wreath = row['Other_wreath_or_crown']
+
+        # Create empty list to store all other wreath or crown
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        wreath_list = []    
+           
+        if wreath != None and wreath != "":
+            if ";" in wreath: 
+                wreath_list_temp = wreath.split(";")
+                for wreath in wreath_list_temp:
+                    wreath_list.append(wreath.strip())                
+            else:
+                wreath_list.append(wreath)
+        
+        # Iconogrpahy on cuirass
+        iconography = row['Iconography_cuirass']
+
+        # Create empty list to store all other iconography items
+        # as there maybe more than one for some portraits
+        # separate by a ";" 
+        iconography_list = []    
+           
+        if iconography != None and iconography != "":
+            if ";" in iconography: 
+                iconography_list_temp = iconography.split(";")
+                for iconography in iconography_list_temp:
+                    iconography_list.append(iconography.strip())                
+            else:
+                iconography_list.append(iconography)
+        # print(iconography_list)
+
+        # Iconogrpahy on cuirass
+
         
         # Boolean fields
         group = row['Part_of_statue_group']
@@ -203,17 +275,15 @@ def update_from_excel(request):
         iddisp = row['Identity_disputed']
             
         # eerst iets gaan bouwen dat alles verwijderd wat aan een reeds ingelezen portrait is gerelateerd, 
-        # id db graag behouden, zie A+M deletables verhaal!
+        # id db graag behouden, zie A+M deletables verhaal! origstr gebruiken als nieuwe code, voorkomen nieuwe id's
 
         # Now we can create a completely fresh portrait record
         # Wissen oude, zie eigen werk dit klopt nog niet hoor
-        port_obj = Portrait.objects.create() 
-        # port_obj.idno = portid ergens gaat er iets mis met een float? Check Excel en CSV
         if name != None and name != "":            
+            port_obj = Portrait.objects.create(name=name)
             
             # Store original id
-            port_obj.origstr = orig            
-            port_obj.name = name
+            port_obj.origstr = orig    
             
             port_obj.startdate = start
             port_obj.enddate = end
@@ -226,7 +296,7 @@ def update_from_excel(request):
             port_obj.height = height
             port_obj.height_comment = heightcom
 
-            port_obj.group_name = group
+            port_obj.group_name = groupname
             port_obj.group_reference = groupref
             
             # Boolean fields
@@ -255,6 +325,10 @@ def update_from_excel(request):
             port_obj.minitatue = miniat
             port_obj.recarved = recarv
             port_obj.disputed = iddisp
+
+
+            # Heel goed checken of het goed gaat met het herkennen van bestaande links tussen portrait en de andere tables
+            # Keer lege database maken. 
 
             # Emperors
 
@@ -307,7 +381,6 @@ def update_from_excel(request):
                     # If the name of the province exists only a link should be made to this name from the Location table
                     province = provincefound    
 
-
             # Location
 
             # Here the name of the location and its attributes will be stored if the name does not yet exist
@@ -329,8 +402,58 @@ def update_from_excel(request):
             else:
                 # If the name of the location exists only a link should be made to this name from the Portrait table
                 port_obj.location = locationfound
-
             
+            # Arachne TH: lijkt ok   
+            if arachne_list != "":
+                for arachne in arachne_list:  
+                    # Try to find if the id of the arachne already exists in the Arachne table:
+                    arachnefound = Arachne.objects.filter(arachne__iexact=arachne).first()
+                    if arachnefound == None:
+                        # If the id does not already exist, it needs to be added to the database
+                        # And a link should be made between this new arachne code and the corresponding portrait id
+                        Arachne.objects.create(arachne = arachne, portrait = port_obj)
+                        
+                    else:
+                        # ??
+                        pass 
+                                                     
+            # Material (view KEYWORD in PASSIM reader views.py)    
+            if material_list != "":
+                for material in material_list:  
+                    # Try to find if the name of the material already exists in the Material table:
+                    materialfound = Material.objects.filter(name__iexact=material).first()
+                    if materialfound == None:
+                        # If the name does not already exist, it needs to be added to the database
+                        material = Material.objects.create(name = material)
+                        # And a link should be made between this new material and corresponding Portrait table
+                        PortraitMaterial.objects.create(portrait = port_obj, material = material)
+                    else:
+                        # In case there is a materialfound, check for a link, if so, nothing should happen, 
+                        # than there is already a link between a portrait and a material
+                        portmtrllink = PortraitMaterial.objects.filter(portrait = port_obj, material = materialfound).first()
+                        if portmtrllink == None:
+                            # If the material already exists, but not the link, than only a link should be 
+                            # made between portrait and the material
+                            PortraitMaterial.objects.create(portrait = port_obj, material = materialfound)
+            
+            # Other wreath and crown (view Material)
+            if wreath_list != "":
+                for wreath in wreath_list:  
+                    # Try to find if the name of the wreath already exists in the Wreathcrown table:
+                    wreathfound = Wreathcrown.objects.filter(name__iexact=wreath).first()
+                    if wreathfound == None:
+                        # If the name does not already exist, it needs to be added to the database
+                        wreath = Wreathcrown.objects.create(name = wreath)
+                        # And a link should be made between this new wreath and corresponding portrait id
+                        PortraitWreathcrown.objects.create(portrait = port_obj, wreathcrown = wreath)
+                    else:
+                        # In case there is a wreathfound, check for a link, if so, nothing should happen, 
+                        # than there is already a link between a wreath and a portrait
+                        portwreathlink = PortraitWreathcrown.objects.filter(portrait = port_obj, wreathcrown = wreathfound).first()
+                        if portwreathlink == None:
+                            # If the wreath already exists, but not the link, than only a link should be 
+                            # made between portrait and the wreath
+                            PortraitWreathcrown.objects.create(portrait = port_obj, wreathcrown = wreathfound)
 
       # Save the results
         port_obj.save()
