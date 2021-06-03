@@ -13,7 +13,10 @@ from datetime import datetime
 
 # Imports from the RIPD app
 import ripdapp.views
+import ripdapp.viewsbasic
 import ripdapp.forms
+
+from ripdapp.viewsbasic import *
 
 # Non-standard settings
 pfx = ""
@@ -31,6 +34,10 @@ urlpatterns = [
     url(r'^home$', ripdapp.views.index, name='home'),
 
     url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'),
+
+    url(r'^portrait/list', PortraitListView.as_view(), name='portrait_list'),
+    url(r'^portrait/details(?:/(?P<pk>\d+))?/$', PortraitDetails.as_view(), name='portrait_details'),
+    url(r'^portrait/edit(?:/(?P<pk>\d+))?/$', PortraitEdit.as_view(), name='portrait_edit'),
 
     # Definitions are kind of separate
     url(r'^definitions$', RedirectView.as_view(url='/'+pfx+'admin/'), name='definitions'),
