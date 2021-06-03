@@ -36,7 +36,7 @@ def index(request):
     # Specify the template
     template_name = "ripdapp/index.html"
     # Define the initial context
-    context =  {'title':'RIPD',
+    context =  {'title':'Homepage',
                 'year': datetime.now().year,
                 'current_time': datetime.now().strftime("%A, %d %B, %Y at %X"),
                 'pfx': '',
