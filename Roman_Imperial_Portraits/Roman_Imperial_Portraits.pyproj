@@ -33,6 +33,15 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="basic\admin.py" />
+    <Compile Include="basic\apps.py" />
+    <Compile Include="basic\migrations\__init__.py" />
+    <Compile Include="basic\models.py" />
+    <Compile Include="basic\tests.py" />
+    <Compile Include="basic\utils.py" />
+    <Compile Include="basic\views.py" />
+    <Compile Include="basic\widgets.py" />
+    <Compile Include="basic\__init__.py" />
     <Compile Include="manage.py" />
     <Compile Include="ripdapp\admin.py" />
     <Compile Include="ripdapp\apps.py" />
@@ -50,6 +59,25 @@
     <Compile Include="Roman_Imperial_Portraits\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="basic\static\basic\content\basic.css" />
+    <Content Include="basic\static\basic\content\font-awesome.min.css" />
+    <Content Include="basic\static\basic\fonts\fontawesome-webfont.eot" />
+    <Content Include="basic\static\basic\fonts\fontawesome-webfont.svg" />
+    <Content Include="basic\static\basic\fonts\fontawesome-webfont.ttf" />
+    <Content Include="basic\static\basic\fonts\fontawesome-webfont.woff" />
+    <Content Include="basic\static\basic\fonts\fontawesome-webfont.woff2" />
+    <Content Include="basic\static\basic\fonts\FontAwesome.otf" />
+    <Content Include="basic\static\basic\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="basic\static\basic\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="basic\static\basic\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="basic\static\basic\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="basic\static\basic\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="basic\static\basic\scripts\basic.js" />
+    <Content Include="basic\static\basic\scripts\html2canvas.js" />
+    <Content Include="basic\templates\basic\basic_details.html" />
+    <Content Include="basic\templates\basic\basic_edit.html" />
+    <Content Include="basic\templates\basic\basic_list.html" />
+    <Content Include="basic\templates\basic\filter_help.html" />
     <Content Include="requirements.txt" />
     <Content Include="ripdapp\static\ripdapp\content\bootstrap.css" />
     <Content Include="ripdapp\static\ripdapp\content\bootstrap.css.map" />
@@ -78,6 +106,15 @@
     <Content Include="ripdapp\templates\topnav.html" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="basic\" />
+    <Folder Include="basic\migrations\" />
+    <Folder Include="basic\static\" />
+    <Folder Include="basic\static\basic\" />
+    <Folder Include="basic\static\basic\content\" />
+    <Folder Include="basic\static\basic\fonts\" />
+    <Folder Include="basic\static\basic\scripts\" />
+    <Folder Include="basic\templates\" />
+    <Folder Include="basic\templates\basic\" />
     <Folder Include="ripdapp\" />
     <Folder Include="ripdapp\migrations\" />
     <Folder Include="ripdapp\static\" />
