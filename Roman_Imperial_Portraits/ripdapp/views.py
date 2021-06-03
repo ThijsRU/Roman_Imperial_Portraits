@@ -244,7 +244,7 @@ def update_from_excel(request):
                 iconography_list.append(iconography)
         # print(iconography_list)
 
-        # Iconogrpahy on cuirass
+        # Additional attributes
 
         
         # Boolean fields
