@@ -10,7 +10,6 @@ from datetime import datetime
 
 from ripdapp.models import Portrait, Emperor, Context, Location, Province
 from ripdapp.forms import SignUpForm
-from Roman_Imperial_Portraits.settings import MEDIA_DIR
 
 # Import Portrait Database Excel 
 
