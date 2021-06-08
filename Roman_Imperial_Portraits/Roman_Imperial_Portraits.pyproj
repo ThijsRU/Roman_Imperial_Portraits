@@ -105,6 +105,7 @@
     <Content Include="ripdapp\templates\layout.html" />
     <Content Include="ripdapp\templates\login.html" />
     <Content Include="ripdapp\templates\nlogin.html" />
+    <Content Include="ripdapp\templates\paginationpost.html" />
     <Content Include="ripdapp\templates\ripdapp\index.html" />
     <Content Include="ripdapp\templates\signup.html" />
     <Content Include="ripdapp\templates\topnav.html" />

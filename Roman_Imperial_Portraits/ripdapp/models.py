@@ -40,9 +40,7 @@ class Portrait(models.Model):
     """The Portrait table is the core of the database, all other tables are linked (in)directly to this table"""
 
     # [1] Name of the portrait
-    name = models.CharField("Name", max_length=LONG_STRING)
-    # [1] Original id of the portrat OLD
-    # orig = models.IntegerField("Original ID", null=True) 
+    name = models.CharField("Name", max_length=LONG_STRING)    
     # [1] Original id of the portrat STRING
     origstr = models.CharField("Original ID", max_length=LONG_STRING, null=True, blank=True)
     # [0-1] References of the portrait # TH: maybe different via Zotero?
@@ -118,7 +116,7 @@ class Portrait(models.Model):
     # [1] Whether the portrait is ...
     part_statue_group = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
-    relief = models.BooleanField(default=False)
+    relief = models.BooleanField(default=False) # ERUIT
     # [1] Whether the portrait is ...
     contabulata = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
@@ -143,10 +141,7 @@ class Portrait(models.Model):
 
     # [m] Many-to-many: one portrait can be made of multiple materials
     material = models.ManyToManyField("Material", through="PortraitMaterial")       
-
-    ## [m] Many-to-many: one portrait can have multiple contexts ??
-    #context = models.ManyToManyField("Context", through="PortraitContext")
-
+    
     # [m] Many-to-many: one portrait can have multiple recarvings 
     recarved_from = models.ManyToManyField("Recarved", through="PortraitRecarved")
 
@@ -229,15 +224,11 @@ class Photographer(models.Model):
 class Photo(models.Model):
     """One or photos that are be linked to a portrait"""
     
-    # [1] Filename of the photo
-    filename = models.CharField("Filename", max_length=LONG_STRING, blank=True, null=True)
-    # [1] Link/path to the photo TH: how will this work?
-    hyperlink = models.CharField("Link?", max_length=LONG_STRING, blank=True, null=True)# ? intern? Dit is ooit extern bedoeld?
-    # [1] Order of importance of each photo linked to a specific portraits
-    order = models.IntegerField("Order of photos", blank=True, null=True) 
-    # [1] The portrait to which the photo belongs 
+    # [1] Filename of the folder with the photo's
+    folder = models.IntegerField("Folder name", null=True)   
+    # [1] The portrait to which the photo belongs OK
     portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_photo")
-    # [0-1] The id of the photographer that made the photo
+    # [0-1] The id of the photographer that made the photo  OK
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.SET_NULL, related_name="photo_photographer")
     
 # Here are the tables that link two tables with eachother
@@ -249,14 +240,6 @@ class PortraitTogether(models.Model):
     portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name= "portrait_together")
     # [1] The together item
     together = models.ForeignKey(Together, on_delete = models.CASCADE, related_name = "portrait_together")
-
-#class PortraitEmperor(models.Model): OLD
-#    """The link between a portrait and emperor item"""
-
-#    # [1] The portrait item
-#    portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_emperor")
-#    # [1] The emperor that is portrayed by the portrait
-#    emperor = models.ForeignKey(Emperor, on_delete = models.CASCADE, related_name = "portrait_emperor")
 
 class PortraitType(models.Model):
     """The link between a portrait and a portrait type"""
@@ -290,13 +273,6 @@ class PortraitMaterial(models.Model):
     # [1] The material or materials of which a portrait is made from
     material = models.ForeignKey(Material, on_delete = models.CASCADE,related_name = "portrait_material")
 
-#class PortraitContext(models.Model): OLD
-#    """The link between a portrait and the context item"""
-    
-#    # [1] The portrait item
-#    portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_context")
-#    # [1] The context in which the portrait is found
-#    context = models.ForeignKey(Context, on_delete = models.CASCADE, related_name = "portrait_context")
     
 class PortraitRecarved(models.Model):
     """The link between a portrait and a recarved item"""
