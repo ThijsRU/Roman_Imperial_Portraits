@@ -74,18 +74,24 @@ class PortraitListView(BasicList):
     sg_name = "Portrait"
     plural_name = "Portraits"
     new_button = False  # Do *NOT* allow adding portraits right now...
-    order_cols = ['name', '']   
+    order_cols = ['origstr', 'name', 'emperor__name', 'material__name', 'location__name','height']   
     order_default = order_cols
     order_heads = [
-        {'name': 'Name',    'order': 'o=1', 'type': 'str', 'field': 'name',     'linkdetails': True, 'main': True},
-        {'name': '',        'order': '',    'type': 'str', 'custom': 'links'}
+        {'name': 'ID', 'order': 'o=2', 'type': 'str', 'field': 'origstr', 'linkdetails': True},
+        {'name': 'Current location', 'order': 'o=1', 'type': 'str', 'field': 'name', 'linkdetails': True, 'main': True},
+        {'name': 'Emperor', 'order': '', 'type': 'str', 'custom': 'emp_name'},
+        {'name': 'Material', 'order': '', 'type': 'str', 'custom': 'mat_name'},
+        {'name': 'Ancient city', 'order': '', 'type': 'str', 'custom': 'location'},
+        {'name': 'Height', 'order': '', 'type': 'float', 'field': 'height', 'custom': 'links'},        
+        #{'name': '',        'order': '',    'type': 'str', 'custom': 'links'}
         ]
     filters = [ 
         {"name": "Name",            "id": "filter_name",     "enabled": False},
-               ]
+        ]
     searches = [
         {'section': '', 'filterlist': [
             {'filter': 'name',   'dbfield': 'name',      'keyS': 'name'},
+  
             ]},
         ]
 
@@ -93,12 +99,24 @@ class PortraitListView(BasicList):
         sBack = ""
         sTitle = ""
 
-        # FIgure out what to do...
+        # Figure out what to do...
         if custom == "links":
             html = []
             html.append("[link]")
             sBack = ", ".join(html)
-
+        elif custom == "emp_name":
+            html = []
+            html.append("<span>{}</span>".format(instance.emperor.name))  
+            sBack = ", ".join(html)
+        elif custom == "location":
+            html = []
+            html.append("<span>{}</span>".format(instance.location.name))  
+            sBack = ", ".join(html)
+        elif custom == "mat_name":
+            html = []
+            for item in instance.material.all():
+                html.append("<div>{}</div>".format(item.name))
+                sBack = "\n".join(html)
         # Return the stuff needed
         return sBack, sTitle
 

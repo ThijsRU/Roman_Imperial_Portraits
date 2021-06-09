@@ -118,19 +118,21 @@ def signup(request):
 def update_from_excel(request):
     """Check if contents can be updated from the MEDIA excel file"""
     
+    # Maybe use empty db? Please view WRITABLE. "Trajan " and "Trajan" are both in the database.
+
     # Can only be done by a super-user
     if request.user.is_superuser:
         pass
     
-    # Read
-        
-    # Misschien pandas gebruiken?
-    #filename = os.path.abspath(os.path.join(MEDIA_DIR, 'portraits_database.xlsx'))
-    #tmp_path = os.path.abspath(os.path.join(MEDIA_DIR, filename))
-    df = pd.read_excel(r'D:/Database.xlsx', engine='openpyxl')
+    # Read the Excel file with pandas from MEDIA_DIR
+   
+    data_sam = os.path.abspath(os.path.join(MEDIA_DIR, 'database.xlsx'))
+    df = pd.read_excel(data_sam, engine='openpyxl')
+
     # Replaces NaN with empty: ""
     df = df.fillna('')  
 
+    # Iterate over all rows in the data frame
     for index, row in df.iterrows():
         print(row['ID'], row['Name'])
         
@@ -139,24 +141,21 @@ def update_from_excel(request):
         start = row['Start_date']        
         end = row['End_date']  
         reason = row['Reason_for_dating']
-        refs = row['Reference']
-        
+        refs = row['Reference']        
         emperor = row['Emperor']
         context = row['Context']
-
-        location = row['Place'] 
-        
+        location = row['Place']         
         province = row['Province']
-        coordinates = row['Coordinates']
-        print(coordinates)
 
-        # First split up coördinates
+        # Coordinates
+        coordinates = row['Coordinates']
+        
+        # Split up the coordinates
         if coordinates != None and coordinates !="":
             coord_list = coordinates.split(",")
+            # Store separately
             lat = coord_list[0]
             long = coord_list[1]
-            print(lat, long)
-
         else:
             # in case of "Unknown"
             lat = ""
@@ -165,10 +164,9 @@ def update_from_excel(request):
         # Portrait type
         porttype = row['Portrait_type']
 
-        # Create empty list to store all alternative names
+        # Create empty list to store all portrait types
         # as there maybe more than one for some portraits
-        # separate by a ";" 
-        
+        # separate by a ";"        
         porttype_list = []    
            
         if porttype != None and porttype != "":
@@ -178,9 +176,6 @@ def update_from_excel(request):
                     porttype_list.append(porttype.strip())                
             else:
                 porttype_list.append(porttype)
-        if len(porttype_list)>2:
-            print(porttype_list)
-
         
         # Alternative name
         alternative = row['Alternative_name'] 
@@ -197,8 +192,6 @@ def update_from_excel(request):
                     alternative_list.append(alternative.strip())                
             else:
                 alternative_list.append(alternative)
-        if len(alternative_list)>2:
-            print(alternative_list)
         
         # Subtype
         subtype = row['Subtype'] 
@@ -215,11 +208,6 @@ def update_from_excel(request):
                     subtype_list.append(subtype.strip())                
             else:
                 subtype_list.append(subtype)
-        if len(subtype_list)>2:
-            print(subtype_list)
-
-
-
         
         # Material
         material = row['Material'] 
@@ -237,10 +225,8 @@ def update_from_excel(request):
             else:
                 material_list.append(material)
         
-        # Arachne id
+        # Arachne 
         arachne = row['Arachne_number']
-        # print(arachne)
-        # print(type(arachne))
 
         # Create empty list to store all Arachne id's 
         # as there maybe more than one for some portraits
@@ -255,11 +241,10 @@ def update_from_excel(request):
             else:
                 arachne_list.append(arachne)
         
-        # LSA id
+        # LSA
         lsa = row['LSA_number']
         if lsa == "":
             lsa = None
-        
 
         # Height
         height = row['Height']
@@ -271,6 +256,14 @@ def update_from_excel(request):
         groupname = row['Name_group']
         groupref = row['Reference_statue_group']
 
+        # Photo
+        photo = row['PHOTO_ID']
+        if photo != None and photo != "":
+            photo = int(photo)
+
+        # Photographer
+        photographer = row['Photo_by'] 
+        
         # Other wreath or crown
         wreath = row['Other_wreath_or_crown']
 
@@ -287,7 +280,7 @@ def update_from_excel(request):
             else:
                 wreath_list.append(wreath)
         
-        # Iconogrpahy on cuirass
+        # Iconography on cuirass
         iconography = row['Iconography_cuirass']
 
         # Create empty list to store all other iconography items
@@ -318,7 +311,6 @@ def update_from_excel(request):
                     attributes_list.append(attributes.strip())                
             else:
                 attributes_list.append(attributes)
-        #print(attributes_list)
 
         # Recarved statue
         recarved = row['Recarved_statue']
@@ -335,7 +327,6 @@ def update_from_excel(request):
                     recarved_list.append(recarved.strip())                
             else:
                 recarved_list.append(recarved)
-        # print(recarved_list)
 
         # Together with
         together = row['Together_with']
@@ -352,18 +343,7 @@ def update_from_excel(request):
                     together_list.append(together.strip())                
             else:
                 together_list.append(together)
-        if len(together_list)>2:
-            print(together_list)
-
-        # Photo
-        photo = row['PHOTO_ID']
-        if photo != None and photo != "":
-            photo = int(photo)
-
-        # Photographer
-        photographer = row['Photo_by'] 
-        print(photographer)
-        
+              
         # Boolean fields
         group = row['Part_of_statue_group']
         tantequem= row['Terminus_ante_quem']
@@ -381,8 +361,7 @@ def update_from_excel(request):
         equest = row['Equestrian']	
         cuira = row['Cuirass']	
         heroic = row['Heroic_semi_nude']	
-        seated = row['Seated']	
-        relief = row['Relief']		
+        seated = row['Seated']		
         recarved = row['Recarved']		
         contabu = row['Contabulata']	
         swbelt = row['Sword_belt']	
@@ -390,42 +369,29 @@ def update_from_excel(request):
         miniat = row['Miniature']	
         recarv = row['Recarved']	
         iddisp = row['Identity_disputed']
-            
-        # eerst iets gaan bouwen dat alles verwijderd wat aan een reeds ingelezen portrait is gerelateerd, 
-        # id db graag behouden, zie A+M deletables verhaal! origstr gebruiken als nieuwe code, voorkomen nieuwe id's
+         
+       # Now alle fields from each record can be stored
 
-        # Create a new portrait if there is a new one TH: aanpassen origstr
+        # Create a new portrait if there is a new one 
         port_obj = Portrait.objects.filter(origstr=orig).first()
         if port_obj == None:
-            # Now we can create a completely fresh portrait TH: hier gaat het mis als er een portrait nog niet in staat
+            # Now we can create a completely fresh portrait 
             port_obj = Portrait.objects.create() 
             port_obj.origstr = orig
         
-        # else:
-         #   print("This portrait is already in the database and will imported again??")
-            # Remove *ALL* existing ?? tables? Met FK naar portrait? Wat moet hier nu eigenlijk gebeuren?   
-            
-        
-            # Wissen oude, zie eigen werk dit klopt nog niet hoor
-     
-        port_obj.name = name                    
-        
+        # Store range of fields in Portrait table    
+        port_obj.name = name
         port_obj.startdate = start
         port_obj.enddate = end
-        
         port_obj.reason_date = reason     
         port_obj.reference = refs
-            
-           
         port_obj.lsa = lsa
-
         port_obj.height = height
         port_obj.height_comment = heightcom
-
         port_obj.group_name = groupname
         port_obj.group_reference = groupref
             
-        # Boolean fields
+        # Store Boolean fields in Portrait table
         port_obj.part_group = group            
         port_obj.terminus_ante_quem = tantequem
         port_obj.terminus_post_quem = tpostquem
@@ -443,7 +409,6 @@ def update_from_excel(request):
         port_obj.cuirass = cuira
         port_obj.heroic_semi_nude = heroic
         port_obj.seated = seated
-        port_obj.relief = relief
         port_obj.recarved = recarved
         port_obj.contabulata = contabu
         port_obj.sword_belt = swbelt
@@ -451,17 +416,11 @@ def update_from_excel(request):
         port_obj.minitatue = miniat
         port_obj.recarved = recarv
         port_obj.disputed = iddisp
-
-
-        # Heel goed checken of het goed gaat met het herkennen van bestaande links tussen portrait en de andere tables
-        # Keer lege database maken. 
-
-        # Emperors
+        
+        # Emperor
 
         # Here the name of the emperor will be stored if the name does not yet exist
         # and a link will be made between the Portrait table and the Emperor table
-                        
-        # eerst laten opzoeken 1030 checken met het verwijderen van alle gerelateerde gegevens tzt
             
         # Try to find if the name of the emperor already exists in the Emperor table:
         emperorfound = Emperor.objects.filter(name__iexact=emperor).first()
@@ -502,7 +461,6 @@ def update_from_excel(request):
                 province2 = Province.objects.create(name = province)
             else:
                 province2 = provincefound
-
             
         # Location
 
@@ -550,7 +508,6 @@ def update_from_excel(request):
                     # And if not known do not store the name
                     Photo.objects.create(folder = photo, portrait = port_obj)
             else:
-                # ??
                 pass 
                        
         # Arachne
@@ -564,7 +521,6 @@ def update_from_excel(request):
                     Arachne.objects.create(arachne = arachne, portrait = port_obj)
                         
                 else:
-                    # ??
                     pass 
                                                      
         # Material
@@ -609,10 +565,10 @@ def update_from_excel(request):
         if porttype_list != "":
             for ptype in porttype_list:  
                 # Try to find if the name of the type already exists in the Type table:
-                ptypefound = Type.objects.filter(name__iexact=wreath).first()
+                ptypefound = Type.objects.filter(name__iexact=ptype).first()
                 if ptypefound == None:
                     # If the name does not already exist, it needs to be added to the database
-                    ptype = Type.objects.create(name = wreath)
+                    ptype = Type.objects.create(name = ptype)
                     # And a link should be made between this new type and corresponding portrait id
                     PortraitType.objects.create(portrait = port_obj, type = ptype)
                 else:
@@ -740,26 +696,7 @@ def update_from_excel(request):
 
       # Save the results
         port_obj.save()
-    #with open('d:\database.csv', 'r') as f: #, encoding='utf-8'
-     #   reader = csv.reader(f, dialect='excel', delimiter='\t')
-      #  rowDataList = list(reader)
-       # for row in rowDataList:
-        #    for col in row:
-         #       print(col)
-    # https://github.com/ErwinKomen/RU-passim/blob/master/passim/passim/reader/views.py
-    # https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas
-    # ID
-    # Portrait zoals Manuscript?
-
     
-
-        
-
-    # class ManuscriptUploadExcel(ReaderImport):
-    # Let op: views.py reader PASSIM https://github.com/ErwinKomen/RU-passim/blob/master/passim/passim/reader/excel.py
-
-
-
     # What we return is simply the home page
     return redirect('home')
 

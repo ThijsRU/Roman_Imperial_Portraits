@@ -14,6 +14,9 @@ class Emperor(models.Model):
     """The emperors that are portrayed by the portraits"""
     # [1] The names of the emperors
     name = models.CharField("Emperor", max_length=LONG_STRING)
+    
+    def __str__(self):
+        return self.name
 
 class Context(models.Model):
     """The contexts (spaces or buildings) in which portraits were found"""
@@ -34,7 +37,7 @@ class Location(models.Model):
     # Lattitude of the place
     lat_coord = models.FloatField("Lattitude coordinate",  blank = True, null = True)
     # The province where the portrait has been found
-    province = models.ForeignKey(Province, null=True, blank=True, on_delete = models.SET_NULL, related_name="location_province")
+    province = models.ForeignKey(Province, null=True, blank=True, on_delete = models.CASCADE, related_name="location_province")
 
 class Portrait(models.Model):
     """The Portrait table is the core of the database, all other tables are linked (in)directly to this table"""
@@ -63,13 +66,13 @@ class Portrait(models.Model):
     reason_date = models.TextField("Reason dating", blank=True, null=True)
 
     # [0-1] The id of the location where the portrait was found
-    location = models.ForeignKey(Location, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_location")
+    location = models.ForeignKey(Location, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_location")
 
     # [0-1] The id of the emperor that is portrayed
-    emperor = models.ForeignKey(Emperor, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_emperor")
+    emperor = models.ForeignKey(Emperor, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_emperor")
     
     # [0-1] The id of the emperor that is portrayed
-    context = models.ForeignKey(Context, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_context")
+    context = models.ForeignKey(Context, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_context")
         
     # Boolean characteristics for each portrait: zie legend.txt
 
@@ -114,9 +117,7 @@ class Portrait(models.Model):
     # [1] Whether the portrait is ...
     terminus_post_quem = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
-    part_statue_group = models.BooleanField(default=False)
-    # [1] Whether the portrait is ...
-    relief = models.BooleanField(default=False) # ERUIT
+    part_statue_group = models.BooleanField(default=False)    
     # [1] Whether the portrait is ...
     contabulata = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
@@ -165,7 +166,7 @@ class Arachne(models.Model):
     # [0-1] The Arachne id 
     arachne = models.IntegerField("Arachne number")    
     # The id of the portrait that belongs to the Arachne code
-    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.SET_NULL, related_name="arachne_portrait")
+    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="arachne_portrait")
 
 # Here are the tables with FK's to Portrait
 
@@ -227,9 +228,9 @@ class Photo(models.Model):
     # [1] Filename of the folder with the photo's
     folder = models.IntegerField("Folder name", null=True)   
     # [1] The portrait to which the photo belongs OK
-    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.SET_NULL, related_name="portrait_photo")
+    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_photo")
     # [0-1] The id of the photographer that made the photo  OK
-    photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.SET_NULL, related_name="photo_photographer")
+    photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.CASCADE, related_name="photo_photographer")
     
 # Here are the tables that link two tables with eachother
 
