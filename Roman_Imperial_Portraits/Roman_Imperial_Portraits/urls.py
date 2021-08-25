@@ -7,6 +7,9 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import admin
 import django.contrib.auth.views
 
+from django.conf import settings # for showing pictures in Browse
+from django.conf.urls.static import static # for showing pictures in Browse
+
 from django.views.generic.base import RedirectView
 
 from datetime import datetime
@@ -72,4 +75,4 @@ urlpatterns = [
     # Enable the admin:
     url(r'^admin/', include(admin.site.urls), name='admin_base'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # for showing pictures in Browse

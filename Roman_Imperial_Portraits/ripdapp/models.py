@@ -18,10 +18,19 @@ class Emperor(models.Model):
     def __str__(self):
         return self.name
 
+    def get_emperor_markdown(self):
+        sBack = "-"
+        if self.name:
+            sBack = '<span class="emperor">{}</span>'.format(self.name)
+        return sBack
+
 class Context(models.Model):
     """The contexts (spaces or buildings) in which portraits were found"""
     # [1] The names of the contexts
     name = models.CharField("Context", max_length=LONG_STRING, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
 
 class Province(models.Model):
     """The names of Roman provinces in which the locations lie where the portraits have been found"""
@@ -111,7 +120,7 @@ class Portrait(models.Model):
     # [1] Whether the portrait is ...
     seated = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
-    recarved = models.BooleanField(default=False)
+    recarvedboo = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
     terminus_ante_quem = models.BooleanField(default=False)
     # [1] Whether the portrait is ...
@@ -161,6 +170,105 @@ class Portrait(models.Model):
     def __str__(self):
         return self.name
 
+    def get_materials(self):
+        lHtml = []
+        # Visit all materials
+        for material in self.material.all().order_by('name'):            
+            lHtml.append(material.name)            
+            
+            #else:
+            #    # Determine where clicking should lead to
+            #    url = "{}?codi-kwlist={}".format(reverse('codico_list'), keyword.id)
+            #    # Create a display for this topic
+            #    lHtml.append("<span class='keyword'><a href='{}'>{}</a></span>".format(url,keyword.name))
+        
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+
+    def get_types(self):
+        lHtml = []
+        # Visit all types
+        for type in self.type.all().order_by('name'):            
+            lHtml.append(type.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+        
+
+    def get_alternatives(self):
+        lHtml = []
+        # Visit all alternatives
+        for alternative in self.alternative.all().order_by('name'):            
+            lHtml.append(alternative.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+
+    def get_subtypes(self):
+        lHtml = []
+        # Visit all subtypes
+        for subtype in self.subtype.all().order_by('name'):            
+            lHtml.append(subtype.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+
+
+    def get_recarvedstatue(self):
+        lHtml = []
+        # Visit all recarved statues: 
+        for recarved in self.recarved.all().order_by('name'):            
+            lHtml.append(recarved.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+
+    def get_wreathcrown(self):
+        lHtml = []
+        # Visit all wreath and crown:
+        for wreathcrown in self.wreathcrown.all().order_by('name'):            
+            lHtml.append(wreathcrown.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+
+    def get_attributes(self):
+        lHtml = []
+        # Visit all attributes:
+        for attribute in self.attributes.all().order_by('name'):            
+            lHtml.append(attribute.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+
+    def get_iconography(self):
+        lHtml = []
+        # Visit all iconography:
+        for iconography in self.iconography.all().order_by('name'):            
+            lHtml.append(iconography.name)  
+
+        sBack = ", ".join(lHtml)
+        print(sBack)
+        return sBack
+    
+    
+    
+    #def get_arachne(self):
+    #    if self.arachne:
+    #        arachne = self.arachne.arachne
+    #    else:
+    #        arachne = "-"
+    #    return arachne
+
+ 
+
 class Arachne(models.Model):
     """The arachne code(s) that belong to a portrait"""
     # [0-1] The Arachne id 
@@ -168,12 +276,24 @@ class Arachne(models.Model):
     # The id of the portrait that belongs to the Arachne code
     portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="arachne_portrait")
 
+    def __str__(self):
+        return self.arachne
+    
+    #def __str__(self):
+    #    sArachne = self.arachne
+    #    if sArachne == None or sArachne == "":
+    #        sArachne = "no Arachne id"
+    #    return sArachne
+
 # Here are the tables with FK's to Portrait
 
 class Attributes(models.Model):
     """The attributes of a portrait"""
      # [1] The names of the attributes (type of attire, statuary type or figurative elements of the figure)
     name = models.CharField("Additional attributes", max_length=LONG_STRING, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
 
 class Together(models.Model):
     """The objects that were originally displayed together with the portrait in the same environment"""
@@ -185,48 +305,73 @@ class Material(models.Model):
     # [1] The names of the substances
     name = models.CharField("Material", max_length=LONG_STRING)
 
+    def __str__(self):
+        return self.name
+
 
 class Type(models.Model):
     """The categories of portraits that the object belongs to based on the repetition of certain key features"""
     # [1] The names of the categories
     name = models.CharField("Type", max_length=LONG_STRING)
 
+    def __str__(self):
+        return self.name
+
 class Alternative(models.Model):
     """The other names commonly used by authors to refer to the type of the portrait """
     # [1] The names of the alternative types
     name = models.CharField("Alternative type", max_length=LONG_STRING)
+
+    def __str__(self):
+        return self.name
 
 class Subtype(models.Model):
     """The subcategories of portraits that the object belongs to based on the repetition of certain key features"""
     # [1] The names of the subcategories
     name = models.CharField("Subtype", max_length=LONG_STRING)
 
+    def __str__(self):
+        return self.name
+
 class Wreathcrown(models.Model):
     """Other types of wreath or crown carried by the portrait that are not a corona laurea, civica or radiata"""
     # [1] Names of other wreath of crown of the portrait
     name =  models.CharField("Other wreath or crown", max_length=LONG_STRING, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
 
 class Iconography(models.Model):
     """The descriptions of figurative decorations displayed on the breastplate"""
     # [1] The names of the decorations
     name = models.CharField("Iconography cuirass", max_length=LONG_STRING, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
 
 class Recarved(models.Model):
     """The former identity/identities of the portrait""" 
     # [1] The names of the identities
     name = models.CharField("Recarved portrait", max_length=LONG_STRING, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 class Photographer(models.Model):
     """Some photos have a link to a photographer"""
     # [1] The names of the photographers
     name = models.CharField("Name photographer", max_length=LONG_STRING, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
+
 class Photo(models.Model):
     """One or photos that are be linked to a portrait"""
     
     # [1] Filename of the folder with the photo's
-    folder = models.IntegerField("Folder name", null=True)   
+    folder = models.IntegerField("Folder name", null=True) 
+    # [0-1] Path to the folder with the photo's (to be added during the list view process, in case there is a photo in the folder)
+    path = models.CharField("Path name", max_length=LONG_STRING, blank=True, null=True)
     # [1] The portrait to which the photo belongs OK
     portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_photo")
     # [0-1] The id of the photographer that made the photo  OK
@@ -249,6 +394,7 @@ class PortraitType(models.Model):
     portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_type")
     # [1] The portrait type (or types) 
     type = models.ForeignKey(Type,on_delete = models.CASCADE, related_name = "portrait_type")
+
 
 class PortraitAlternative(models.Model):
     """The link between a portrait and one or more alternative name items"""
@@ -281,7 +427,7 @@ class PortraitRecarved(models.Model):
     # [1] The portrait item
     portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_recarved")
     # [1] The recarved item or items related to the portrait
-    recarved_from = models.ForeignKey(Recarved, on_delete = models.CASCADE, related_name = "portrait_recarved")
+    recarved = models.ForeignKey(Recarved, on_delete = models.CASCADE, related_name = "portrait_recarved")
 
 class PortraitAttributes(models.Model):
     """The link between a portrait and an attribute item"""

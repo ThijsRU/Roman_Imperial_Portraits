@@ -112,8 +112,27 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
+#def update_photo(request):
+#    """Check if the availabilty of photos in the designated folders has been changed"""
+    
+#    # Can only be done by a super-user
+#    if request.user.is_superuser:
+#        pass
+    
+#    # First go over all folders in PICTURES_DIR
 
+#    # Use the name of the folder to link up the photos to the portraits
+#    # Model should be changed, one portrait can have multiple photos, maybe link them directly with 
+#    # the help of the folder name if 
 
+#    # USe the
+#    # https://stackoverflow.com/questions/60979784/python-walk-through-directory-and-save-all-foldernames-subfolder-and-files-in
+    
+#    # Save the results
+#        port_obj.save()
+    
+#    # What we return is simply the home page
+#    return redirect('home')
 
 def update_from_excel(request):
     """Check if contents can be updated from the MEDIA excel file"""
@@ -362,7 +381,7 @@ def update_from_excel(request):
         cuira = row['Cuirass']	
         heroic = row['Heroic_semi_nude']	
         seated = row['Seated']		
-        recarved = row['Recarved']		
+        recarvedboo = row['Recarved']		
         contabu = row['Contabulata']	
         swbelt = row['Sword_belt']	
         paluda = row['Paludamentum']	 
