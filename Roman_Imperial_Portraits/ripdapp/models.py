@@ -1,6 +1,7 @@
 # Create your models here.
 from django.db import models
 from django.contrib.auth.models import Group, User
+from basic.utils import ErrHandle
 
 # Create your models here.
 
@@ -37,6 +38,9 @@ class Province(models.Model):
     # [1] Names of Roman province 
     name = models.CharField("Province", max_length=LONG_STRING, blank=True, null=True) # Is dat laatste nodig
 
+    def __str__(self):
+        return self.name
+
 class Location(models.Model): 
     """Table that stores the locations where portraits have been found"""
     # Name of the place
@@ -47,6 +51,9 @@ class Location(models.Model):
     lat_coord = models.FloatField("Lattitude coordinate",  blank = True, null = True)
     # The province where the portrait has been found
     province = models.ForeignKey(Province, null=True, blank=True, on_delete = models.CASCADE, related_name="location_province")
+
+    def __str__(self):
+        return self.name
 
 class Portrait(models.Model):
     """The Portrait table is the core of the database, all other tables are linked (in)directly to this table"""
@@ -82,7 +89,8 @@ class Portrait(models.Model):
     
     # [0-1] The id of the emperor that is portrayed
     context = models.ForeignKey(Context, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_context")
-        
+ 
+    
     # Boolean characteristics for each portrait: zie legend.txt
 
     # [1] Whether the portrait is ...
@@ -164,111 +172,181 @@ class Portrait(models.Model):
     # [m] Many-to-many: one portrait can have multiple other wreath or crown items
     wreathcrown = models.ManyToManyField("Wreathcrown", through="PortraitWreathcrown")
 
-    # [m] Many-to-many: one portrait can be together with multiple other portraits
+    # [m] Many-to-many: one portrait can be together with multiple together items
     together = models.ManyToManyField("Together", through="PortraitTogether")
-
+    
     def __str__(self):
-        return self.name
-
-    def get_materials(self):
-        lHtml = []
-        # Visit all materials
-        for material in self.material.all().order_by('name'):            
-            lHtml.append(material.name)            
-            
-            #else:
-            #    # Determine where clicking should lead to
-            #    url = "{}?codi-kwlist={}".format(reverse('codico_list'), keyword.id)
-            #    # Create a display for this topic
-            #    lHtml.append("<span class='keyword'><a href='{}'>{}</a></span>".format(url,keyword.name))
-        
-        sBack = ", ".join(lHtml)
-        print(sBack)
-        return sBack
-
-    def get_types(self):
-        lHtml = []
-        # Visit all types
-        for type in self.type.all().order_by('name'):            
-            lHtml.append(type.name)  
-
-        sBack = ", ".join(lHtml)
-        print(sBack)
-        return sBack
-        
+        return self.name    
 
     def get_alternatives(self):
         lHtml = []
-        # Visit all alternatives
+        # Visit all alternative type items
         for alternative in self.alternative.all().order_by('name'):            
             lHtml.append(alternative.name)  
 
         sBack = ", ".join(lHtml)
-        print(sBack)
         return sBack
 
-    def get_subtypes(self):
+    def get_arachne(self):
         lHtml = []
-        # Visit all subtypes
-        for subtype in self.subtype.all().order_by('name'):            
-            lHtml.append(subtype.name)  
-
+        # Visit all arachne items        
+        for arachne in self.arachne_portrait.all().order_by('arachne'):    
+            # Add to list, make string of the integer
+            lHtml.append(str(arachne.arachne))          
         sBack = ", ".join(lHtml)
-        print(sBack)
-        return sBack
-
-
-    def get_recarvedstatue(self):
-        lHtml = []
-        # Visit all recarved statues: 
-        for recarved in self.recarved.all().order_by('name'):            
-            lHtml.append(recarved.name)  
-
-        sBack = ", ".join(lHtml)
-        print(sBack)
-        return sBack
-
-    def get_wreathcrown(self):
-        lHtml = []
-        # Visit all wreath and crown:
-        for wreathcrown in self.wreathcrown.all().order_by('name'):            
-            lHtml.append(wreathcrown.name)  
-
-        sBack = ", ".join(lHtml)
-        print(sBack)
         return sBack
 
     def get_attributes(self):
         lHtml = []
-        # Visit all attributes:
-        for attribute in self.attributes.all().order_by('name'):            
+        # Visit all attribute items
+        for attribute in self.attribute.all().order_by('name'):            
             lHtml.append(attribute.name)  
 
         sBack = ", ".join(lHtml)
-        print(sBack)
         return sBack
 
+    def get_context(self):
+        lHtml = []
+        # First check if there is a context linked to the portrait 
+        if self.context != None:
+            # If there is one, pick the province up
+            cntxt = self.context.name   
+            # And add it to list, 
+            lHtml.append(cntxt)          
+            sBack = ", ".join(lHtml)
+        else:
+            # If there is no context linked to a portrait
+            # this needs to be marked with a "-" in order to skip the "empty" field
+            # later in the process 
+            lHtml.append("-")
+            sBack = "".join(lHtml) 
+        return sBack
+    
     def get_iconography(self):
         lHtml = []
-        # Visit all iconography:
+        # Visit all iconography items
         for iconography in self.iconography.all().order_by('name'):            
-            lHtml.append(iconography.name)  
-
+            lHtml.append(iconography.name) 
         sBack = ", ".join(lHtml)
-        print(sBack)
+        return sBack
+
+    def get_materials(self):
+        lHtml = []
+        # Visit all material items
+        for material in self.material.all().order_by('name'):            
+            lHtml.append(material.name)            
+        sBack = ", ".join(lHtml)
+        return sBack 
+
+    def get_photofolder(self):
+        lHtml = []
+        # Visit all photo items  
+        for path in self.path_portrait.all().order_by('folder'):    
+            # Add folder number to the list, make string of the integer
+            lHtml.append(str(path.folder))          
+        sBack = ", ".join(lHtml)
+        return sBack
+
+    def get_photopath(self):
+        lHtml = []
+        # Visit all photo items (no tiffs)      
+        for item in self.path_portrait.all().order_by('folder'):    
+            # Add path to list
+            lHtml.append("<img src='/{}' style='max-width: 300px; width: auto; height: auto;'/>".format(item.path))
+  
+
+        sBack = "\n".join(lHtml)
+        return sBack
+           
+    def get_photographer(self):
+        lHtml = []
+        # Visit the first photo path
+        path1 = self.path_portrait.first()
+        
+        # Only move forward if there is a path (and thus picture)
+        if path1 != None:      
+            # Get the id of the photographer:
+            id_grapher = path1.photographer_id
+            # Only move forward when there is photographer associated with the image
+            if id_grapher != None:
+                # ok dit gaat goed
+                # Get the corresponding object in the Photographer table                      
+                namefound = Photographer.objects.filter(id__iexact=id_grapher).first()               
+                # Add the name of the Photographer to the list
+                lHtml.append(namefound.name) 
+                sBack = ", ".join(lHtml)
+            else:
+                # If there is no photogrpaher linked to a portrait 
+                # this needs to be marked with a "-" in order to skip the "empty" field
+                # later in the process
+                lHtml.append("-")
+                sBack = "".join(lHtml)
+        return sBack
+
+    def get_province(self):
+        lHtml = []
+        # First check if there is a province linked to the location 
+        if self.location.province != None:
+            # If there is one, pick the province up
+            prov = self.location.province.name   
+            # And add it to list, 
+            lHtml.append(prov)          
+            sBack = ", ".join(lHtml)
+        else:
+            # If there is no province linked to a location
+            # this needs to be marked with a "-" in order to skip the "empty" field
+            # later in the process
+            lHtml.append("-")
+            sBack = "".join(lHtml)   
+        return sBack    
+    
+    def get_recarvedstatue(self):
+        lHtml = []
+        oErr = ErrHandle()
+        sBack = ""
+        try:
+            # Visit all recarved statues: 
+            for recarved in self.recarved_from.all().order_by('name'):            
+                lHtml.append(recarved.name)  
+            sBack = ", ".join(lHtml)
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("get_carved")
         return sBack
     
-    
-    
-    #def get_arachne(self):
-    #    if self.arachne:
-    #        arachne = self.arachne.arachne
-    #    else:
-    #        arachne = "-"
-    #    return arachne
+    def get_subtypes(self):
+        lHtml = []
+        # Visit all subtype items
+        for subtype in self.subtype.all().order_by('name'):            
+            lHtml.append(subtype.name)  
+        sBack = ", ".join(lHtml)
+        return sBack
 
- 
+    def get_together(self):
+        lHtml = []
+        # Visit all together items
+        for together in self.together.all().order_by('name'):            
+            lHtml.append(together.name)  
+        sBack = ", ".join(lHtml)
+        return sBack
+    
+    def get_types(self):
+        lHtml = []
+        # Visit all type items
+        for type in self.type.all().order_by('name'):            
+            lHtml.append(type.name)  
 
+        sBack = ", ".join(lHtml)
+        return sBack  
+
+    def get_wreathcrown(self):
+        lHtml = []
+        # Visit all wreath and crown items
+        for wreathcrown in self.wreathcrown.all().order_by('name'):            
+            lHtml.append(wreathcrown.name)  
+        sBack = ", ".join(lHtml)
+        return sBack    
+  
 class Arachne(models.Model):
     """The arachne code(s) that belong to a portrait"""
     # [0-1] The Arachne id 
@@ -278,14 +356,6 @@ class Arachne(models.Model):
 
     def __str__(self):
         return self.arachne
-    
-    #def __str__(self):
-    #    sArachne = self.arachne
-    #    if sArachne == None or sArachne == "":
-    #        sArachne = "no Arachne id"
-    #    return sArachne
-
-# Here are the tables with FK's to Portrait
 
 class Attributes(models.Model):
     """The attributes of a portrait"""
@@ -299,7 +369,10 @@ class Together(models.Model):
     """The objects that were originally displayed together with the portrait in the same environment"""
     # [1] The names of the objects
     name = models.CharField("Together with", max_length=LONG_STRING, blank=True, null=True)
-  
+
+    def __str__(self):
+        return self.name
+      
 class Material(models.Model):
     """The substances of which the portrait has been made (if available)"""
     # [1] The names of the substances
@@ -307,8 +380,7 @@ class Material(models.Model):
 
     def __str__(self):
         return self.name
-
-
+    
 class Type(models.Model):
     """The categories of portraits that the object belongs to based on the repetition of certain key features"""
     # [1] The names of the categories
@@ -358,25 +430,28 @@ class Recarved(models.Model):
         return self.name
 
 class Photographer(models.Model):
-    """Some photos have a link to a photographer"""
+    """Some paths/photos have a link to a photographer"""
     # [1] The names of the photographers
     name = models.CharField("Name photographer", max_length=LONG_STRING, blank=True, null=True)
 
     def __str__(self):
         return self.name
 
-class Photo(models.Model):
-    """One or photos that are be linked to a portrait"""
-    
+class Path(models.Model):
+    """One or paths (to photos) that are be linked to a portrait""" 
+    # VIEW ARACHNE
+    # [0-1] The path      
+    path = models.CharField("Path name", max_length=LONG_STRING)
+    # The id of the portrait that belongs to the Arachne code
+    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="path_portrait")
     # [1] Filename of the folder with the photo's
     folder = models.IntegerField("Folder name", null=True) 
-    # [0-1] Path to the folder with the photo's (to be added during the list view process, in case there is a photo in the folder)
-    path = models.CharField("Path name", max_length=LONG_STRING, blank=True, null=True)
-    # [1] The portrait to which the photo belongs OK
-    portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_photo")
-    # [0-1] The id of the photographer that made the photo  OK
-    photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.CASCADE, related_name="photo_photographer")
+    # [0-1] The id of the photographer that made the photo (at the end of the path)
+    photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.CASCADE, related_name="path_photographer")
     
+    def __str__(self):
+        return self.path
+       
 # Here are the tables that link two tables with eachother
 
 class PortraitTogether(models.Model): 
@@ -394,7 +469,6 @@ class PortraitType(models.Model):
     portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_type")
     # [1] The portrait type (or types) 
     type = models.ForeignKey(Type,on_delete = models.CASCADE, related_name = "portrait_type")
-
 
 class PortraitAlternative(models.Model):
     """The link between a portrait and one or more alternative name items"""
@@ -419,7 +493,6 @@ class PortraitMaterial(models.Model):
     portrait = models.ForeignKey(Portrait, on_delete = models.CASCADE, related_name="portrait_material")
     # [1] The material or materials of which a portrait is made from
     material = models.ForeignKey(Material, on_delete = models.CASCADE,related_name = "portrait_material")
-
     
 class PortraitRecarved(models.Model):
     """The link between a portrait and a recarved item"""

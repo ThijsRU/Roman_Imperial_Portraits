@@ -14,7 +14,7 @@ from basic.views import BasicList, BasicDetails
 # RIPD: forms and models
 from ripdapp.forms import SignUpForm, PortraitForm
 from ripdapp.models import Portrait, Emperor, Context, Location, Province, Material, PortraitMaterial, Arachne, \
-    Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Photo
+    Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Path, Photographer 
 
 from Roman_Imperial_Portraits.settings import PICTURES_DIR
 
@@ -32,79 +32,104 @@ class PortraitEdit(BasicDetails):
     
     def add_to_context(self, context, instance):
         """Add to the existing context"""
+        
+        # Here the most fields and tables related to each portrait are collected 
+        # and added to the context, but only when there is data available
+        def add_if_available(arThis, type, label, value, field_key):
+            # print(label) to test if the labels and values are ok
+            # print(value) 
+            
+            # Filter out the fields without data
+            if value == "" or value == "-" or value == None:
+                pass
+            # The rest will be processed here:
+            else: 
+                # Convert the values of the boolean fields 
+                # in the Portrait table, first True --> YES
+                if value == True:
+                    value = "YES"
+                    oAddThis = {'type': type, 'label': label, 'value': value , 'field_key': field_key}
+                    arThis.append( oAddThis )                
+                # then False --> NO
+                elif value == False:
+                    value = "NO"
+                    oAddThis = {'type': type, 'label': label, 'value': value, 'field_key': field_key}
+                    arThis.append( oAddThis )
+                # The rest will be processed here
+                else:
+                    oAddThis = {'type': type, 'label': label, 'value': value, 'field_key': field_key}
+                    arThis.append( oAddThis )
 
-        # Define the main items to show and edit TH: HIER VERDER zie PASSIM niet 
-        # class ManuscriptEdit(BasicDetails):
-        # https://github.com/ErwinKomen/RU-passim/blob/master/passim/passim/seeker/views.py#L8399
+        # Define the main items to show        
         context['mainitems'] = [            
+            {'type': 'plain', 'label': "ID: ", 'value': instance.origstr, 'field_key': 'orid_id'},
             {'type': 'plain', 'label': "Emperor: ", 'value': instance.emperor.name, 'field_key': 'emperor'},           
             {'type': 'plain', 'label': "Portrait type: ", 'value': instance.get_types(), 'field_key': 'types'},
-            {'type': 'plain', 'label': "Alternative: ", 'value': instance.get_alternatives(), 'field_key': 'alternatives'},
-            {'type': 'plain', 'label': "Subtype: ", 'value': instance.get_subtypes(), 'field_key': 'subtypes'},
-                                  
-            {'type': 'plain', 'label': "Identity disputed: ", 'value': instance.disputed, 'field_key': 'disputed'},
-            {'type': 'plain', 'label': "Re-carved: ", 'value': instance.recarvedboo, 'field_key': 'recarved_boolean'},
-           
-            # Hieronder gaat het mis. Nu ok?
-            {'type': 'plain', 'label': "Original identity: ", 'value': instance.get_recarvedstatue(), 'field_key': 'recarvedstatue'},
-            
-            {'type': 'plain', 'label': "Original ID: ", 'value': instance.origstr,'field_key': 'origstr'},
-            
-            {'type': 'plain', 'label': "Reference(s): ", 'value': instance.reference,'field_key': 'reference'},
-            # Arachne
-            #{'type': 'plain', 'label': "Arachne: ", 'value': instance.get_arachne(),'field_key': 'arachne'},
-            {'type': 'plain', 'label': "LSA: ", 'value': instance.lsa,'field_key': 'lsa'},
-
-            {'type': 'plain', 'label': "Start date: ", 'value': instance.startdate,'field_key': 'startdate'},
-            {'type': 'plain', 'label': "End date: ", 'value': instance.enddate,'field_key': 'enddate'},
-            {'type': 'plain', 'label': "Reason for dating: ", 'value': instance.reason_date,'field_key': 'reason_date'},
-                        
-            {'type': 'plain', 'label': "Material: ", 'value': instance.get_materials(), 'field_key': 'material'},
-            {'type': 'plain', 'label': "Height: ", 'value': instance.height,'field_key': 'height'},
-            {'type': 'plain', 'label': "Height specified: ", 'value': instance.height_comment,'field_key': 'height_comment'},
-            {'type': 'plain', 'label': "Miniature: ", 'value': instance.miniature, 'field_key': 'miniature'},
-
-            {'type': 'plain', 'label': "Name: ", 'value': instance.name, 'field_key': 'name'},
-            {'type': 'plain', 'label': "Ancient city: ", 'value': instance.location.name,'field_key': 'location'},
-            # Province TO DO            
-            {'type': 'plain', 'label': "Context: ", 'value': instance.context.name,'field_key': 'context'},
-
-            {'type': 'plain', 'label': "Part of statue group: ", 'value': instance.part_group, 'field_key': 'miniature'},
-            {'type': 'plain', 'label': "Name group: ", 'value': instance.group_name,'field_key': 'group_name'},
-            {'type': 'plain', 'label': "Reference: ", 'value': instance.group_reference,'field_key': 'group_reference'},
-            
-            {'type': 'plain', 'label': "Statue: ", 'value': instance.statue, 'field_key': 'statue'},
-            {'type': 'plain', 'label': "Bust: ", 'value': instance.buste, 'field_key': 'bust'},
-            {'type': 'plain', 'label': "Toga: ", 'value': instance.toga, 'field_key': 'toga'},
-            {'type': 'plain', 'label': "Capite velato : ", 'value': instance.capite_velato, 'field_key': 'capite_velato'},
-            {'type': 'plain', 'label': "Cuirass: ", 'value': instance.cuirass, 'field_key': 'cuirass'},            
-            
-            {'type': 'plain', 'label': "Iconography cuirass: ", 'value': instance.get_iconography(), 'field_key': 'iconography'},
-            
-            {'type': 'plain', 'label': "Heroic nudity: ", 'value': instance.heroic_semi_nude, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Enthroned: ", 'value': instance.seated, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Equestrian: ", 'value': instance.equestrian, 'field_key': 'cuirass'},
-            
-            {'type': 'plain', 'label': "Beard: ", 'value': instance.beard, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Paludamentum: ", 'value': instance.paludamentum, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Sword belt: ", 'value': instance.sword_belt, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Contabulata: ", 'value': instance.contabulata, 'field_key': 'cuirass'},
-
-            {'type': 'plain', 'label': "Headgear: ", 'value': instance.headgear, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Corona laurea: ", 'value': instance.corona_laurea, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Corona civica: ", 'value': instance.corona_civica, 'field_key': 'cuirass'},
-            {'type': 'plain', 'label': "Corona radiata: ", 'value': instance.corona_radiata, 'field_key': 'cuirass'},
-
-            {'type': 'plain', 'label': "Other: ", 'value': instance.get_wreathcrown(), 'field_key': 'wreathcrown'},
-
-            #TH: hier gaat er ook nog iets niet goed
-            #{'type': 'plain', 'label': "Additional attributes: ", 'value': instance.get_attributes(), 'field_key': 'attributes'},
-
-          
-
-           # {'type': 'plain', 'label': "Province: ", 'value': instance.location.province.name,'field_key': 'province'},
             ]
 
+        # One by one evaluate the remaining items
+        add_if_available(context['mainitems'], "plain", "Alternative: ", instance.get_alternatives(), 'alternatives')
+        add_if_available(context['mainitems'], "plain", "Subtype: ", instance.get_subtypes(), 'subtypes') 
+
+        add_if_available(context['mainitems'], "plain", "Identity disputed: ", instance.disputed, 'disputed')
+        add_if_available(context['mainitems'], "plain", "Re-carved: ", instance.recarvedboo, 'recarved_boolean')
+        add_if_available(context['mainitems'], "plain", "Original identity: ", instance.get_recarvedstatue(), 'recarvedstatue')
+
+        # Waarom moet de door Sam gemaakte ID's er niet in?               
+        add_if_available(context['mainitems'], "plain", "Original ID: ", instance.origstr, 'origstr')         
+        add_if_available(context['mainitems'], "plain", "Reference(s): ", instance.reference, 'reference') 
+        add_if_available(context['mainitems'], "plain", "Arachne: ", instance.get_arachne(), 'arachne') 
+        add_if_available(context['mainitems'], "plain", "LSA: ", instance.lsa, 'lsa') 
+
+        add_if_available(context['mainitems'], "plain", "Start date: ", instance.startdate, 'startdate') 
+        add_if_available(context['mainitems'], "plain", "End date: ", instance.enddate, 'enddate') 
+        add_if_available(context['mainitems'], "plain", "Reason for dating: ", instance.reason_date, 'reason_date') 
+
+        add_if_available(context['mainitems'], "plain", "Material: ", instance.get_materials(), 'material') 
+        add_if_available(context['mainitems'], "plain", "Height: ", instance.height, 'height') 
+        add_if_available(context['mainitems'], "plain", "Height specified: ", instance.height_comment, 'height_commnt') 
+        add_if_available(context['mainitems'], "plain", "Miniature: ", instance.miniature, 'miniature')
+        
+        add_if_available(context['mainitems'], "plain", "Name: ", instance.name, 'name')
+        add_if_available(context['mainitems'], "plain", "Ancient city: ", instance.location.name, 'location')
+        add_if_available(context['mainitems'], "plain", "Province: ", instance.get_province(), 'province')         
+        add_if_available(context['mainitems'], "plain", "Context: ", instance.get_context(), 'context') 
+
+        add_if_available(context['mainitems'], "plain", "Part of statue group: ", instance.part_group, 'part_statue_group')         
+        add_if_available(context['mainitems'], "plain", "Name group: ", instance.group_name, 'group_name') 
+        add_if_available(context['mainitems'], "plain", "Together with: ", instance.get_together(), 'together')
+        add_if_available(context['mainitems'], "plain", "Reference: ", instance.group_reference, 'group_reference') 
+
+        add_if_available(context['mainitems'], "plain", "Statue: ", instance.statue, 'statue')     
+        add_if_available(context['mainitems'], "plain", "Bust: ", instance.buste, 'buste')
+        add_if_available(context['mainitems'], "plain", "Toga: ", instance.toga, 'toga')
+        add_if_available(context['mainitems'], "plain", "Capite velato: ", instance.capite_velato, 'capite_velato')
+        add_if_available(context['mainitems'], "plain", "Cuirass: ", instance.cuirass, 'cuirass')            
+        add_if_available(context['mainitems'], "plain", "Iconography cuirass: ", instance.get_iconography(), 'iconography')          
+        add_if_available(context['mainitems'], "plain", "Heroic nudity: ", instance.heroic_semi_nude, 'heroic nude')
+        add_if_available(context['mainitems'], "plain", "Enthroned: ", instance.seated, 'seated')
+        add_if_available(context['mainitems'], "plain", "Equestrian: ", instance.equestrian, 'equestrian')
+
+        add_if_available(context['mainitems'], "plain", "Beard: ", instance.beard, 'beard')
+        add_if_available(context['mainitems'], "plain", "Paludamentum: ", instance.paludamentum, 'paludamentum')
+        add_if_available(context['mainitems'], "plain", "Sword belt: ", instance.sword_belt, 'sword_belt')
+        add_if_available(context['mainitems'], "plain", "Contabulata: ", instance.contabulata, 'contabulata')
+        
+        add_if_available(context['mainitems'], "plain", "Headgear: ", instance.headgear, 'headgear')
+        add_if_available(context['mainitems'], "plain", "Corona laurea: ", instance.corona_laurea, 'corona_laurea')
+        add_if_available(context['mainitems'], "plain", "Corona civica: ", instance.corona_civica, 'corona_civica')
+        add_if_available(context['mainitems'], "plain", "Corona radiata: ", instance.corona_radiata, 'corona_radiata')        
+        add_if_available(context['mainitems'], "plain", "Other: ", instance.get_wreathcrown(), 'wreathcrown')
+
+        add_if_available(context['mainitems'], "plain", "Additional attributes: ", instance.get_attributes(), 'attributes')
+
+        #add_if_available(context['mainitems'], "plain", "Photo folder: ", instance.get_photofolder(), 'photo folder')
+                
+        add_if_available(context['mainitems'], "plain", "Photo by © : ", instance.get_photographer(), 'photographer') # dit werkt niet meer
+        add_if_available(context['mainitems'], "plain", "Photo: ", instance.get_photopath(), 'photo path') # idem
+
+        # class ManuscriptEdit(BasicDetails):
+        # https://github.com/ErwinKomen/RU-passim/blob/master/passim/passim/seeker/views.py#L8399
 
 
         # Signal that we have select2
@@ -148,83 +173,49 @@ class PortraitListView(BasicList):
     order_default = order_cols
     order_heads = [
         # Regel met plaatje, name empty, order idem, type str custom, zie onder custom: 'picture'
-        {'name': 'Folder No', 'order': '', 'type': 'int', 'custom': 'picture', 'linkdetails': True},
+        {'name': 'Photo', 'order': '', 'type': 'int', 'custom': 'picture', 'linkdetails': True},
         {'name': 'ID', 'order': 'o=1', 'type': 'int', 'field': 'origstr', 'linkdetails': True},
         {'name': 'Current location', 'order': 'o=2', 'type': 'str', 'field': 'name', 'linkdetails': True, 'main': True},
         {'name': 'Emperor', 'order': '', 'type': 'str', 'custom': 'emp_name'},
         {'name': 'Material', 'order': '', 'type': 'str', 'custom': 'mat_name'},
         {'name': 'Ancient city', 'order': '', 'type': 'str', 'custom': 'location'},        
         ]
+    # Nog geen typeahead, maar er is al een beetje op name te zoeken!
     filters = [ 
-        {"name": "Name",            "id": "filter_name",     "enabled": False},
+        {"name": "Name",                "id": "filter_name",       "enabled": False},
+        {"name": "Emperor",             "id": "filter_emperor",    "enabled": False},
+        {"name": "Disputed",            "id": "filter_disputed",   "enabled": False},
+        {"name": "Recarved",            "id": "filter_recarved",   "enabled": False},
+        {"name": "Original identity",   "id": "filter_origident",  "enabled": False},
+
         ]
     searches = [
         {'section': '', 'filterlist': [
-            {'filter': 'name',   'dbfield': 'name',      'keyS': 'name'},
-  
+            {'filter': 'name',    'dbfield': 'name',                    'keyS': 'name'},
+            {'filter': 'emperor', 'fkfield': 'portrait_emperor.name',   'keyS': 'emperor'},
+            {'filter': 'disputed', 'dbfield': 'disputed',               'keyS': 'disputed'},
             ]},
         ]
 
     def get_field_value(self, instance, custom):
         sBack = ""
-        sTitle = ""
-                       
+        sTitle = ""                       
         if custom == "emp_name":            
             html = []
-            html.append("<span>{}</span>".format(instance.emperor.name))  
+            html.append("<span>{}</span>".format(instance.emperor.name)) 
             sBack = ", ".join(html)
         elif custom == "picture":            
-            # Find number of folder
-            # Find folder
-            # Find first photo
-            ext_list = ['jpg','jpeg','png']
+            # If there are images available, get the first one            
             html = []
-            for item in instance.portrait_photo.all():                
-                # Find id of the corresponding photo folder
-                folder = str(item.folder)  
-                # Use that number to go to that folder in the MEDIA_DIR
-                path = os.path.join(PICTURES_DIR, folder)
-                # Make a list of all contents in the foldder
-                photo_list = os.listdir(path)
-                # Find out if there are items in the list
-                if len(photo_list) > 0:
-                    # Pick the first item of that list, let op, je hebt hier alleen de naam!
-                    item_1 = photo_list[0]
-                    # Now seek for way to access the photo... 
-                    # use path and 
-                    print(item_1)
-                    # Split the file name up
-                    item_1_list = item_1.split(".")
-                    # Get extension part of the name of the image
-                    ext = item_1_list[-1].lower()   
-
-                    # Now check that the extension of the photograph Wat is het? Check extensie in lijst met acceptable extensies (te maken)
-                    if ext in ext_list:                                      
-                        # Try to find if the path to the first image of the portrait already exists in the Photo table:
-                        path_test = item.path
-                        # If there is no path to the first image in the database, the path should be created and added
-                        if path_test == None or path_test =="": 
-                            # This is the full path
-                            path_test = os.path.join(path, item_1)
-
-                            # We do not need the full path, only from /media onwards, split up                            
-                            path_test_split = path_test.split("writable\\")
-                                                                                   
-                            # Grab the last part
-                            path_temp = path_test_split[-1]
-
-                            # Changes slashes to forward
-                            path_final = path_temp.replace('\\', '/')
-
-                            print(path_final)
-                            
-                            # Store the path in the db 
-                            item.path = path_final 
-                            item.save()
-                                                                                                           
-                        # single quote of class gebruiken in css, evt later               
-                        html.append("<img src='/{}' style='max-width: 75px; width: auto; height: auto;'/>".format(item.path)) # ?? hier alleen maar parameters opgeven
-                        sBack = "\n".join(html)
+            # Pickup all available paths 
+            qs = instance.path_portrait.all()
+            # Only go forward when there is an image available
+            if len(qs) > 0:
+                # Select the first on                
+                item1 = qs.first()                  
+                # Add the path to the html
+                html.append("<img src='/{}' style='max-width: 75px; width: auto; height: auto;'/>".format(item1)) 
+                sBack = "\n".join(html)
         elif custom == "location":
             html = []
             html.append("<span>{}</span>".format(instance.location.name))  

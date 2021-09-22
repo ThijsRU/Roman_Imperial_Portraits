@@ -13,7 +13,9 @@ from ripdapp.forms import SignUpForm
 from ripdapp.models import Portrait, Emperor, Context, Location, Province, Material, PortraitMaterial, Arachne, \
     Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Type, PortraitType, Subtype, PortraitSubtype, \
     Alternative, PortraitAlternative, Recarved, PortraitRecarved, Together, PortraitTogether, Attributes, PortraitAttributes, \
-    Iconography, PortraitIconography, Photo, Photographer
+    Iconography, PortraitIconography, Path, Photographer 
+
+from Roman_Imperial_Portraits.settings import PICTURES_DIR
 
 # Import Portrait Database Excel 
 
@@ -112,28 +114,6 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
-#def update_photo(request):
-#    """Check if the availabilty of photos in the designated folders has been changed"""
-    
-#    # Can only be done by a super-user
-#    if request.user.is_superuser:
-#        pass
-    
-#    # First go over all folders in PICTURES_DIR
-
-#    # Use the name of the folder to link up the photos to the portraits
-#    # Model should be changed, one portrait can have multiple photos, maybe link them directly with 
-#    # the help of the folder name if 
-
-#    # USe the
-#    # https://stackoverflow.com/questions/60979784/python-walk-through-directory-and-save-all-foldernames-subfolder-and-files-in
-    
-#    # Save the results
-#        port_obj.save()
-    
-#    # What we return is simply the home page
-#    return redirect('home')
-
 def update_from_excel(request):
     """Check if contents can be updated from the MEDIA excel file"""
     
@@ -150,6 +130,9 @@ def update_from_excel(request):
 
     # Replaces NaN with empty: ""
     df = df.fillna('')  
+
+    # Create list with acceptable extensions for the images of the portraits
+    ext_list = ['jpg','jpeg','png','JPG']
 
     # Iterate over all rows in the data frame
     for index, row in df.iterrows():
@@ -280,6 +263,47 @@ def update_from_excel(request):
         if photo != None and photo != "":
             photo = int(photo)
 
+        # Paths
+        path_list =[]
+        
+        # Note for possible future enhancements, if case there will be multiple photographers for 1 portrait, some
+        # changes need to be made, for instance the name associated with each new photo will have to be stored and linked not
+        # to a specific folder/portrait but to an specific photo. One way to do so is to make a spreadsheet with names and abbreviations
+        # of the names of the photographers and add them to the END of each filename (and to the db table photographers) and retrieve 
+        # the abbreviations from the filename within the process below, link the name to the abbreviations thus to the path of the new photo
+
+        # TH: overwegen waard om dit alvast toch klaar te maken en te testen, bijvoorbeeld folder 467 from portrait 464
+
+        # First make a string of the photo id (name folder)
+        folder = str(photo)  
+        # Use that string to go to that folder in the MEDIA_DIR and store the path        
+        path = os.path.join(PICTURES_DIR, folder)
+        # Make a list of all contents/images in that folder         
+        photo_list = os.listdir(path)            
+        # Find out if there is a photo available
+        if len(photo_list) > 0:
+            print(photo_list)
+            for item in photo_list:
+                # Split the file name up
+                photo_split_list = item.split(".")                
+                # Get extension part of the name of the image
+                ext = photo_split_list[-1].lower()                    
+                # Check that the extension of the photograph is in the list 
+                if ext in ext_list:                                 
+                    # Create the path of this image of this portrait
+                    path_temp = os.path.join(path, item)                            
+                    # We do not want to store the full path, only from /media onwards, 
+                    # so path_temp needs to be split up                            
+                    path_temp_split = path_temp.split("writable\\")
+                    # Grab the last part
+                    path_temp = path_temp_split[-1]
+                    # Changes slashes to forward
+                    path_final = path_temp.replace('\\', '/')
+                    # Add the path to the list                               
+                    path_list.append(path_final)
+
+        print(path_list)     
+
         # Photographer
         photographer = row['Photo_by'] 
         
@@ -381,7 +405,7 @@ def update_from_excel(request):
         cuira = row['Cuirass']	
         heroic = row['Heroic_semi_nude']	
         seated = row['Seated']		
-        recarvedboo = row['Recarved']		
+        recarved = row['Recarved']		
         contabu = row['Contabulata']	
         swbelt = row['Sword_belt']	
         paluda = row['Paludamentum']	 
@@ -399,6 +423,7 @@ def update_from_excel(request):
             port_obj.origstr = orig
         
         # Store range of fields in Portrait table    
+        # Maybe add folder of the photo's
         port_obj.name = name
         port_obj.startdate = start
         port_obj.enddate = end
@@ -428,7 +453,7 @@ def update_from_excel(request):
         port_obj.cuirass = cuira
         port_obj.heroic_semi_nude = heroic
         port_obj.seated = seated
-        port_obj.recarved = recarved
+        port_obj.recarvedboo = recarved
         port_obj.contabulata = contabu
         port_obj.sword_belt = swbelt
         port_obj.paludamentum = paluda
@@ -451,7 +476,6 @@ def update_from_excel(request):
         else:
             # If the name of the emperor exists only a link should be made to this name from the Portrait table
             port_obj.emperor = emperorfound
-            # emp = Emperor.objects.create(name = emperor) # Ok, komt er in maar hoe id ook alweer te gebruiken voor Portrait?
             
         # Context
 
@@ -512,22 +536,7 @@ def update_from_excel(request):
                 photographer2 = Photographer.objects.create(name = photographer)
             else:
                 photographer2 = grapherfound
-        
-        # Photo
-        if photo != None and photo != "":
-            # Try to find if the folder name of the photo already exists in the Photo table:
-            photofound = Photo.objects.filter(folder__iexact=photo).first()
-            if photofound == None:
-            # If the folder does not already exist, it needs to be added to the database and
-            # a link should be made between this new folder code and the corresponding portrait id
-                if photographer != None and photographer != "":  
-                    # And the name of the photographer if known TH: hier gaat het mis met de photogrpaher
-                    Photo.objects.create(folder = photo, portrait = port_obj, photographer= photographer2)
-                else:
-                    # And if not known do not store the name
-                    Photo.objects.create(folder = photo, portrait = port_obj)
-            else:
-                pass 
+
                        
         # Arachne
         if arachne_list != "":
@@ -541,7 +550,24 @@ def update_from_excel(request):
                         
                 else:
                     pass 
-                                                     
+        
+        # Path
+        if path_list != "": 
+            for path in path_list:  
+                # Try to find if the id of the path already exists in the Path table:
+                pathfound = Path.objects.filter(path__iexact=path).first()
+                if pathfound == None:
+                    print(pathfound)
+                    # If the id does not already exist, it needs to be added to the database
+                    # And a link should be made between this new path  and the corresponding portrait id
+                    if photographer != None and photographer != "":   
+                        Path.objects.create(path = path, portrait = port_obj, folder = folder, photographer = photographer2)
+                    else:
+                        Path.objects.create(path = path, portrait = port_obj, folder = folder)                           
+
+                else:
+                    pass 
+                        
         # Material
         if material_list != "":
             for material in material_list:  
@@ -646,15 +672,15 @@ def update_from_excel(request):
                     # If the name does not already exist, it needs to be added to the database
                     recarved = Recarved.objects.create(name = recarv)
                     # And a link should be made between this new recarved item and corresponding portrait id
-                    PortraitRecarved.objects.create(portrait = port_obj, recarved_from = recarved)
+                    PortraitRecarved.objects.create(portrait = port_obj, recarved = recarved)
                 else:
                     # In case there is a recarvfound, check for a link, if so, nothing should happen, 
                     # than there is already a link between a recarved item and a portrait
-                    recarvedlink = PortraitRecarved.objects.filter(portrait = port_obj, recarved_from = recarvfound).first()
+                    recarvedlink = PortraitRecarved.objects.filter(portrait = port_obj, recarved = recarvfound).first()
                     if recarvedlink == None:
                         # If the recarved item already exists, but not the link, than only a link should be 
                         # made between portrait and the recarved item
-                        PortraitRecarved.objects.create(portrait = port_obj, recarved_from = recarvfound)
+                        PortraitRecarved.objects.create(portrait = port_obj, recarved = recarvfound)
         
         # Together with
         if together_list != "":

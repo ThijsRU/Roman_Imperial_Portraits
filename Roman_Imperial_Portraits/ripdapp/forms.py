@@ -40,8 +40,12 @@ class PortraitForm(forms.ModelForm):
 
         model = Portrait
         fields = ['name']
-        widgets={'name':        forms.TextInput(attrs={'placeholder': 'English name...', 'style': 'width: 100%;', 'class': 'searching'})
+        #fields = ['emperor']
+        #fields=  ['disputed']
+        widgets={'name':        forms.TextInput(attrs={'placeholder': 'Name of the portrait...', 'style': 'width: 100%;', 'class': 'searching'})
                  }
+        #widgets={'emperor':     forms.TextInput(attrs={'placeholder': 'Name of the emperor...', 'style': 'width: 100%;', 'class': 'searching'})
+                # }
 
     def __init__(self, *args, **kwargs):
         # Start by executing the standard handling
@@ -50,7 +54,11 @@ class PortraitForm(forms.ModelForm):
         oErr = ErrHandle()
         try:
             # Set other parameters
+            # Ok, hij doet de laatste steeds
+            
             self.fields['name'].required = False
+            #self.fields['emperor'].required = False
+            #self.fields['disputed'].required = False
             
             # Get the instance
             if 'instance' in kwargs:
