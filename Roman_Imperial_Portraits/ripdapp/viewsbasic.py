@@ -182,20 +182,67 @@ class PortraitListView(BasicList):
         ]
     # Nog geen typeahead, maar er is al een beetje op name te zoeken!
     filters = [ 
-        {"name": "Name",                "id": "filter_name",       "enabled": False},
-        {"name": "Emperor",             "id": "filter_emperor",    "enabled": False},
-        {"name": "Disputed",            "id": "filter_disputed",   "enabled": False},
-        {"name": "Recarved",            "id": "filter_recarved",   "enabled": False},
-        {"name": "Original identity",   "id": "filter_origident",  "enabled": False},
+        {"name": "Name",                "id": "filter_name",            "enabled": False},
+        {"name": "Emperor",             "id": "filter_emperor",         "enabled": False},
+        {"name": "Material",            "id": "filter_material",        "enabled": False},
+        {"name": "Disputed",            "id": "filter_disputed",        "enabled": False},
+        {"name": "Recarved",            "id": "filter_recarvedboo",     "enabled": False},
+        {"name": "Original identity",   "id": "filter_orig_identity",   "enabled": False},
+        {"name": "Ancient city",        "id": "filter_ancient_city",    "enabled": False},
+        {"name": "Province",            "id": "filter_province",        "enabled": False},
+        {"name": "Statues",             "id": "filter_statue",          "enabled": False},
+        {"name": "Busts",               "id": "filter_bust",            "enabled": False},
+        {"name": "Context",             "id": "filter_context",         "enabled": False},
+        {"name": "Toga",                "id": "filter_toga",            "enabled": False},
+        {"name": "Cuirass",             "id": "filter_cuirass",         "enabled": False},
+        {"name": "Heroic nudity",       "id": "filter_heroic_semi_nude","enabled": False},
+        {"name": "Enthroned",           "id": "filter_seated",          "enabled": False},
+        {"name": "Paludamentum",        "id": "filter_paludamentum",    "enabled": False},
+        {"name": "Sword belt",          "id": "filter_sword_belt",      "enabled": False},
+        {"name": "Capite velato",       "id": "filter_capite_velato",   "enabled": False},
+        {"name": "Iconography cuirass", "id": "filter_icon_cuirass",    "enabled": False},
+        {"name": "Other attributes",    "id": "filter_attributes",      "enabled": False},
+        {"name": "Corona laurea",       "id": "filter_corona_laurea",   "enabled": False},
+        {"name": "Corona civica",       "id": "filter_corona_civica",   "enabled": False},
+        {"name": "Corona radiata",      "id": "filter_corona_radiata",  "enabled": False},
+        {"name": "References",          "id": "filter_reference",      "enabled": False},
+        {"name": "Arachne",             "id": "filter_arachne",         "enabled": False},
+        {"name": "LSA",                 "id": "filter_lsa",             "enabled": False}
 
         ]
     searches = [
         {'section': '', 'filterlist': [
-            {'filter': 'name',    'dbfield': 'name',                    'keyS': 'name'},
-            {'filter': 'emperor', 'fkfield': 'portrait_emperor.name',   'keyS': 'emperor'},
-            {'filter': 'disputed', 'dbfield': 'disputed',               'keyS': 'disputed'},
+            {'filter': 'name',           'dbfield': 'name',                   'keyS': 'name'},
+            {'filter': 'emperor',        'fkfield': 'emperor', 'keyS': 'empname', 'keyId': 'emperor', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            {'filter': 'disputed',       'dbfield': 'disputed',               'keyS': 'disputed'},            
+            {'filter': 'recarvedboo',    'dbfield': 'recarvedboo',            'keyS': 'recarvedboo'},
+            {'filter': 'orig_identity',  'dbfield': 'origstr',                'keyS': 'origstr'},
+            {'filter': 'ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            {'filter': 'province',       'fkfield': 'location__province', 'keyS': 'provname', 'keyId': 'province', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            {'filter': 'statue',         'dbfield': 'statue',                 'keyS': 'statue'},
+            {'filter': 'bust',           'dbfield': 'buste',                  'keyS': 'buste'},
+            {'filter': 'context',         'fkfield': 'context', 'keyS': 'contname', 'keyId': 'context', 'keyFk': "name"}, 
+            {'filter': 'material',        'fkfield': 'material', 'keyS': 'matname','keyId': 'material', 'keyFk': "name"},
+            {'filter': 'toga',            'dbfield': 'toga',              'keyS': 'toga'},
+            {'filter': 'cuirass',         'dbfield': 'cuirass',           'keyS': 'cuirass'},
+            {'filter': 'heroic_semi_nude','dbfield': 'heroic_semi_nude', 'keyS': 'heroic_semi_nude'},
+            {'filter': 'seated',          'dbfield': 'seated',           'keyS': 'seated'},
+            {'filter': 'paludamentum',    'dbfield': 'paludamentum',     'keyS': 'paludamentum'},
+            {'filter': 'sword_belt',      'dbfield': 'sword_belt',       'keyS': 'sword_belt'},
+            {'filter': 'icon_cuirass',    'fkfield': 'iconography',      'keyS': 'iconname', 'keyId': 'iconography', 'keyFk': "name"}, 
+            {'filter': 'attributes',      'fkfield': 'attribute',        'keyS': 'attrname', 'keyId': 'attributes', 'keyFk': "name"},
+            {'filter': 'capite_velato',   'dbfield': 'capite_velato',    'keyS': 'capite_velato'},
+            {'filter': 'corona_laurea',   'dbfield': 'corona_laurea',    'keyS': 'corona_laurea'},
+            {'filter': 'corona_civica',   'dbfield': 'corona_civica',    'keyS': 'corona_civica'},
+            {'filter': 'corona_radiata',  'dbfield': 'corona_radiata',   'keyS': 'corona_radiata'},
+            {'filter': 'reference',       'dbfield': 'reference',        'keyS': 'reference'},
+            {'filter': 'arachne',         'fkfield': 'arachne_portrait', 'keyS': 'arachid', 'keyId': 'arachne', 'keyFk': "arachne"},            
+            {'filter': 'lsa',             'dbfield': 'lsa',              'keyS': 'lsa'},
+
             ]},
         ]
+
+    # https://cls.ru.nl/staff/ekomen/passimutils
 
     def get_field_value(self, instance, custom):
         sBack = ""
