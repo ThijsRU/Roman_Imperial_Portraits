@@ -35,9 +35,20 @@ class PortraitForm(forms.ModelForm):
 
     # Buiten model Portrait, zoals emperor en de rest Keyword is een voorbeeld voor Emperor and Context
     # het werkt een beetje...nog niet de juiste resultaten
-    empname = forms.CharField(label="Emperor", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    #empname = forms.CharField(label="Emperor", required=False,     #                          widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    # Select Multiple 
+    #empname = forms.SelectMultiple()
+
+    #empname = forms.CharField(label="Emperor", required=False, widget=forms.SelectMultiple(attrs={'style': 'width: 100%;'})) # Wat moet hier aan toegevoegd worden?
+
+    empname = forms.SelectMultiple(attrs={'id':'name'})
+
+    wreathname = forms.CharField(label="WreathCrown", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching wreathcrown input-sm', 'placeholder': 'Name of the wreath or crown...',  'style': 'width: 100%;'}))
     
-    matname = forms.CharField(label="Material", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching material input-sm', 'placeholder': 'Name of the material...',  'style': 'width: 100%;'}))
+    matlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'}))
+
+    #matname = forms.CharField(label="Material", required=False,     #                          widget=forms.TextInput(attrs={'class': 'typeahead searching material input-sm', 'placeholder': 'Name of the material...',  'style': 'width: 100%;'}))
     
     locname = forms.CharField(label="Location", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching location input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
     
@@ -50,11 +61,30 @@ class PortraitForm(forms.ModelForm):
     attrname = forms.CharField(label="Attributes", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching attributes input-sm', 'placeholder': 'Name of the attribute...',  'style': 'width: 100%;'}))
     
     arachid = forms.CharField(label="Arachne", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'Arachne id of the portrait...',  'style': 'width: 100%;'}))
-   
-    # locname= forms.SelectMultiple()
+    
+    # Let op, in PASSIM is er een aantal Status, Manuscript type en Keyword, zijn lijsten, meerdere te selecteren. EK evt vragen
+    
+    # This is to circumvent the standard filter option for the Booleans: False
+    disputed_free = forms.NullBooleanField()
+    buste_free = forms.NullBooleanField()
+    statue_free = forms.NullBooleanField()
+    part_group_free = forms.NullBooleanField()
+    recarvedboo_free = forms.NullBooleanField()
+    toga_free = forms.NullBooleanField()            
+    cuirass_free = forms.NullBooleanField()
+    heroic_semi_nude_free = forms.NullBooleanField()
+    seated_free = forms.NullBooleanField()
+    paludamentum_free = forms.NullBooleanField()
+    sword_belt_free = forms.NullBooleanField()
+    capite_velato_free = forms.NullBooleanField()
+    corona_laurea_free = forms.NullBooleanField()
+    corona_civica_free = forms.NullBooleanField()
+    corona_radiata_free = forms.NullBooleanField()
+    
+    # hier booleans
     
     # hoe zit het met typeahead?
-    typeaheads = ['emperor', 'material', 'location', 'province', 'context'] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
+    typeaheads = ['emperor', 'material', 'location', 'province', 'context', 'wreathname'] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
 
    # libname_ta  = forms.CharField(label=_("Library"), required=False, 
     
@@ -69,29 +99,34 @@ class PortraitForm(forms.ModelForm):
         ATTRS_FOR_FORMS = {'class': 'form-control'};
 
         model = Portrait
-        fields = ['name', 'disputed', 'recarvedboo', 'origstr', 'statue', 'buste', 'toga', 'cuirass', 'heroic_semi_nude','seated', 'paludamentum', 
-                  'sword_belt', 'capite_velato', 'corona_laurea', 'corona_civica', 'corona_radiata', 'reference', 'lsa'] # eea lijkt te werken
+        fields = ['name', 'origstr', 'startdate', 'enddate', 'reference', 'lsa'] # eea lijkt te werken
        
         widgets={'name':             forms.TextInput(attrs={'placeholder': 'Name of the portrait...', 'style': 'width: 100%;', 'class': 'searching'}),
-                 'disputed':         forms.NullBooleanSelect(),
-                 'location':         forms.TextInput(attrs={'style': 'width: 100%;'}),
-                 'recarvedboo':      forms.NullBooleanSelect(),   
+                 #'name':             forms.RadioSelect(attrs={'style': 'width: 100%;'}),
+                 #'disputed':         forms.NullBooleanSelect(),
+                 #'location':         forms.TextInput(attrs={'style': 'width: 100%;'}),
+                 #'location':         forms.SelectMultiple(attrs={'style': 'width: 100%;'}),
+                 #'recarvedboo':      forms.NullBooleanSelect(),
                  'origstr':          forms.TextInput(attrs={'placeholder': 'Original id of the portrait...', 'style': 'width: 100%;'}),
-                 'statue':           forms.NullBooleanSelect(),
-                 'bust':             forms.Select(), # deze doet het wel maar bij andere werkt het niet
-                 'toga':             forms.NullBooleanSelect(),
-                 'cuirass':          forms.NullBooleanSelect(),
-                 'heroic_semi_nude': forms.NullBooleanSelect(),
-                 'seated':           forms.NullBooleanSelect(),
-                 'paludamentum':     forms.NullBooleanSelect(),
-                 'sword_belt':       forms.NullBooleanSelect(),
-                 'capite_velato':    forms.NullBooleanSelect(),
-                 'corona_laurea':    forms.NullBooleanSelect(),
-                 'corona_civica':    forms.NullBooleanSelect(),
-                 'corona_radiata':   forms.NullBooleanSelect(),
-                 'reference':        forms.TextInput(attrs={'placeholder': 'Reference contains...', 'style': 'width: 100%;'}),
-                 
+                 'startdate':        forms.NumberInput(), # aan te passen, "vanaf een jaar" dus de input dient als startpunt om te bepalen
+                                                          # vanaf welk jaartal de portraits meegenomen moeten worden, dus "50" is alles vanaf 50
+                                                          # range of years, SelectDateWidget? Date Range in Passim?
+                 'enddate':          forms.NumberInput(), # aan te passen, "tot een bepaald jaar" PASSIM?
+                 #'statue':           forms.NullBooleanSelect(),
+                 #'bust':             forms.Select(), # deze doet het wel maar bij andere werkt het niet
+                 #'toga':             forms.NullBooleanSelect(),
+                 #'cuirass':          forms.NullBooleanSelect(),
+                 #'heroic_semi_nude': forms.NullBooleanSelect(),
+                 #'seated':           forms.NullBooleanSelect(),
+                 #'paludamentum':     forms.NullBooleanSelect(),
+                 #'sword_belt':       forms.NullBooleanSelect(),
+                 #'capite_velato':    forms.NullBooleanSelect(),
+                 #'corona_laurea':    forms.NullBooleanSelect(),
+                 #'corona_civica':    forms.NullBooleanSelect(),
+                 #'corona_radiata':   forms.NullBooleanSelect(),
+                 'reference':         forms.TextInput(attrs={'placeholder': 'Reference contains...', 'style': 'width: 100%;'}),                 
                  'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),
+                 
                  } 
         
         # Zie regel 1326 van forms.py in Passim
@@ -102,23 +137,40 @@ class PortraitForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Start by executing the standard handling
         super(PortraitForm, self).__init__(*args, **kwargs)
-
         oErr = ErrHandle()
         try:
             # Set other parameters
             # Ok, hij doet de laatste steeds
             
-            self.fields['name'].required = False
-            #self.fields['emperor'].required = False
-            self.fields['disputed'].required = False
-            self.fields['recarvedboo'].required = False
-            self.fields['statue'].required = False
-            self.fields['corona_laurea'].required = False
-            self.fields['corona_civica'].required = False
-            self.fields['corona_radiata'].required = False
+            self.fields['name'].required = False            
+            self.fields['disputed_free'].required = None
+            self.fields['part_group_free'].required = None
+            self.fields['buste_free'].required = None
+            self.fields['recarvedboo_free'].required = None
+            self.fields['startdate'].required = False
+            self.fields['enddate'].required = False
+            self.fields['buste'].required = False
+            self.fields['statue_free'].required = None
+            self.fields['corona_laurea_free'].required = None
+            self.fields['corona_civica_free'].required = None
+            self.fields['corona_radiata_free'].required = None                 
+            self.fields['toga_free'].required = None
+            self.fields['cuirass_free'].required = None
+            self.fields['heroic_semi_nude_free'].required = None
+            self.fields['seated_free'].required = None
+            self.fields['paludamentum_free'].required = None
+            self.fields['sword_belt_free'].required = None
+            self.fields['capite_velato_free'].required = None            
             self.fields['lsa'].required = False
-        
+            
+            self.fields['matlist'].queryset = Material.objects.all().order_by('name') #???
+
+            # self.fields['kwlist'].queryset = Keyword.get_scoped_queryset(username, team_group)
+            
+           # boolean default waarde op 1 zetten, als standaard instelling
+           #
            
+
             
             # Get the instance
             if 'instance' in kwargs:
@@ -137,6 +189,20 @@ class PortraitForm(forms.ModelForm):
         # Return the response
         return None
 
+class MaterialWidget(ModelSelect2MultipleWidget):
+    model = Material
+    search_fields = [ 'name__icontains' ]
+    is_team = True
+
+    def label_from_instance(self, obj):
+        return obj.name
+
+    def get_queryset(self):
+        if self.is_team:
+            qs = Material.objects.all().order_by('name').distinct()
+        else:
+            qs = Material.objects.exclude(visibility="edi").order_by('name').distinct()
+        return qs
 
 
 

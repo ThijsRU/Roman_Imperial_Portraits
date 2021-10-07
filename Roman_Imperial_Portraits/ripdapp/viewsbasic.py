@@ -182,63 +182,113 @@ class PortraitListView(BasicList):
         ]
     # Nog geen typeahead, maar er is al een beetje op name te zoeken!
     filters = [ 
-        {"name": "Name",                "id": "filter_name",            "enabled": False},
-        {"name": "Emperor",             "id": "filter_emperor",         "enabled": False},
-        {"name": "Material",            "id": "filter_material",        "enabled": False},
-        {"name": "Disputed",            "id": "filter_disputed",        "enabled": False},
-        {"name": "Recarved",            "id": "filter_recarvedboo",     "enabled": False},
-        {"name": "Original identity",   "id": "filter_orig_identity",   "enabled": False},
-        {"name": "Ancient city",        "id": "filter_ancient_city",    "enabled": False},
-        {"name": "Province",            "id": "filter_province",        "enabled": False},
-        {"name": "Statues",             "id": "filter_statue",          "enabled": False},
-        {"name": "Busts",               "id": "filter_bust",            "enabled": False},
-        {"name": "Context",             "id": "filter_context",         "enabled": False},
-        {"name": "Toga",                "id": "filter_toga",            "enabled": False},
-        {"name": "Cuirass",             "id": "filter_cuirass",         "enabled": False},
-        {"name": "Heroic nudity",       "id": "filter_heroic_semi_nude","enabled": False},
-        {"name": "Enthroned",           "id": "filter_seated",          "enabled": False},
-        {"name": "Paludamentum",        "id": "filter_paludamentum",    "enabled": False},
-        {"name": "Sword belt",          "id": "filter_sword_belt",      "enabled": False},
-        {"name": "Capite velato",       "id": "filter_capite_velato",   "enabled": False},
-        {"name": "Iconography cuirass", "id": "filter_icon_cuirass",    "enabled": False},
-        {"name": "Other attributes",    "id": "filter_attributes",      "enabled": False},
-        {"name": "Corona laurea",       "id": "filter_corona_laurea",   "enabled": False},
-        {"name": "Corona civica",       "id": "filter_corona_civica",   "enabled": False},
-        {"name": "Corona radiata",      "id": "filter_corona_radiata",  "enabled": False},
-        {"name": "References",          "id": "filter_reference",      "enabled": False},
-        {"name": "Arachne",             "id": "filter_arachne",         "enabled": False},
-        {"name": "LSA",                 "id": "filter_lsa",             "enabled": False}
+        {"name": "Identity...",         "id": "filter_identity",        "enabled": False, "head_id": "none"}, 
+        {"name": "Name",                "id": "filter_identity_name",            "enabled": False, "head_id": "filter_identity"}, 
+        {"name": "Emperor",             "id": "filter_identity_emperor",         "enabled": False, "head_id": "filter_identity"}, 
+        {"name": "Disputed",            "id": "filter_identity_disputed",        "enabled": False, "head_id": "filter_identity"}, 
 
-        ]
+        {"name": "Material...",         "id": "filter_material",        "enabled": False, "head_id": "none"}, 
+        {"name": "Material",            "id": "filter_material_material", "enabled": False, "head_id": "filter_material"}, 
+        {"name": "Statues",             "id": "filter_material_statue",  "enabled": False, "head_id": "filter_material"},
+        {"name": "Busts",               "id": "filter_material_bust",    "enabled": False, "head_id": "filter_material"},
+
+        {"name": "Recarved...",         "id": "filter_recarved",        "enabled": False, "head_id": "none"}, 
+        {"name": "Recarved",            "id": "filter_recarved_recarvedboo",     "enabled": False, "head_id": "filter_recarved"},
+        {"name": "Original identity",   "id": "filter_recarved_orig_identity",   "enabled": False, "head_id": "filter_recarved"},
+
+        {"name": "Date...",             "id": "filter_date",            "enabled": False, "head_id": "none"}, 
+
+        {"name": "Earliest possible year:", "id": "filter_date_earl_year",   "enabled": False, "head_id": "filter_date"},
+        {"name": "Latest possible year:", "id": "filter_date_late_year",     "enabled": False, "head_id": "filter_date"},
+
+        {"name": "Provenance...",       "id": "filter_provenance",      "enabled": False, "head_id": "none"}, 
+
+        {"name": "Ancient city",        "id": "filter_provenance_ancient_city",    "enabled": False, "head_id": "filter_provenance"},
+        {"name": "Statue group",        "id": "filter_provenance_statue_group",    "enabled": False, "head_id": "filter_provenance"},
+        {"name": "Province",            "id": "filter_provenance_province",        "enabled": False, "head_id": "filter_provenance"},        
+        {"name": "Context",             "id": "filter_provenance_context",         "enabled": False, "head_id": "filter_provenance"},
+        
+        {"name": "Costume...",          "id": "filter_costume",         "enabled": False, "head_id": "none"}, 
+
+        {"name": "Toga",                "id": "filter_costume_toga",            "enabled": False, "head_id": "filter_costume"},
+        {"name": "Cuirass",             "id": "filter_costume_cuirass",         "enabled": False, "head_id": "filter_costume"},
+        {"name": "Heroic nudity",       "id": "filter_costume_heroic_semi_nude","enabled": False, "head_id": "filter_costume"},
+        {"name": "Enthroned",           "id": "filter_costume_seated",          "enabled": False, "head_id": "filter_costume"},
+        {"name": "Paludamentum",        "id": "filter_costume_paludamentum",    "enabled": False, "head_id": "filter_costume"},
+        {"name": "Sword belt",          "id": "filter_costume_sword_belt",      "enabled": False, "head_id": "filter_costume"},
+        {"name": "Capite velato",       "id": "filter_costume_capite_velato",   "enabled": False, "head_id": "filter_costume"},
+        {"name": "Iconography cuirass", "id": "filter_costume_icon_cuirass",    "enabled": False, "head_id": "filter_costume"},
+        {"name": "Other attributes",    "id": "filter_costume_attributes",      "enabled": False, "head_id": "filter_costume"},
+        
+        {"name": "Headgear...",         "id": "filter_headgear",        "enabled": False, "head_id": "none"}, 
+        
+        {"name": "Corona laurea",       "id": "filter_headgear_corona_laurea",   "enabled": False, "head_id": "filter_headgear"},
+        {"name": "Corona civica",       "id": "filter_headgear_corona_civica",   "enabled": False,"head_id": "filter_headgear"},
+        {"name": "Corona radiata",      "id": "filter_headgear_corona_radiata",  "enabled": False, "head_id": "filter_headgear"},
+        {"name": "Other: ",             "id": "filter_headgear_wreath_crown",    "enabled": False, "head_id": "filter_headgear"},
+        
+        {"name": "References...",       "id": "filter_references",      "enabled": False, "head_id": "none"},
+        
+        {"name": "References",          "id": "filter_references_reference", "enabled": False, "head_id": "filter_references"},
+        {"name": "Arachne",             "id": "filter_references_arachne",   "enabled": False, "head_id": "filter_references"},
+        {"name": "LSA",                 "id": "filter_references_lsa",  "enabled": False, "head_id": "filter_references"},
+
+        ] # aparte secties?
     searches = [
-        {'section': '', 'filterlist': [
-            {'filter': 'name',           'dbfield': 'name',                   'keyS': 'name'},
-            {'filter': 'emperor',        'fkfield': 'emperor', 'keyS': 'empname', 'keyId': 'emperor', 'keyFk': "name"}, # PASSIM library voorbeeld?
-            {'filter': 'disputed',       'dbfield': 'disputed',               'keyS': 'disputed'},            
-            {'filter': 'recarvedboo',    'dbfield': 'recarvedboo',            'keyS': 'recarvedboo'},
-            {'filter': 'orig_identity',  'dbfield': 'origstr',                'keyS': 'origstr'},
-            {'filter': 'ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"}, # PASSIM library voorbeeld?
-            {'filter': 'province',       'fkfield': 'location__province', 'keyS': 'provname', 'keyId': 'province', 'keyFk': "name"}, # PASSIM library voorbeeld?
-            {'filter': 'statue',         'dbfield': 'statue',                 'keyS': 'statue'},
-            {'filter': 'bust',           'dbfield': 'buste',                  'keyS': 'buste'},
-            {'filter': 'context',         'fkfield': 'context', 'keyS': 'contname', 'keyId': 'context', 'keyFk': "name"}, 
-            {'filter': 'material',        'fkfield': 'material', 'keyS': 'matname','keyId': 'material', 'keyFk': "name"},
-            {'filter': 'toga',            'dbfield': 'toga',              'keyS': 'toga'},
-            {'filter': 'cuirass',         'dbfield': 'cuirass',           'keyS': 'cuirass'},
-            {'filter': 'heroic_semi_nude','dbfield': 'heroic_semi_nude', 'keyS': 'heroic_semi_nude'},
-            {'filter': 'seated',          'dbfield': 'seated',           'keyS': 'seated'},
-            {'filter': 'paludamentum',    'dbfield': 'paludamentum',     'keyS': 'paludamentum'},
-            {'filter': 'sword_belt',      'dbfield': 'sword_belt',       'keyS': 'sword_belt'},
-            {'filter': 'icon_cuirass',    'fkfield': 'iconography',      'keyS': 'iconname', 'keyId': 'iconography', 'keyFk': "name"}, 
-            {'filter': 'attributes',      'fkfield': 'attribute',        'keyS': 'attrname', 'keyId': 'attributes', 'keyFk': "name"},
-            {'filter': 'capite_velato',   'dbfield': 'capite_velato',    'keyS': 'capite_velato'},
-            {'filter': 'corona_laurea',   'dbfield': 'corona_laurea',    'keyS': 'corona_laurea'},
-            {'filter': 'corona_civica',   'dbfield': 'corona_civica',    'keyS': 'corona_civica'},
-            {'filter': 'corona_radiata',  'dbfield': 'corona_radiata',   'keyS': 'corona_radiata'},
-            {'filter': 'reference',       'dbfield': 'reference',        'keyS': 'reference'},
-            {'filter': 'arachne',         'fkfield': 'arachne_portrait', 'keyS': 'arachid', 'keyId': 'arachne', 'keyFk': "arachne"},            
-            {'filter': 'lsa',             'dbfield': 'lsa',              'keyS': 'lsa'},
+        {'section': 'identity', 'filterlist': [
+            {'filter': 'identity_name',           'dbfield': 'name',                   'keyS': 'name'},
+            {'filter': 'identity_emperor',        'fkfield': 'emperor', 'keyS': 'empname', 'keyId': 'emperor', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            {'filter': 'identity_disputed',       'dbfield': 'disputed',               'keyS': 'disputed_free'},
+            ]},
+            
+        {'section': 'material', 'filterlist': [
+            {'filter': 'material_material',       'fkfield': 'material', 'keyList': 'matlist', 'infield': 'name'},
+            
+            #{'filter': 'material_material',      'fkfield': 'material', 'keyS': 'matname','keyId': 'material', 'keyFk': "name"},
+            {'filter': 'material_statue',         'dbfield': 'statue',                 'keyS': 'statue_free'},
+            {'filter': 'material_bust',           'dbfield': 'buste',                  'keyS': 'buste_free'},
+            ]},
+            
+        {'section': 'recarved', 'filterlist': [ 
+            {'filter': 'recarved_recarvedboo',    'dbfield': 'recarvedboo',            'keyS': 'recarvedboo_free'},
+            {'filter': 'recarved_orig_identity',  'dbfield': 'origstr',                'keyS': 'origstr'},            
+            ]},
+            
+        {'section': 'date', 'filterlist': [ 
+            {'filter': 'date_earl_year',      'dbfield': 'startdate',              'keyS': 'startdate'},
+            {'filter': 'date_late_year',      'dbfield': 'enddate',                'keyS': 'enddate'}, 
+            ]},
+            
+        {'section': 'provenance', 'filterlist': [ 
+            {'filter': 'provenance_ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            {'filter': 'provenance_statue_group',   'dbfield': 'part_group',             'keyS': 'part_group_free'},
+            {'filter': 'provenance_province',       'fkfield': 'location__province', 'keyS': 'provname', 'keyId': 'province', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            {'filter': 'provenance_context',         'fkfield': 'context', 'keyS': 'contname', 'keyId': 'context', 'keyFk': "name"},                         
+            ]},
+        
+        {'section': 'costume', 'filterlist': [
+            {'filter': 'costume_toga',            'dbfield': 'toga',              'keyS': 'toga_free'},
+            {'filter': 'costume_cuirass',         'dbfield': 'cuirass',           'keyS': 'cuirass_free'},
+            {'filter': 'costume_heroic_semi_nude','dbfield': 'heroic_semi_nude', 'keyS': 'heroic_semi_nude_free'},
+            {'filter': 'costume_seated',          'dbfield': 'seated',           'keyS': 'seated_free'},
+            {'filter': 'costume_paludamentum',    'dbfield': 'paludamentum',     'keyS': 'paludamentum_free'},
+            {'filter': 'costume_sword_belt',      'dbfield': 'sword_belt',       'keyS': 'sword_belt_free'},
+            {'filter': 'costume_icon_cuirass',    'fkfield': 'iconography',      'keyS': 'iconname', 'keyId': 'iconography', 'keyFk': "name"}, 
+            {'filter': 'costume_attributes',      'fkfield': 'attribute',        'keyS': 'attrname', 'keyId': 'attributes', 'keyFk': "name"},
+            {'filter': 'costume_capite_velato',   'dbfield': 'capite_velato',    'keyS': 'capite_velato_free'},
+            ]},
 
+        {'section': 'headgear', 'filterlist': [         
+            {'filter': 'headgear_corona_laurea',   'dbfield': 'corona_laurea',    'keyS': 'corona_laurea_free'},
+            {'filter': 'headgear_corona_civica',   'dbfield': 'corona_civica',    'keyS': 'corona_civica_free'},
+            {'filter': 'headgear_corona_radiata',  'dbfield': 'corona_radiata',   'keyS': 'corona_radiata_free'},
+            {'filter': 'headgear_wreath_crown',   'fkfield': 'wreathcrown',      'keyS': 'wreathname', 'keyId': 'wreath', 'keyFk': "name"},
+            ]},
+
+        {'section': 'references', 'filterlist': [
+            {'filter': 'references_reference', 'dbfield': 'reference',        'keyS': 'reference'},                        
+            {'filter': 'references_arachne',   'fkfield': 'arachne_portrait', 'keyS': 'arachid', 'keyId': 'arachne', 'keyFk': "arachne"},
+            {'filter': 'references_lsa',       'dbfield': 'lsa',              'keyS': 'lsa'},
             ]},
         ]
 
@@ -275,4 +325,5 @@ class PortraitListView(BasicList):
         # Return the stuff needed
         return sBack, sTitle
 
+    def adapt_search(self, fields):        lstExclude=None        qAlternative = None        return fields, lstExclude, qAlternative
 
