@@ -6,6 +6,10 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 
+from django.forms import ModelMultipleChoiceField, ModelChoiceField
+from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
+
+
 from ripdapp.models import *
 from basic.utils import ErrHandle
 
@@ -30,31 +34,83 @@ class SignUpForm(UserCreationForm):
 
 # ==================== FORMS RELATED TO VIEWSBASIC =========================================
 
+class EmperorWidget(ModelSelect2MultipleWidget):
+    model = Emperor
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Emperor.objects.all().order_by('name')     
+        return qs
+
+class MaterialWidget(ModelSelect2MultipleWidget):
+    model = Material
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): # is er een self? werkt niet zoals bij Passim
+        return obj.name
+
+    def get_queryset(self): # werkt niet       
+        qs = Material.objects.all().order_by('name') # gaat dit goed? Niet zoals bij Keyword in Passim. Hier komt hij niet als de site opstart.
+        #dit wordt gebruikt als er naar Browse wordt gegaan     
+        return qs
+
+class ProvinceWidget(ModelSelect2MultipleWidget):
+    model = Province
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Province.objects.all().order_by('name')     
+        return qs
+
+class ContextWidget(ModelSelect2MultipleWidget):
+    model = Context
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Province.objects.all().order_by('name')     
+        return qs
+
 class PortraitForm(forms.ModelForm):
     """One form to handle the Portrait searching and details view"""
 
     # Buiten model Portrait, zoals emperor en de rest Keyword is een voorbeeld voor Emperor and Context
     # het werkt een beetje...nog niet de juiste resultaten
-    #empname = forms.CharField(label="Emperor", required=False,     #                          widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
-    # Select Multiple 
-    #empname = forms.SelectMultiple()
-
-    #empname = forms.CharField(label="Emperor", required=False, widget=forms.SelectMultiple(attrs={'style': 'width: 100%;'})) # Wat moet hier aan toegevoegd worden?
-
-    empname = forms.SelectMultiple(attrs={'id':'name'})
+    #empname = forms.CharField(label="Emperor", required=False,     #                         widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+   
+    emplist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=EmperorWidget(attrs={'data-placeholder': 'Select multiple emperors...', 'style': 'width: 100%;', 'class': 'searching'}))
+    
 
     wreathname = forms.CharField(label="WreathCrown", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching wreathcrown input-sm', 'placeholder': 'Name of the wreath or crown...',  'style': 'width: 100%;'}))
     
     matlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'}))
+                               widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'})) #, 
 
     #matname = forms.CharField(label="Material", required=False,     #                          widget=forms.TextInput(attrs={'class': 'typeahead searching material input-sm', 'placeholder': 'Name of the material...',  'style': 'width: 100%;'}))
     
-    locname = forms.CharField(label="Location", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching location input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
+    #date_from   = forms.IntegerField(label=_("Date start"), required = False,
+    #                                 widget=forms.TextInput(attrs={'placeholder': 'Starting from...',  'style': 'width: 30%;', 'class': 'searching'}))
+    #date_until  = forms.IntegerField(label=_("Date until"), required = False,
+    # 3                                widget=forms.TextInput(attrs={'placeholder': 'Until (including)...',  'style': 'width: 30%;', 'class': 'searching'}))
+            locname = forms.CharField(label="Location", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching location input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
     
     provname = forms.CharField(label="Province", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching province input-sm', 'placeholder': 'Name of the province...',  'style': 'width: 100%;'}))
-        contname = forms.CharField(label="Context", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching context input-sm', 'placeholder': 'Name of the context...',  'style': 'width: 100%;'}))
+        provlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=ProvinceWidget(attrs={'data-placeholder': 'Select one province...', 'style': 'width: 100%;', 'class': 'searching'}))
+    contname = forms.CharField(label="Context", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching context input-sm', 'placeholder': 'Name of the context...',  'style': 'width: 100%;'}))
     
+    #contlist = ModelMultipleChoiceField(queryset=None, required=False, 
+    #                           widget=ContextWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 100%;', 'class': 'searching'}))
+
     # Icon werkt helemaal niet, wat gaat er niet goed? Erwin vragen, met lijsten werken?
     iconname = forms.CharField(label="Iconography cuirass", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching iconography input-sm', 'placeholder': 'Name of the icon...',  'style': 'width: 100%;'}))
     
@@ -84,7 +140,7 @@ class PortraitForm(forms.ModelForm):
     # hier booleans
     
     # hoe zit het met typeahead?
-    typeaheads = ['emperor', 'material', 'location', 'province', 'context', 'wreathname'] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
+    typeaheads = ['emperor', 'location', 'province', 'context', 'wreathname'] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
 
    # libname_ta  = forms.CharField(label=_("Library"), required=False, 
     
@@ -99,8 +155,7 @@ class PortraitForm(forms.ModelForm):
         ATTRS_FOR_FORMS = {'class': 'form-control'};
 
         model = Portrait
-        fields = ['name', 'origstr', 'startdate', 'enddate', 'reference', 'lsa'] # eea lijkt te werken
-       
+        fields = ['name', 'origstr',  'startdate', 'enddate', 'reference', 'lsa'] # eea lijkt te werken
         widgets={'name':             forms.TextInput(attrs={'placeholder': 'Name of the portrait...', 'style': 'width: 100%;', 'class': 'searching'}),
                  #'name':             forms.RadioSelect(attrs={'style': 'width: 100%;'}),
                  #'disputed':         forms.NullBooleanSelect(),
@@ -128,11 +183,6 @@ class PortraitForm(forms.ModelForm):
                  'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),
                  
                  } 
-        
-        # Zie regel 1326 van forms.py in Passim
-        
-        #widgets={'emperor':     forms.TextInput(attrs={'placeholder': 'Name of the emperor...', 'style': 'width: 100%;', 'class': 'searching'})
-         #        }
 
     def __init__(self, *args, **kwargs):
         # Start by executing the standard handling
@@ -149,7 +199,7 @@ class PortraitForm(forms.ModelForm):
             self.fields['recarvedboo_free'].required = None
             self.fields['startdate'].required = False
             self.fields['enddate'].required = False
-            self.fields['buste'].required = False
+            self.fields['buste_free'].required = False
             self.fields['statue_free'].required = None
             self.fields['corona_laurea_free'].required = None
             self.fields['corona_civica_free'].required = None
@@ -163,18 +213,18 @@ class PortraitForm(forms.ModelForm):
             self.fields['capite_velato_free'].required = None            
             self.fields['lsa'].required = False
             
-            self.fields['matlist'].queryset = Material.objects.all().order_by('name') #???
-
-            # self.fields['kwlist'].queryset = Keyword.get_scoped_queryset(username, team_group)
+            # in fields staat eea verzameld maar hier gaat het niet goed
+            self.fields['emplist'].queryset = Emperor.objects.all().order_by('name')
+            self.fields['matlist'].queryset = Material.objects.all().order_by('name') # er gaat iets met die queryset? 
+            self.fields['provlist'].queryset = Province.objects.all().order_by('name')
+            self.fields['contlist'].queryset = Context.objects.all().order_by('name')
             
-           # boolean default waarde op 1 zetten, als standaard instelling
-           #
-           
-
-            
+          
             # Get the instance
             if 'instance' in kwargs:
                 instance = kwargs['instance']
+                # Material
+                                
                 # Check if there is an emperor specified TH: hier verder iets mee doen?? MAANDAG
                 emperor = instance.emperor
                 if emperor != None:
@@ -189,20 +239,6 @@ class PortraitForm(forms.ModelForm):
         # Return the response
         return None
 
-class MaterialWidget(ModelSelect2MultipleWidget):
-    model = Material
-    search_fields = [ 'name__icontains' ]
-    is_team = True
-
-    def label_from_instance(self, obj):
-        return obj.name
-
-    def get_queryset(self):
-        if self.is_team:
-            qs = Material.objects.all().order_by('name').distinct()
-        else:
-            qs = Material.objects.exclude(visibility="edi").order_by('name').distinct()
-        return qs
 
 
 

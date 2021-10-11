@@ -75,4 +75,7 @@ urlpatterns = [
     # Enable the admin:
     url(r'^admin/', include(admin.site.urls), name='admin_base'),
 
+    # For working with ModelWidgets from the select2 package https://django-select2.readthedocs.io    url(r'^select2/', include('django_select2.urls')),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # for showing pictures in Browse

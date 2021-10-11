@@ -708,7 +708,7 @@ class BasicList(ListView):
     new_button = True
     initial = None
     listform = None
-    has_select2 = False
+    has_select2 = True
     plural_name = ""
     sg_name = ""
     basic_name = ""

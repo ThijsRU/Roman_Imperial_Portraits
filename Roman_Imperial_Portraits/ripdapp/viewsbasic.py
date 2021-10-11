@@ -237,12 +237,16 @@ class PortraitListView(BasicList):
     searches = [
         {'section': 'identity', 'filterlist': [
             {'filter': 'identity_name',           'dbfield': 'name',                   'keyS': 'name'},
-            {'filter': 'identity_emperor',        'fkfield': 'emperor', 'keyS': 'empname', 'keyId': 'emperor', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            #{'filter': 'identity_emperor',        'fkfield': 'emperor', 'keyS': 'empname', 'keyId': 'emperor', 'keyFk': "name"},            
+            
+            # Dropdown option:
+            {'filter': 'identity_emperor',     'fkfield': 'emperor', 'keyList': 'emplist', 'infield': 'name'},
+            
             {'filter': 'identity_disputed',       'dbfield': 'disputed',               'keyS': 'disputed_free'},
             ]},
             
         {'section': 'material', 'filterlist': [
-            {'filter': 'material_material',       'fkfield': 'material', 'keyList': 'matlist', 'infield': 'name'},
+            {'filter': 'material_material',       'fkfield': 'material', 'keyList': 'matlist', 'infield': 'name'}, # Example
             
             #{'filter': 'material_material',      'fkfield': 'material', 'keyS': 'matname','keyId': 'material', 'keyFk': "name"},
             {'filter': 'material_statue',         'dbfield': 'statue',                 'keyS': 'statue_free'},
@@ -255,15 +259,23 @@ class PortraitListView(BasicList):
             ]},
             
         {'section': 'date', 'filterlist': [ 
-            {'filter': 'date_earl_year',      'dbfield': 'startdate',              'keyS': 'startdate'},
-            {'filter': 'date_late_year',      'dbfield': 'enddate',                'keyS': 'enddate'}, 
+            {'filter': 'date_earl_year',      'dbfield': 'startdate',              'keyS': 'date_from'},
+            {'filter': 'date_late_year',      'dbfield': 'enddate',                'keyS': 'date_until'}, 
             ]},
             
         {'section': 'provenance', 'filterlist': [ 
             {'filter': 'provenance_ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"}, # PASSIM library voorbeeld?
             {'filter': 'provenance_statue_group',   'dbfield': 'part_group',             'keyS': 'part_group_free'},
-            {'filter': 'provenance_province',       'fkfield': 'location__province', 'keyS': 'provname', 'keyId': 'province', 'keyFk': "name"}, # PASSIM library voorbeeld?
-            {'filter': 'provenance_context',         'fkfield': 'context', 'keyS': 'contname', 'keyId': 'context', 'keyFk': "name"},                         
+            #{'filter': 'provenance_province',       'fkfield': 'location__province', 'keyS': 'provname', 'keyId': 'province', 'keyFk': "name"}, # PASSIM library voorbeeld?
+            
+            # Dropdown option:
+            {'filter': 'provenance_province',     'fkfield': 'location__province', 'keyList': 'provlist', 'infield': 'name'},
+            
+            {'filter': 'provenance_context',        'fkfield': 'context', 'keyS': 'contname', 'keyId': 'context', 'keyFk': "name"},                         
+            
+            # Dropdown option:
+            # {'filter': 'provenance_context',     'fkfield': 'context', 'keyList': 'contlist', 'infield': 'name'},
+
             ]},
         
         {'section': 'costume', 'filterlist': [
