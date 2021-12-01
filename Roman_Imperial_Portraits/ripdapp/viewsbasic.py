@@ -169,12 +169,12 @@ class PortraitListView(BasicList):
     sg_name = "Portrait"
     plural_name = "Portraits"
     new_button = False  # Do *NOT* allow adding portraits right now...
-    order_cols = ['origstr', 'name', 'emperor__name', 'material__name', 'location__name','height']   
+    order_cols = ['id', 'name', 'emperor__name', 'material__name', 'location__name','height']   
     order_default = order_cols
     order_heads = [
         # Regel met plaatje, name empty, order idem, type str custom, zie onder custom: 'picture'
         {'name': 'Photo', 'order': '', 'type': 'int', 'custom': 'picture', 'linkdetails': True},
-        {'name': 'ID', 'order': 'o=1', 'type': 'int', 'field': 'origstr', 'linkdetails': True},
+        {'name': 'ID', 'order': 'o=1', 'type': 'int', 'field': 'id', 'linkdetails': True},
         {'name': 'Current location', 'order': 'o=2', 'type': 'str', 'field': 'name', 'linkdetails': True, 'main': True},
         {'name': 'Emperor', 'order': '', 'type': 'str', 'custom': 'emp_name'},
         {'name': 'Material', 'order': '', 'type': 'str', 'custom': 'mat_name'},
@@ -182,34 +182,30 @@ class PortraitListView(BasicList):
         ]
     # Nog geen typeahead, maar er is al een beetje op name te zoeken!
     filters = [ 
-        {"name": "Identity...",         "id": "filter_identity",        "enabled": False, "head_id": "none"}, 
-        {"name": "Name",                "id": "filter_identity_name",            "enabled": False, "head_id": "filter_identity"}, 
-        {"name": "Emperor",             "id": "filter_identity_emperor",         "enabled": False, "head_id": "filter_identity"}, 
-        {"name": "Disputed",            "id": "filter_identity_disputed",        "enabled": False, "head_id": "filter_identity"}, 
+        {"name": "Identity...",         "id": "filter_identity",                "enabled": False, "head_id": "none"}, 
+        {"name": "Name",                "id": "filter_identity_name",           "enabled": False, "head_id": "filter_identity"}, 
+        {"name": "Emperor",             "id": "filter_identity_emperor",        "enabled": False, "head_id": "filter_identity"}, 
+        {"name": "Disputed",            "id": "filter_identity_disputed",       "enabled": False, "head_id": "filter_identity"}, 
 
-        {"name": "Material...",         "id": "filter_material",        "enabled": False, "head_id": "none"}, 
-        {"name": "Material",            "id": "filter_material_material", "enabled": False, "head_id": "filter_material"}, 
-        {"name": "Statues",             "id": "filter_material_statue",  "enabled": False, "head_id": "filter_material"},
-        {"name": "Busts",               "id": "filter_material_bust",    "enabled": False, "head_id": "filter_material"},
+        {"name": "Material...",         "id": "filter_material",                "enabled": False, "head_id": "none"}, 
+        {"name": "Material",            "id": "filter_material_material",       "enabled": False, "head_id": "filter_material"}, 
+        {"name": "Statues",             "id": "filter_material_statue",         "enabled": False, "head_id": "filter_material"},
+        {"name": "Busts",               "id": "filter_material_bust",           "enabled": False, "head_id": "filter_material"},
 
-        {"name": "Recarved...",         "id": "filter_recarved",        "enabled": False, "head_id": "none"}, 
-        {"name": "Recarved",            "id": "filter_recarved_recarvedboo",     "enabled": False, "head_id": "filter_recarved"},
-        {"name": "Original identity",   "id": "filter_recarved_orig_identity",   "enabled": False, "head_id": "filter_recarved"},
+        {"name": "Recarved...",         "id": "filter_recarved",                "enabled": False, "head_id": "none"}, 
+        {"name": "Recarved",            "id": "filter_recarved_recarvedboo",    "enabled": False, "head_id": "filter_recarved"},
+        {"name": "Original identity",   "id": "filter_recarved_orig_identity",  "enabled": False, "head_id": "filter_recarved"},
 
-        {"name": "Date...",             "id": "filter_date",            "enabled": False, "head_id": "none"}, 
+        {"name": "Date...",             "id": "filter_date",                     "enabled": False, "head_id": "none"}, 
+        {"name": "Date range",          "id": "filter_date_daterange",           "enabled": False, "head_id": "filter_date"},
 
-        {"name": "Earliest possible year:", "id": "filter_date_earl_year",   "enabled": False, "head_id": "filter_date"},
-        {"name": "Latest possible year:", "id": "filter_date_late_year",     "enabled": False, "head_id": "filter_date"},
-
-        {"name": "Provenance...",       "id": "filter_provenance",      "enabled": False, "head_id": "none"}, 
-
-        {"name": "Ancient city",        "id": "filter_provenance_ancient_city",    "enabled": False, "head_id": "filter_provenance"},
-        {"name": "Statue group",        "id": "filter_provenance_statue_group",    "enabled": False, "head_id": "filter_provenance"},
-        {"name": "Province",            "id": "filter_provenance_province",        "enabled": False, "head_id": "filter_provenance"},        
-        {"name": "Context",             "id": "filter_provenance_context",         "enabled": False, "head_id": "filter_provenance"},
+        {"name": "Provenance...",       "id": "filter_provenance",               "enabled": False, "head_id": "none"}, 
+        {"name": "Ancient city",        "id": "filter_provenance_ancient_city",  "enabled": False, "head_id": "filter_provenance"},
+        {"name": "Statue group",        "id": "filter_provenance_statue_group",  "enabled": False, "head_id": "filter_provenance"},
+        {"name": "Province",            "id": "filter_provenance_province",      "enabled": False, "head_id": "filter_provenance"},        
+        {"name": "Context",             "id": "filter_provenance_context",       "enabled": False, "head_id": "filter_provenance"},
         
-        {"name": "Costume...",          "id": "filter_costume",         "enabled": False, "head_id": "none"}, 
-
+        {"name": "Costume...",          "id": "filter_costume",                 "enabled": False, "head_id": "none"}, 
         {"name": "Toga",                "id": "filter_costume_toga",            "enabled": False, "head_id": "filter_costume"},
         {"name": "Cuirass",             "id": "filter_costume_cuirass",         "enabled": False, "head_id": "filter_costume"},
         {"name": "Heroic nudity",       "id": "filter_costume_heroic_semi_nude","enabled": False, "head_id": "filter_costume"},
@@ -220,35 +216,27 @@ class PortraitListView(BasicList):
         {"name": "Iconography cuirass", "id": "filter_costume_icon_cuirass",    "enabled": False, "head_id": "filter_costume"},
         {"name": "Other attributes",    "id": "filter_costume_attributes",      "enabled": False, "head_id": "filter_costume"},
         
-        {"name": "Headgear...",         "id": "filter_headgear",        "enabled": False, "head_id": "none"}, 
+        {"name": "Headgear...",         "id": "filter_headgear",                "enabled": False, "head_id": "none"},        
+        {"name": "Corona laurea",       "id": "filter_headgear_corona_laurea",  "enabled": False, "head_id": "filter_headgear"},
+        {"name": "Corona civica",       "id": "filter_headgear_corona_civica",  "enabled": False, "head_id": "filter_headgear"},
+        {"name": "Corona radiata",      "id": "filter_headgear_corona_radiata", "enabled": False, "head_id": "filter_headgear"},
+        {"name": "Other: ",             "id": "filter_headgear_wreath_crown",   "enabled": False, "head_id": "filter_headgear"},
         
-        {"name": "Corona laurea",       "id": "filter_headgear_corona_laurea",   "enabled": False, "head_id": "filter_headgear"},
-        {"name": "Corona civica",       "id": "filter_headgear_corona_civica",   "enabled": False,"head_id": "filter_headgear"},
-        {"name": "Corona radiata",      "id": "filter_headgear_corona_radiata",  "enabled": False, "head_id": "filter_headgear"},
-        {"name": "Other: ",             "id": "filter_headgear_wreath_crown",    "enabled": False, "head_id": "filter_headgear"},
-        
-        {"name": "References...",       "id": "filter_references",      "enabled": False, "head_id": "none"},
-        
-        {"name": "References",          "id": "filter_references_reference", "enabled": False, "head_id": "filter_references"},
-        {"name": "Arachne",             "id": "filter_references_arachne",   "enabled": False, "head_id": "filter_references"},
-        {"name": "LSA",                 "id": "filter_references_lsa",  "enabled": False, "head_id": "filter_references"},
+        {"name": "References...",       "id": "filter_references",              "enabled": False, "head_id": "none"},        
+        {"name": "References",          "id": "filter_references_reference",    "enabled": False, "head_id": "filter_references"},
+        {"name": "Arachne",             "id": "filter_references_arachne",      "enabled": False, "head_id": "filter_references"},
+        {"name": "LSA",                 "id": "filter_references_lsa",          "enabled": False, "head_id": "filter_references"},
 
-        ] # aparte secties?
+        ] 
     searches = [
         {'section': 'identity', 'filterlist': [
-            {'filter': 'identity_name',           'dbfield': 'name',                   'keyS': 'name'},
-            #{'filter': 'identity_emperor',        'fkfield': 'emperor', 'keyS': 'empname', 'keyId': 'emperor', 'keyFk': "name"},            
-            
-            # Dropdown option:
+            {'filter': 'identity_name',           'dbfield': 'name',                   'keyS': 'name'},    
             {'filter': 'identity_emperor',     'fkfield': 'emperor', 'keyList': 'emplist', 'infield': 'name'},
-            
             {'filter': 'identity_disputed',       'dbfield': 'disputed',               'keyS': 'disputed_free'},
             ]},
             
         {'section': 'material', 'filterlist': [
-            {'filter': 'material_material',       'fkfield': 'material', 'keyList': 'matlist', 'infield': 'name'}, # Example
-            
-            #{'filter': 'material_material',      'fkfield': 'material', 'keyS': 'matname','keyId': 'material', 'keyFk': "name"},
+            {'filter': 'material_material',       'fkfield': 'material', 'keyList': 'matlist', 'infield': 'name'}, 
             {'filter': 'material_statue',         'dbfield': 'statue',                 'keyS': 'statue_free'},
             {'filter': 'material_bust',           'dbfield': 'buste',                  'keyS': 'buste_free'},
             ]},
@@ -259,23 +247,15 @@ class PortraitListView(BasicList):
             ]},
             
         {'section': 'date', 'filterlist': [ 
-            {'filter': 'date_earl_year',      'dbfield': 'startdate',              'keyS': 'date_from'},
-            {'filter': 'date_late_year',      'dbfield': 'enddate',                'keyS': 'date_until'}, 
+            {'filter': 'date_daterange',      'dbfield': 'startdate',              'keyS': 'startdate'},
+            {'filter': 'date_daterange',      'dbfield': 'enddate',                'keyS': 'enddate'}, 
             ]},
             
         {'section': 'provenance', 'filterlist': [ 
-            {'filter': 'provenance_ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"}, # PASSIM library voorbeeld?
-            {'filter': 'provenance_statue_group',   'dbfield': 'part_group',             'keyS': 'part_group_free'},
-            #{'filter': 'provenance_province',       'fkfield': 'location__province', 'keyS': 'provname', 'keyId': 'province', 'keyFk': "name"}, # PASSIM library voorbeeld?
-            
-            # Dropdown option:
-            {'filter': 'provenance_province',     'fkfield': 'location__province', 'keyList': 'provlist', 'infield': 'name'},
-            
-            {'filter': 'provenance_context',        'fkfield': 'context', 'keyS': 'contname', 'keyId': 'context', 'keyFk': "name"},                         
-            
-            # Dropdown option:
-            # {'filter': 'provenance_context',     'fkfield': 'context', 'keyList': 'contlist', 'infield': 'name'},
-
+            {'filter': 'provenance_ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"},
+            {'filter': 'provenance_statue_group',   'dbfield': 'part_group',             'keyS': 'part_group_free'},          
+            {'filter': 'provenance_province',     'fkfield': 'location__province', 'keyList': 'provlist', 'infield': 'name'},     
+            {'filter': 'provenance_context',     'fkfield': 'context', 'keyList': 'contlist', 'infield': 'name'},
             ]},
         
         {'section': 'costume', 'filterlist': [

@@ -7,9 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.utils.translation import ugettext_lazy as _
 
 from django.forms import ModelMultipleChoiceField, ModelChoiceField
-from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget
-
-
+from django_select2.forms import ModelSelect2MultipleWidget, ModelSelect2Widget, Select2MultipleWidget
 from ripdapp.models import *
 from basic.utils import ErrHandle
 
@@ -34,6 +32,8 @@ class SignUpForm(UserCreationForm):
 
 # ==================== FORMS RELATED TO VIEWSBASIC =========================================
 
+# Igv Browse komt hij hier niet langs, wel bij PASSIM
+
 class EmperorWidget(ModelSelect2MultipleWidget):
     model = Emperor
     search_fields = [ 'name__icontains' ]
@@ -42,7 +42,7 @@ class EmperorWidget(ModelSelect2MultipleWidget):
         return obj.name
 
     def get_queryset(self):
-        qs = Emperor.objects.all().order_by('name')     
+        qs = Emperor.objects.all().order_by('name').distinct()
         return qs
 
 class MaterialWidget(ModelSelect2MultipleWidget):
@@ -53,7 +53,7 @@ class MaterialWidget(ModelSelect2MultipleWidget):
         return obj.name
 
     def get_queryset(self): # werkt niet       
-        qs = Material.objects.all().order_by('name') # gaat dit goed? Niet zoals bij Keyword in Passim. Hier komt hij niet als de site opstart.
+        qs = Material.objects.all().order_by('name').distinct() # gaat dit goed? Niet zoals bij Keyword in Passim. Hier komt hij niet als de site opstart.
         #dit wordt gebruikt als er naar Browse wordt gegaan     
         return qs
 
@@ -75,8 +75,8 @@ class ContextWidget(ModelSelect2MultipleWidget):
     def label_from_instance(self, obj): 
         return obj.name
 
-    def get_queryset(self):
-        qs = Province.objects.all().order_by('name')     
+    def get_queryset(self):        
+        qs = Context.objects.all().order_by('name')        
         return qs
 
 class PortraitForm(forms.ModelForm):
@@ -84,39 +84,51 @@ class PortraitForm(forms.ModelForm):
 
     # Buiten model Portrait, zoals emperor en de rest Keyword is een voorbeeld voor Emperor and Context
     # het werkt een beetje...nog niet de juiste resultaten
-    #empname = forms.CharField(label="Emperor", required=False,     #                         widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    empname = forms.CharField(label="Emperor", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
    
     emplist = ModelMultipleChoiceField(queryset=None, required=False, 
                                widget=EmperorWidget(attrs={'data-placeholder': 'Select multiple emperors...', 'style': 'width: 100%;', 'class': 'searching'}))
     
 
-    wreathname = forms.CharField(label="WreathCrown", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching wreathcrown input-sm', 'placeholder': 'Name of the wreath or crown...',  'style': 'width: 100%;'}))
+    wreathname = forms.CharField(label="WreathCrown", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching wreathcrowns input-sm', 'placeholder': 'Name of the wreath or crown...',  'style': 'width: 100%;'}))
     
     matlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'})) #, 
+                               widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'}))  
 
-    #matname = forms.CharField(label="Material", required=False,     #                          widget=forms.TextInput(attrs={'class': 'typeahead searching material input-sm', 'placeholder': 'Name of the material...',  'style': 'width: 100%;'}))
+    #matname = forms.CharField(label="Material", required=False, 
+    #                          widget=forms.TextInput(attrs={'class': 'typeahead searching material input-sm', 'placeholder': 'Name of the material...',  'style': 'width: 100%;'}))
     
     #date_from   = forms.IntegerField(label=_("Date start"), required = False,
     #                                 widget=forms.TextInput(attrs={'placeholder': 'Starting from...',  'style': 'width: 30%;', 'class': 'searching'}))
     #date_until  = forms.IntegerField(label=_("Date until"), required = False,
     # 3                                widget=forms.TextInput(attrs={'placeholder': 'Until (including)...',  'style': 'width: 30%;', 'class': 'searching'}))
-            locname = forms.CharField(label="Location", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching location input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
     
-    provname = forms.CharField(label="Province", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching province input-sm', 'placeholder': 'Name of the province...',  'style': 'width: 100%;'}))
-        provlist = ModelMultipleChoiceField(queryset=None, required=False, 
+    
+    locname = forms.CharField(label="Location", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching locations input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
+    
+    #provname = forms.CharField(label="Province", required=False, 
+    #                          widget=forms.TextInput(attrs={'class': 'typeahead searching province input-sm', 'placeholder': 'Name of the province...',  'style': 'width: 100%;'}))
+    
+    provlist = ModelMultipleChoiceField(queryset=None, required=False, 
                                widget=ProvinceWidget(attrs={'data-placeholder': 'Select one province...', 'style': 'width: 100%;', 'class': 'searching'}))
-    contname = forms.CharField(label="Context", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching context input-sm', 'placeholder': 'Name of the context...',  'style': 'width: 100%;'}))
     
-    #contlist = ModelMultipleChoiceField(queryset=None, required=False, 
-    #                           widget=ContextWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 100%;', 'class': 'searching'}))
-
-    # Icon werkt helemaal niet, wat gaat er niet goed? Erwin vragen, met lijsten werken?
-    iconname = forms.CharField(label="Iconography cuirass", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching iconography input-sm', 'placeholder': 'Name of the icon...',  'style': 'width: 100%;'}))
+    #contname = forms.CharField(label="Context", required=False, 
+    #                          widget=forms.TextInput(attrs={'class': 'typeahead searching context input-sm', 'placeholder': 'Name of the context...',  'style': 'width: 100%;'}))
     
-    attrname = forms.CharField(label="Attributes", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching attributes input-sm', 'placeholder': 'Name of the attribute...',  'style': 'width: 100%;'}))
+    contlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=ContextWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 100%;', 'class': 'searching'}))
+      
+    iconname = forms.CharField(label="Iconography cuirass", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching iconographies input-sm', 'placeholder': 'Name of the icon...',  'style': 'width: 100%;'}))
     
-    arachid = forms.CharField(label="Arachne", required=False,                               widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'Arachne id of the portrait...',  'style': 'width: 100%;'}))
+    attrname = forms.CharField(label="Attributes", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching attributes input-sm', 'placeholder': 'Name of the attribute...',  'style': 'width: 100%;'}))
+    
+    arachid = forms.CharField(label="Arachne", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'Arachne id of the portrait...',  'style': 'width: 100%;'}))
     
     # Let op, in PASSIM is er een aantal Status, Manuscript type en Keyword, zijn lijsten, meerdere te selecteren. EK evt vragen
     
@@ -140,7 +152,7 @@ class PortraitForm(forms.ModelForm):
     # hier booleans
     
     # hoe zit het met typeahead?
-    typeaheads = ['emperor', 'location', 'province', 'context', 'wreathname'] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
+    typeaheads = ["locations", "wreathnames", "iconographies", "attributes"] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
 
    # libname_ta  = forms.CharField(label=_("Library"), required=False, 
     
@@ -163,10 +175,10 @@ class PortraitForm(forms.ModelForm):
                  #'location':         forms.SelectMultiple(attrs={'style': 'width: 100%;'}),
                  #'recarvedboo':      forms.NullBooleanSelect(),
                  'origstr':          forms.TextInput(attrs={'placeholder': 'Original id of the portrait...', 'style': 'width: 100%;'}),
-                 'startdate':        forms.NumberInput(), # aan te passen, "vanaf een jaar" dus de input dient als startpunt om te bepalen
+                 'startdate':        forms.TextInput(attrs={'placeholder': 'Earliest possible year...','style': 'width: 20%;'}), # aan te passen, "vanaf een jaar" dus de input dient als startpunt om te bepalen
                                                           # vanaf welk jaartal de portraits meegenomen moeten worden, dus "50" is alles vanaf 50
                                                           # range of years, SelectDateWidget? Date Range in Passim?
-                 'enddate':          forms.NumberInput(), # aan te passen, "tot een bepaald jaar" PASSIM?
+                 'enddate':          forms.TextInput(attrs={'placeholder': 'Latest possible year...','style': 'width: 20%;'}), 
                  #'statue':           forms.NullBooleanSelect(),
                  #'bust':             forms.Select(), # deze doet het wel maar bij andere werkt het niet
                  #'toga':             forms.NullBooleanSelect(),
@@ -215,7 +227,7 @@ class PortraitForm(forms.ModelForm):
             
             # in fields staat eea verzameld maar hier gaat het niet goed
             self.fields['emplist'].queryset = Emperor.objects.all().order_by('name')
-            self.fields['matlist'].queryset = Material.objects.all().order_by('name') # er gaat iets met die queryset? 
+            self.fields['matlist'].queryset = Material.objects.all().order_by('name') # er gaat iets met die queryset? Lijkt er wel in te staan.
             self.fields['provlist'].queryset = Province.objects.all().order_by('name')
             self.fields['contlist'].queryset = Context.objects.all().order_by('name')
             
@@ -223,9 +235,10 @@ class PortraitForm(forms.ModelForm):
             # Get the instance
             if 'instance' in kwargs:
                 instance = kwargs['instance']
-                # Material
-                                
+                                          
                 # Check if there is an emperor specified TH: hier verder iets mee doen?? MAANDAG
+                # Erwin vragen, 
+                             
                 emperor = instance.emperor
                 if emperor != None:
                     self.fields['empname'].initial = emperor.name

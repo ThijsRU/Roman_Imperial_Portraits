@@ -35,6 +35,8 @@ class Context(models.Model):
 
 class Province(models.Model):
     """The names of Roman provinces in which the locations lie where the portraits have been found"""
+
+    # CHANGE: here the location id, not in Location, this way location Unknown can handle an empty and a named province field
     # [1] Names of Roman province 
     name = models.CharField("Province", max_length=LONG_STRING, blank=True, null=True) # Is dat laatste nodig
 

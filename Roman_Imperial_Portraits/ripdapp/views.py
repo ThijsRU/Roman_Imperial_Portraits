@@ -512,6 +512,10 @@ def update_from_excel(request):
         # Let op "Unknown"
             
         # Try to find if the name of the location already exists in the Location table:
+
+        # TH: this should be changed as there are for location == Unknown toe options: Province is named or not, so in the Province table there should 
+        # be an id from location and not vice versa
+
         locationfound = Location.objects.filter(name__iexact=location).first()
         if locationfound == None:
             # If the name does not already exist, it needs to be added to the database and the coordinates if available also need to best
