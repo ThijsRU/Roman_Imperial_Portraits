@@ -62,9 +62,9 @@ class PortraitEdit(BasicDetails):
 
         # Define the main items to show        
         context['mainitems'] = [            
-            {'type': 'plain', 'label': "ID: ", 'value': instance.origstr, 'field_key': 'orid_id'},
-            {'type': 'plain', 'label': "Emperor: ", 'value': instance.emperor.name, 'field_key': 'emperor'},           
-            {'type': 'plain', 'label': "Portrait type: ", 'value': instance.get_types(), 'field_key': 'types'},
+            {'type': 'plain', 'label': "ID: ", 'value': instance.origstr, 'field_key': 'origstr'},
+            {'type': 'plain', 'label': "Emperor: ", 'value': instance.emperor.name, 'field_key': 'empname'},           
+            {'type': 'plain', 'label': "Portrait type: ", 'value': instance.get_types()},
             ]
 
         # One by one evaluate the remaining items
@@ -87,7 +87,7 @@ class PortraitEdit(BasicDetails):
 
         add_if_available(context['mainitems'], "plain", "Material: ", instance.get_materials(), 'material') 
         add_if_available(context['mainitems'], "plain", "Height: ", instance.height, 'height') 
-        add_if_available(context['mainitems'], "plain", "Height specified: ", instance.height_comment, 'height_commnt') 
+        add_if_available(context['mainitems'], "plain", "Height specified: ", instance.height_comment, 'height_comment') 
         add_if_available(context['mainitems'], "plain", "Miniature: ", instance.miniature, 'miniature')
         
         add_if_available(context['mainitems'], "plain", "Name: ", instance.name, 'name')

@@ -1,9 +1,9 @@
 """
 Definition of urls for Roman_Imperial_Portraits.
 """
-
+from django.contrib.auth.views import LoginView, LogoutView
 from django.conf.urls import include, url
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib import admin
 import django.contrib.auth.views
 
@@ -50,30 +50,20 @@ urlpatterns = [
     url(r'^login/user/(?P<user_id>\w[\w\d_]+)$', ripdapp.views.login_as_user, name='login_as'),
 
     url(r'^nlogin', ripdapp.views.nlogin, name='nlogin'),
-    url(r'^login/$',
-        django.contrib.auth.views.login,
-        {
-            'template_name': 'login.html',
-            'authentication_form': ripdapp.forms.BootstrapAuthenticationForm,
-            'extra_context':
-            {
-                'title': 'Log in',
-                'year': datetime.now().year,
-            }
-        },
+    url(r'^login/$', LoginView.as_view
+        (
+            template_name= 'login.html',
+            authentication_form= ripdapp.forms.BootstrapAuthenticationForm,
+            extra_context= {'title': 'Log in','year': datetime.now().year,}
+        ),
         name='login'),
-    url(r'^logout$',
-        django.contrib.auth.views.logout,
-        {
-            'next_page':  reverse_lazy('home'),
-        },
-        name='logout'),
-
+    url(r'^logout$',  LogoutView.as_view(next_page=reverse_lazy('home')), name='logout'),
+      
     # Enable admin documentation:
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Enable the admin:
-    url(r'^admin/', include(admin.site.urls), name='admin_base'),
+    url(r'^admin/', admin.site.urls, name='admin_base'),
 
     # For working with ModelWidgets from the select2 package https://django-select2.readthedocs.io    url(r'^select2/', include('django_select2.urls')),
 

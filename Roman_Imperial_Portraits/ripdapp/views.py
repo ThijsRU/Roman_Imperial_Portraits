@@ -4,7 +4,8 @@ Definition of views for the RIPD app.
 
 from django.contrib import admin
 from django.contrib.auth import login, authenticate
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from datetime import datetime
 
