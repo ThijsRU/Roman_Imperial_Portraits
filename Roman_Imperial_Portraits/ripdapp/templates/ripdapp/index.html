@@ -5,16 +5,25 @@
 <div class="container body-content">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <h2>
+      <h3>
         <span>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</span>
         <span class="pull-right" style="font-size: small;">on {{current_time}}</span>
-      </h2>
+      </h3>
 
       {% if user.is_authenticated %}
         <div>Welkom {{user.username}}</div>
+        <br/>
         
-        <div><i>De RIPD website heeft als doel </i></div>
-
+        <div>The dataset presented here includes sculptural portraits of Roman emperors (mostly carved from marble or casted in bronze) 
+            that were collected for the purposes of analyzing the representation of Roman emperors in freestanding sculpture.</div>
+        <br/>
+        <div>The dataset consists of processed data. Entries in the dataset were collected using museum catalogues and archaeological/art-historical reports. 
+        The dataset includes portrait heads (when applicable: together with their accompanying body and base) and provides detailed information on their provenance, 
+        formal features, iconography, context.</div>
+        <br/>
+        <div>Funding agency: <i>Stichting Ammodo, through the Ammodo Science Award (2017) for Humanities.</i></div>
+        <br/>
+        
         <div>(Of wilt u <a href="{% url 'logout' %}">uitloggen</a>?</div>
 
         {% if user.is_superuser %}
