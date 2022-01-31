@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #WRITABLE_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../writable/database/")) origineel
 
 # Writable DIR for the server 
-WRITABLE_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../writable/database/"))# Writable DIR for windows if '\\writable' in WRITABLE_DIR:    # Need another string    WRITABLE_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../../writable/database/"))
+WRITABLE_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../writable/database/"))# Writable DIR for windows if '\\writable' in WRITABLE_DIR:    # Need another string    WRITABLE_DIR = os.path.abspath(os.path.join(BASE_DIR, "../../writable/database/"))
 
 # dit moet worden aangepast voor de live versie, die eerste "../" moeten verdwijnen
 MEDIA_DIR = os.path.abspath(os.path.join(WRITABLE_DIR, "../media/"))
@@ -140,4 +140,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
+#STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
+STATIC_ROOT = os.path.abspath(os.path.join("/", posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))))

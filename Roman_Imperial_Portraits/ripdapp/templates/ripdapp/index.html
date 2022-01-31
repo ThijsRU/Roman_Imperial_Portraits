@@ -12,6 +12,9 @@
 
       {% if user.is_authenticated %}
         <div>Welkom {{user.username}}</div>
+        
+        <div><i>De RIPD website heeft als doel </i></div>
+
         <div>(Of wilt u <a href="{% url 'logout' %}">uitloggen</a>?</div>
 
         {% if user.is_superuser %}
