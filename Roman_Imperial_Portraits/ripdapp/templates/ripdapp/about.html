@@ -1,21 +1,67 @@
-﻿{% extends "ripdapp/layout.html" %}
+﻿{% extends "layout.html" %}
+
 {% block content %}
-{{ content }}
-{% endblock %}
 
-<html>
-    <head>
-        <title>{{ title }}</title>
-        {% load staticfiles %}
-        <link rel="stylesheet" type="text/css" href="../../static/site.css" />
-    </head>
+<div class="container body-content">
+
+ <h3>{{ title }} the {{ message }}</h3>
     
+    <h4>Emperor</h4>
+    <p>The Roman Empire was one of the largest empires the world has ever seen. For a long period of history, one man stood at the head 
+    of this enormous political entity: the Roman emperor. His presence was felt in almost every city in the ancient Roman world. Since the majority of 
+    the inhabitants of the Roman Empire would never get to see the emperor in person, statues and busts of the emperor 
+    played a crucial role as proxies in visualizing imperial leadership.</p> 
 
-    <body>
-        <div><a href="home">Home</a></div>
-        <span class="content">{{ content }}</span>
-        <span class="content2">{{ content2 }}</span>
-        
-    </body>
-</html>
+    <h4>Portraits</h4>
+    <p>For centuries, the portraits of the Roman emperors have been a focal point in the study of the ancient world. 
+    They are treated as unique artifacts that show how the emperors of Rome wished to be perceived by their subjects. 
+    At the same time, the distribution mechanisms of these portraits allowed sculptors to add their own unique twists to the art works. 
+    They were thus an important means of communication between the imperial center and local communities, and have been rightly treated as 
+    such over the last few decades. However, questions on how this medium developed over time and/or how perceptions of the emperor changed over 
+    more than four centuries of imperial rule, are constrained by the availability and accessibility of the material.</p>    
 
+    <h4>Project</h4>
+    <p>Scholars have tried to make available the wide collection of imperial portraits spread throughout mainly European and North-American museums and depots. 
+    The first systematic attempt to do so was conducted by the Italian antiquarian Ennio Quirino Visconti (1751-1818) in the early nineteenth century, 
+    who was followed by the Swiss Johann Jakob Bernoulli (1831-1913). The positivist spirit of Visconti and Bernoulli continued in the works 
+    Max Wegner (1902-1998), one of the founders of the Das römische Herrscherbild (DRH) book series.The first volume of the (still incomplete) DRH appeared in 1939, 
+    and the series as a whole has since aimed to bring up to date and to complete Bernoulli’s catalogue. In the meantime, each year new or revised finds are 
+    published in archaeological reports, museum catalogues, and/or online databases.</p> 
+
+    <h4>Project</h4>
+    <p>Our ideas on the physical characteristics of the Roman emperors too are changing as portraits that radically differ from the standardized 
+    image are re-examined, and new methods to recognize and identify images of Roman emperors such as facial recognition are now being tested. 
+    The field of Roman portrait studies is thus constantly in motion. In order to advance our knowledge on the functioning of imperial portraits 
+    and to gain an overview of the sources currently available, the RIPDS has attempted to systematically bring together extant (i.e. published) 
+    portraits of the Roman emperors in a single dataset that can be used for further study.</p>
+    
+    <h4>Goals</h4>
+    <p>To do so, the project has extracted and cross-referenced published portraits of the Roman emperors from the available record as well as (online) 
+    catalogues and recent archaeological reports. 
+    The aim of the project is not so much to provide alternative readings of the available data as it aims to allow researchers to introduce 
+    quantitative questions to the study of imperial portraiture. It is worth stressing that the dataset introduced here should not be considered as 
+    a “complete” overview. As mentioned above, new portraits are unearthed each year and the identities of existing portraits are constantly 
+    reconsidered on the basis of discussions in the field of ancient history and archaeology.</p>
+    
+    <h4>Dataset</h4>
+    <p>The dataset presented here includes sculptural portraits of Roman emperors (mostly carved from marble or casted in bronze) 
+    that were collected for the purposes of analyzing the representation of Roman emperors in freestanding sculpture. The dataset consists of processed data. 
+    Entries in the dataset were collected using museum catalogues and archaeological/art-historical reports.The dataset includes portrait heads 
+    (when applicable: together with their accompanying body and base) and provides detailed information on their provenance, formal features, 
+    iconography, context.</p>
+    
+    <h4>Funding agency</h4>
+    <p><i>Stichting Ammodo, through the Ammodo Science Award (2017) for Humanities.</i></p>
+
+    <address>
+    <p>
+      <strong>RIPDS contents:</strong> <a href="mailto:s.j.m.heijnen@vu.nl">Sam Heijnen</a>
+    </p>
+    <p>
+      <strong>Technical support:</strong> <a href="mailto:thijs.hermsen@ru.nl">Thijs Hermsen</a><br />
+    </p>
+  </address>
+
+
+</div>
+{% endblock %}

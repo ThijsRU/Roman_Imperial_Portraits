@@ -24,11 +24,9 @@
         {% if user.is_superuser %}
           <li><a href="{% url 'definitions' %}">Definitions</a></li>
         {% endif %}
-
         <li><a href="{% url 'home' %}">Welcome</a></li>
-        <li><a href="{% url 'home' %}">About</a></li> 
-        <li><a href="{% url 'portrait_list' %}">Browse</a></li>
-        <li><a href="{% url 'home' %}">Advanced search</a></li>
+        <li><a href="{% url 'about' %}">About</a></li> 
+        <li><a href="{% url 'portrait_list' %}">Browse & Advanced Search</a></li>        
         <li><a href="{% url 'home' %}">References and links</a></li>
 
         <li class="dropdown">

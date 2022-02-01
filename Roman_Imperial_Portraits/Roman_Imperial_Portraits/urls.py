@@ -35,11 +35,8 @@ urlpatterns = [
     url(r'^$', ripdapp.views.index, name='index'),
     url(r'^favicon\.ico$',RedirectView.as_view(url='/static/ripdapp/content/favicon.ico')),
     url(r'^home$', ripdapp.views.index, name='home'),
-
-    #url(r'^about$', ripdapp.views.about, name='about'),
-
+    url(r'^about$', ripdapp.views.about, name='about'),
     url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'),
-
     url(r'^portrait/list', PortraitListView.as_view(), name='portrait_list'),
     url(r'^portrait/details(?:/(?P<pk>\d+))?/$', PortraitDetails.as_view(), name='portrait_details'),
     url(r'^portrait/edit(?:/(?P<pk>\d+))?/$', PortraitEdit.as_view(), name='portrait_edit'),

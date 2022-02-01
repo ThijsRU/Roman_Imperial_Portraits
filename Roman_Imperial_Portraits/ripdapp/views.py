@@ -115,6 +115,18 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'signup.html', {'form': form})
 
+def about(request):
+    """The about page of the Roman Imperial Portraits Database"""
+    assert isinstance(request, HttpRequest)
+
+    # Specify the template
+    template_name = "ripdapp/about.html"
+
+    context =  {'title':'About',
+                'message':'Roman Imperial Portraits Database (RIPD)'}
+
+    return render(request, template_name, context)
+
 def update_from_excel(request):
     """Check if contents can be updated from the MEDIA excel file"""
     
