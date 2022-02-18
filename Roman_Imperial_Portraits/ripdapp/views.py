@@ -127,6 +127,31 @@ def about(request):
 
     return render(request, template_name, context)
 
+
+def references(request):
+    """The about page of the Roman Imperial Portraits Database"""
+    assert isinstance(request, HttpRequest)
+
+    # Specify the template
+    template_name = "references.html"
+
+    context =  {'title':'References',
+                'message':'Roman Imperial Portraits Database (RIPD)'}
+
+    return render(request, template_name, context)
+
+def links(request):
+    """The about page of the Roman Imperial Portraits Database"""
+    assert isinstance(request, HttpRequest)
+
+    # Specify the template
+    template_name = "links.html"
+
+    context =  {'title':'Links',
+                'message':'Roman Imperial Portraits Database (RIPD)'}
+
+    return render(request, template_name, context)
+
 def update_from_excel(request):
     """Check if contents can be updated from the MEDIA excel file"""
     
