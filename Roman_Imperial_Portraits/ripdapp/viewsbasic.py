@@ -14,7 +14,7 @@ from basic.views import BasicList, BasicDetails
 # RIPD: forms and models
 from ripdapp.forms import SignUpForm, PortraitForm
 from ripdapp.models import Portrait, Emperor, Context, Location, Province, Material, PortraitMaterial, Arachne, \
-    Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Path, Photographer 
+    Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Path, Photographer, Information 
 
 from Roman_Imperial_Portraits.settings import PICTURES_DIR
 
@@ -30,6 +30,13 @@ class PortraitEdit(BasicDetails):
     history_button = False 
     mainitems = []
     
+    def custom_init(self, instance):
+        # Check and set the authentication if needed
+        auth = Information.get_kvalue("authenticated")
+        if auth.lower() in ['true', 'ok', 'set']:
+            self.authenticated = True
+        return None
+        
     def add_to_context(self, context, instance):
         """Add to the existing context"""
         
@@ -252,15 +259,15 @@ class PortraitListView(BasicList):
             ]},
             
         {'section': 'provenance', 'filterlist': [ 
-            {'filter': 'provenance_ancient_city',   'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"},
-            {'filter': 'provenance_statue_group',   'dbfield': 'part_group',             'keyS': 'part_group_free'},          
+            {'filter': 'provenance_ancient_city', 'fkfield': 'location', 'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"},
+            {'filter': 'provenance_statue_group', 'dbfield': 'part_group',             'keyS': 'part_group_free'},          
             {'filter': 'provenance_province',     'fkfield': 'location__province', 'keyList': 'provlist', 'infield': 'name'},     
-            {'filter': 'provenance_context',     'fkfield': 'context', 'keyList': 'contlist', 'infield': 'name'},
+            {'filter': 'provenance_context',      'fkfield': 'context', 'keyList': 'contlist', 'infield': 'name'},
             ]},
         
         {'section': 'costume', 'filterlist': [
-            {'filter': 'costume_toga',            'dbfield': 'toga',              'keyS': 'toga_free'},
-            {'filter': 'costume_cuirass',         'dbfield': 'cuirass',           'keyS': 'cuirass_free'},
+            {'filter': 'costume_toga',            'dbfield': 'toga',             'keyS': 'toga_free'},
+            {'filter': 'costume_cuirass',         'dbfield': 'cuirass',          'keyS': 'cuirass_free'},
             {'filter': 'costume_heroic_semi_nude','dbfield': 'heroic_semi_nude', 'keyS': 'heroic_semi_nude_free'},
             {'filter': 'costume_seated',          'dbfield': 'seated',           'keyS': 'seated_free'},
             {'filter': 'costume_paludamentum',    'dbfield': 'paludamentum',     'keyS': 'paludamentum_free'},
@@ -285,6 +292,13 @@ class PortraitListView(BasicList):
         ]
 
     # https://cls.ru.nl/staff/ekomen/passimutils
+
+    def custom_init(self):
+        # Check and set the authentication if needed
+        auth = Information.get_kvalue("authenticated")
+        if auth.lower() in ['true', 'ok', 'set']:
+            self.authenticated = True
+        return None
 
     def get_field_value(self, instance, custom):
         sBack = ""

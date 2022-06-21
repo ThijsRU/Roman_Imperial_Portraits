@@ -11,6 +11,40 @@ LONG_STRING=255
 
 # please view legend.txt document
 
+class Information(models.Model):
+    """Specific information that needs to be kept in the database"""
+
+    # [1] The key under which this piece of information resides
+    name = models.CharField("Key name", max_length=255)
+    # [0-1] The value for this piece of information
+    kvalue = models.TextField("Key value", default = "", null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Information Items"
+
+    def __str__(self):
+        return self.name
+
+    def get_kvalue(name):
+        info = Information.objects.filter(name=name).first()
+        if info == None:
+            return ''
+        else:
+            return info.kvalue
+
+    def set_kvalue(name, value):
+        info = Information.objects.filter(name=name).first()
+        if info == None:
+            info = Information(name=name)
+            info.save()
+        info.kvalue = value
+        info.save()
+        return True
+
+    def save(self, force_insert = False, force_update = False, using = None, update_fields = None):
+        return super(Information, self).save(force_insert, force_update, using, update_fields)
+
+
 class Emperor(models.Model):
     """The emperors that are portrayed by the portraits"""
     # [1] The names of the emperors
@@ -448,11 +482,18 @@ class Path(models.Model):
     portrait = models.ForeignKey(Portrait, null=True, blank=True, on_delete = models.CASCADE, related_name="path_portrait")
     # [1] Filename of the folder with the photo's
     folder = models.IntegerField("Folder name", null=True) 
-    # [0-1] The id of the photographer that made the photo (at the end of the path)
+    # [0-1] The id of the photographer that made the photo (at the end of the path) ERUIT!
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.CASCADE, related_name="path_photographer")
     
     def __str__(self):
         return self.path
+
+# Add class PathPhotographer(models.Model):
+    # [1] The portrait item
+    # path = models.ForeignKey(Path, on_delete = models.CASCADE, related_name= "path_photographer")
+    # [1] The together item
+    # photographer = models.ForeignKey(Photographer, on_delete = models.CASCADE, related_name = "path_photographer")
+
        
 # Here are the tables that link two tables with eachother
 

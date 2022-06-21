@@ -741,8 +741,12 @@ class BasicList(ListView):
     param_list = []
     qs = None
     page_function = "ru.basic.search_paged_start"
+    authenticated = False
 
     def initializations(self):
+        return None
+
+    def custom_init(self):
         return None
 
     def get_context_data(self, **kwargs):
@@ -945,7 +949,7 @@ class BasicList(ListView):
         context['filterhelp_contents'] = self.get_filterhelp()
 
         # Check if user may upload
-        context['is_authenticated'] = user_is_authenticated(self.request)
+        context['is_authenticated'] = user_is_authenticated(self.request) or self.authenticated
         context['authenticated'] = context['is_authenticated'] 
         context['is_app_uploader'] = user_is_ingroup(self.request, app_uploader)
         context['is_app_editor'] = user_is_ingroup(self.request, app_editor)
@@ -1250,7 +1254,8 @@ class BasicList(ListView):
         return None
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
+        self.custom_init()
+        if not request.user.is_authenticated and not self.authenticated:
             # Do not allow to get a good response
             response = redirect(reverse('nlogin'))
         else:
@@ -1272,7 +1277,7 @@ class BasicList(ListView):
                 response = super(BasicList, self).get(request, *args, **kwargs)
             else:
                 response = redirect(self.redirectpage)
-        # REturn the appropriate response
+        # Return the appropriate response
         return response
 
     def post(self, request, *args, **kwargs):
@@ -1314,13 +1319,14 @@ class BasicDetails(DetailView):
     is_basic = True         # Is this a basic details/edit view?
     history_button = False  # Show history button for this view
     lst_typeahead = []
+    authenticated = False   #
 
     def get(self, request, pk=None, *args, **kwargs):
         # Initialisation
         data = {'status': 'ok', 'html': '', 'statuscode': ''}
         # always do this initialisation to get the object
         self.initializations(request, pk)
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated and not self.authenticated:
             # Do not allow to get a good response
             if self.rtype == "json":
                 data['html'] = "(No authorization)"
@@ -1493,7 +1499,7 @@ class BasicDetails(DetailView):
         oErr = ErrHandle()
 
         # Check this user: is he allowed to UPLOAD data?
-        context['authenticated'] = user_is_authenticated(self.request)
+        context['authenticated'] = user_is_authenticated(self.request) or self.authenticated
         context['is_app_uploader'] = user_is_ingroup(self.request, app_uploader)
         context['is_app_editor'] = user_is_ingroup(self.request, app_editor)
         context['is_app_userplus'] = user_is_ingroup(self.request, app_userplus)
