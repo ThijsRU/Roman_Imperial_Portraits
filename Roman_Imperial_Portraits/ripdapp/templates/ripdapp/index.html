@@ -5,13 +5,14 @@
 <div class="container body-content">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <h3>
-        <span>Hello {% if user.username %}{{user.username}}{% else %}anonymous-user{% endif %}!</span>
+      <h3>        
         <span class="pull-right" style="font-size: small;">on {{current_time}}</span>
+         <br/>
       </h3>
 
       {% if user.is_authenticated %}
         
+        <br/>
         <br/>
         
         <p>The dataset presented here includes sculptural portraits of Roman emperors (mostly carved from marble or casted in bronze) 
