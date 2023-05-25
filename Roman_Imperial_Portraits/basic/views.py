@@ -256,7 +256,7 @@ def make_search_list(filters, oFields, search_list, qd, lstExclude):
 
         # (2) Reset the filters in the list we get
         for item in filters: item['enabled'] = False
-    
+      
         # (3) Walk all sections
         for part in search_list:
             head_id = get_value(part, 'section')
@@ -1174,13 +1174,13 @@ class BasicList(ListView):
                 else:
                     # There is a filter, so build it up
                     filter = lstQ[0]
-                    for item in lstQ[1:]:
+                    for item in lstQ[1:]: # HIER komt bij PASSIM de rangeslider naar voren, dat zit dus in item ofzo? Neem, hier wordt over alle filters heen gegaan om het filter goed opte bouwen
                         filter = filter & item
                     if qAlternative:
                         # filter = ( filter ) | ( ( qAlternative ) & filter )
                         filter = ( ( qAlternative ) & filter )
 
-                    # Check if excluding is needed
+                    # Check if excluding is needed TH waar wordt nu die daterange gebruikt?
                     if lstExclude:
                         qs = self.model.objects.filter(filter).exclude(*lstExclude).distinct()
                     else:
@@ -1735,7 +1735,7 @@ class BasicDetails(DetailView):
 
             # Possibly add to context by the calling function
             if instance.id:
-                context = self.add_to_context(context, instance)
+                context = self.add_to_context(context, instance) # TH sections ok
                 if self.history_button:
                     # Retrieve history
                     context['history_contents'] = self.get_history(instance)
@@ -1743,10 +1743,10 @@ class BasicDetails(DetailView):
             # fill in the form values
             if frm and 'mainitems' in context:
                 for mobj in context['mainitems']:
-                    # Check for possible form field information
+                    # Check for possible form field information TH: hier alleen die eerste drie orig, emp, type # Hier komt een foutmelding naar boven
                     if 'field_key' in mobj: 
                         mobj['field_abbr'] = "{}-{}".format(frm.prefix, mobj['field_key'])
-                        mobj['field_key'] = frm[mobj['field_key']]
+                        mobj['field_key'] = frm[mobj['field_key']] 
                     if 'field_view' in mobj: mobj['field_view'] = frm[mobj['field_view']]
                     if 'field_ta' in mobj: mobj['field_ta'] = frm[mobj['field_ta']]
                     if 'field_list' in mobj: mobj['field_list'] = frm[mobj['field_list']]
@@ -1769,7 +1769,7 @@ class BasicDetails(DetailView):
             msg = oErr.get_error_message()
             oErr.DoError("BasicDetails, get_context_data")
 
-        # Return the calculated context
+        # Return the calculated context TH sections gaan mee
         return context
 
     def action_add(self, instance, details, actiontype):

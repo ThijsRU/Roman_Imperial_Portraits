@@ -18,7 +18,8 @@
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 5px;
-    font-size: x-large;
+    font-size: 25px;
+    font-style: italic;
     color: white;
     background-color: darkred;
     right: 0;
@@ -125,12 +126,23 @@ div.inline-group a.add-related {
 
 /* Adaptation of the standard panel */
 .panel {
-    margin-top: 5px;
+    margin-top: 2px;
+    margin-bottom: 2px;
     margin-left: 15px;
     margin-right: 15px;
     padding-left: 15px;
     padding-right: 15px;
 }
+
+.section {
+    margin-top: 20px;
+    margin-bottom: 2px;
+    margin-left: 15px;
+    margin-right: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
 
 .panel-plain {
     margin-left: 0px !important;
@@ -189,6 +201,8 @@ div.inline-group a.add-related {
 /* link */
 .navbar-custom .navbar-nav > li > a {
     color: white;
+    font-size: 16px;
+    
 }
     .navbar-custom .navbar-nav > li > a:hover,
     .navbar-custom .navbar-nav > li > a:focus {
@@ -279,6 +293,11 @@ p {
 .pagination-xsm > li:last-child > span {
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
+}
+
+
+.view-row p {
+    margin: 0 0 0 0;
 }
 
 /* Bootstrap dashboard */
@@ -572,8 +591,9 @@ div.arg-value {
   font-size: 11px;
 }
 .tdnowrap {
-  white-space:nowrap !important;
+    white-space: nowrap !important;
 }
+
 div.arg-selected {
     background-color: lightcyan;  
 }
@@ -592,9 +612,9 @@ form .panel-heading.row {
 
 /* Colors of jumbo parts */
 .jumbo-1 {
-  background-color: lavender;
-  color: chocolate;
-  fill: lavender;
+    background-color: lavender;
+    color: chocolate;
+    fill: lavender;
 }
 .jumbo-1 text {
   fill: goldenrod;
@@ -1240,11 +1260,29 @@ table.compact-table td:hover {
     cursor: pointer;
 }
 
-
-
-.sermon-author {
-  color: darkblue;
+.arachne style {
+    /* font-family: monospace; */
+    font-size: smaller;
+    color: darkgreen;
 }
+
+.emperor {
+    color: darkblue;
+    background-color: darkgoldenrod;
+}
+
+.arachne {
+    color: darkblue;
+    background-color: lightpink;
+}
+
+
+
+.lsa {
+    color: darkblue;
+    background-color: lightcyan;
+}
+
 
 .sermon-nickname {
   color: darkred;
@@ -1412,6 +1450,7 @@ a.sermon:link, a.sermon:visited {
 div.view-mode a, div.any-mode a {
   text-decoration: none;
   color: inherit;
+  
 }
 
 tr.selected > td.selectable {
@@ -1657,6 +1696,12 @@ svg .nodes {
 svg .nodes text {
     fill: currentColor;
     stroke: none;
+}
+
+
+/* Specific for RIPD TEST*/
+.details-label {
+    font-style: italic;
 }
 
 /* END OF D3 Section */

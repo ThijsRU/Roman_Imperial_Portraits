@@ -107,22 +107,23 @@
               <!-- Optionally more after the details view -->
               <div id="after_details" >{{after_details|safe}}</div>
             {% endif %}
-
+            
             {% if sections and sections|length > 1 %}
               <!-- List of buttons for sections -->
               <div class="row">
+                <div class="row">&nbsp;</div>
                 <div class="col-md-12">
                 {% for section in sections %}
                   <span>
-                    <a class="btn btn-xs jumbo-1" role="button" targetid="{{section.id}}" title="Show/Hide {{section.name}}"
+                    <a class="btn btn-s jumbo-1" role="button" targetid="{{section.id}}" title="Show/Hide {{section.name}}"
                        onclick="ru.basic.toggle_click(this);">{{section.name}}</a>
                   </span>
-                {% endfor %}
+                {% endfor %}                
                 </div>
               </div>
-
+              <div class="row">&nbsp;</div>
               <!-- Room for each section -->
-              {% for section in sections %}
+              {% for section in sections %}                
                 <div id="{{section.id}}" class="hidden panel panel-default">
                   <!-- Show this section in a standard way -->
                   <h4>{{section.name}}</h4>
@@ -130,7 +131,7 @@
                     <tbody>
                       {% for item in section.fields %}
                         <tr class="view-row">
-                          <td class="tdnowrap" valign="top">{{item.label}}</td>
+                          <td class="tdnowrap details-label" valign="top">{{item.label}}&nbsp;</td>
                           <td class="hoverable" {% if item.align %}align="{{item.align}}"{% endif %}>
                             {% spaceless %}
                               {% if item.type == "bold" %}{% if item.link == "" %}<b>{{item.value}}</b>{% else %}<a href="{{item.link}}"><b>{{item.value}}</b></a>{% endif %}
@@ -141,7 +142,7 @@
                               {% endif %}
                             {% endspaceless %}
                           </td>
-                        </tr>
+                        </tr>                      
                       {% endfor %}
 
                     </tbody>

@@ -32,7 +32,27 @@ class SignUpForm(UserCreationForm):
 
 # ==================== FORMS RELATED TO VIEWSBASIC =========================================
 
-# Igv Browse komt hij hier niet langs, wel bij PASSIM
+class OrigIDWidget(ModelSelect2MultipleWidget):
+    model = Portrait
+    search_fields = [ 'origstr__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.origstr
+
+    def get_queryset(self):
+        qs = Portrait.objects.all().order_by('origstr').distinct()
+        return qs
+
+class NameWidget(ModelSelect2MultipleWidget):
+    model = Portrait
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Portrait.objects.all().order_by('name').distinct()
+        return qs
 
 class EmperorWidget(ModelSelect2MultipleWidget):
     model = Emperor
@@ -53,8 +73,7 @@ class MaterialWidget(ModelSelect2MultipleWidget):
         return obj.name
 
     def get_queryset(self): # werkt niet       
-        qs = Material.objects.all().order_by('name').distinct() # gaat dit goed? Niet zoals bij Keyword in Passim. Hier komt hij niet als de site opstart.
-        #dit wordt gebruikt als er naar Browse wordt gegaan     
+        qs = Material.objects.all().order_by('name').distinct() 
         return qs
 
 class ProvinceWidget(ModelSelect2MultipleWidget):
@@ -68,6 +87,19 @@ class ProvinceWidget(ModelSelect2MultipleWidget):
         qs = Province.objects.all().order_by('name')     
         return qs
 
+# Wanneer current location erin staat:
+
+#class CurrentLocationWidget(ModelSelect2MultipleWidget):
+#    model = CurrentLocation # MODEL aanpassen!
+#    search_fields = [ 'name__icontains' ]
+   
+#    def label_from_instance(self, obj): 
+#        return obj.name
+
+#    def get_queryset(self):
+#        qs = CurrentLocation.objects.all().order_by('name') # MODEL aanpassen!     
+#        return qs
+
 class ContextWidget(ModelSelect2MultipleWidget):
     model = Context
     search_fields = [ 'name__icontains' ]
@@ -79,88 +111,212 @@ class ContextWidget(ModelSelect2MultipleWidget):
         qs = Context.objects.all().order_by('name')        
         return qs
 
-class PortraitForm(forms.ModelForm):
-    """One form to handle the Portrait searching and details view"""
+class RecarvedWidget(ModelSelect2MultipleWidget):
+    model = Recarved
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
 
-    # Buiten model Portrait, zoals emperor en de rest Keyword is een voorbeeld voor Emperor and Context
-    # het werkt een beetje...nog niet de juiste resultaten
+    def get_queryset(self):        
+        qs = Recarved.objects.all().order_by('name')        
+        return qs
+
+class IconWidget(ModelSelect2MultipleWidget):
+    model = Iconography
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):        
+        qs = Iconography.objects.all().order_by('name')        
+        return qs
+
+class AttributeWidget(ModelSelect2MultipleWidget):
+    model = Attributes
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):        
+        qs = Attributes.objects.all().order_by('name')        
+        return qs
+
+class WreathWidget(ModelSelect2MultipleWidget):
+    model = Wreathcrown
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):        
+        qs = Wreathcrown.objects.all().order_by('name')        
+        return qs
+
+class ReferencesWidget(ModelSelect2MultipleWidget):
+    model = Portrait
+    search_fields = [ 'reference__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.reference
+
+    def get_queryset(self):   
+        qs = Portrait.objects.exclude(reference__exact='').order_by('reference')      
+        return qs
+
+class PortraitForm(forms.ModelForm):
+    """One form to handle the Portrait searching and details view"""  
+    
+    origidlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 100%;', 'class': 'searching'})) 
+
     empname = forms.CharField(label="Emperor", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    
+    date_from   = forms.IntegerField(label=_("Date start"), required = False,
+                widget=forms.TextInput(attrs={'placeholder': _('Starting from year...'),  'style': 'width: 100%;', 'class': 'searching'}))
+    
+    date_until  = forms.IntegerField(label=_("Date until"), required = False,
+                widget=forms.TextInput(attrs={'placeholder': _('Until the year...'),  'style': 'width: 100%;', 'class': 'searching'}))
+
+    ####### These are added because there need to be a 'fieldkey' viewsbasic.py
+    material = forms.CharField(label="Material", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))    
+    height = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))    
+    height_comment = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))    
+    miniature = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    location = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    province = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))    
+    context = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    part_statue_group = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    group_name = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    together = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    group_reference = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))    
+    photo_folder = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    photographer = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    photo_path = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+
+    recarvedstatue = forms.CharField(label="Height", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+
+    #####
+
+    namelist  = ModelMultipleChoiceField(queryset=None, required=False, 
+                widget=NameWidget(attrs={'data-placeholder': 'Select modern location, museum or inventory number...', 'style': 'width: 100%;', 'class': 'searching'}))
    
     emplist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=EmperorWidget(attrs={'data-placeholder': 'Select multiple emperors...', 'style': 'width: 100%;', 'class': 'searching'}))
-    
-
-    wreathname = forms.CharField(label="WreathCrown", required=False, 
-                              widget=forms.TextInput(attrs={'class': 'typeahead searching wreathcrowns input-sm', 'placeholder': 'Name of the wreath or crown...',  'style': 'width: 100%;'}))
-    
+              widget=EmperorWidget(attrs={'data-placeholder': 'Select an emperors...', 'style': 'width: 100%;', 'class': 'searching'}))
+        
     matlist = ModelMultipleChoiceField(queryset=None, required=False, 
                                widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'}))  
-
-    #matname = forms.CharField(label="Material", required=False, 
-    #                          widget=forms.TextInput(attrs={'class': 'typeahead searching material input-sm', 'placeholder': 'Name of the material...',  'style': 'width: 100%;'}))
     
-    #date_from   = forms.IntegerField(label=_("Date start"), required = False,
-    #                                 widget=forms.TextInput(attrs={'placeholder': 'Starting from...',  'style': 'width: 30%;', 'class': 'searching'}))
-    #date_until  = forms.IntegerField(label=_("Date until"), required = False,
-    # 3                                widget=forms.TextInput(attrs={'placeholder': 'Until (including)...',  'style': 'width: 30%;', 'class': 'searching'}))
-    
-    
+    recarvedlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=RecarvedWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 100%;', 'class': 'searching'}))
+               
     locname = forms.CharField(label="Location", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching locations input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
     
-    #provname = forms.CharField(label="Province", required=False, 
-    #                          widget=forms.TextInput(attrs={'class': 'typeahead searching province input-sm', 'placeholder': 'Name of the province...',  'style': 'width: 100%;'}))
+    # When the current locations are in the database:
+    # curlocname of curloclist? Ik zou zeggen de laatste
+    # curloclist = ModelMultipleChoiceField(queryset=None, required=False, 
+    #                           widget=CurrentLocationWidget(attrs={'data-placeholder': 'Select multiple current locations...', 'style': 'width: 100%;', 'class': 'searching'}))
     
+                
     provlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=ProvinceWidget(attrs={'data-placeholder': 'Select one province...', 'style': 'width: 100%;', 'class': 'searching'}))
-    
-    #contname = forms.CharField(label="Context", required=False, 
-    #                          widget=forms.TextInput(attrs={'class': 'typeahead searching context input-sm', 'placeholder': 'Name of the context...',  'style': 'width: 100%;'}))
-    
-    contlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                                widget=ContextWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 100%;', 'class': 'searching'}))
+                               widget=ProvinceWidget(attrs={'data-placeholder': 'Select multiple provinces...', 'style': 'width: 100%;', 'class': 'searching'}))
       
-    iconname = forms.CharField(label="Iconography cuirass", required=False, 
-                              widget=forms.TextInput(attrs={'class': 'typeahead searching iconographies input-sm', 'placeholder': 'Name of the icon...',  'style': 'width: 100%;'}))
-    
-    attrname = forms.CharField(label="Attributes", required=False, 
-                              widget=forms.TextInput(attrs={'class': 'typeahead searching attributes input-sm', 'placeholder': 'Name of the attribute...',  'style': 'width: 100%;'}))
+    contlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=ContextWidget(attrs={'data-placeholder': 'Select multiple contexts...', 'style': 'width: 100%;', 'class': 'searching'}))
+        
+    iconlist = ModelMultipleChoiceField(queryset=None, required=False, 
+              widget=IconWidget(attrs={'data-placeholder': 'Select multiple icons...', 'style': 'width: 100%;', 'class': 'searching'}))
+        
+    attrlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=AttributeWidget(attrs={'data-placeholder': 'Select multiple attributes...', 'style': 'width: 100%;', 'class': 'searching'}))
+        
+    wreathlist = ModelMultipleChoiceField(queryset=None, required=False, 
+              widget=WreathWidget(attrs={'data-placeholder': 'Select multiple wreaths or crowns...', 'style': 'width: 100%;', 'class': 'searching'}))
     
     arachid = forms.CharField(label="Arachne", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'Arachne id of the portrait...',  'style': 'width: 100%;'}))
     
-    # Let op, in PASSIM is er een aantal Status, Manuscript type en Keyword, zijn lijsten, meerdere te selecteren. EK evt vragen
+    # Werkt nog niet goed, EK vragen. Sowieso moeten de lege niet getoond worden.
+    referenceslist = ModelMultipleChoiceField(queryset=None, required=False, 
+              widget=ReferencesWidget(attrs={'data-placeholder': 'Select multiple references...', 'style': 'width: 100%;', 'class': 'searching'}))
     
     # This is to circumvent the standard filter option for the Booleans: False
     disputed_free = forms.NullBooleanField()
+    disputed = disputed_free
+    
     buste_free = forms.NullBooleanField()
+    buste = buste_free
+
     statue_free = forms.NullBooleanField()
+    statue = statue_free
+
+    equestrian_free = forms.NullBooleanField()
+    equestrian = equestrian_free
+
+    beard_free = forms.NullBooleanField()
+    beard = beard_free
+
     part_group_free = forms.NullBooleanField()
+    part_group = part_group_free
+    
     recarvedboo_free = forms.NullBooleanField()
-    toga_free = forms.NullBooleanField()            
+    recarvedboo = recarvedboo_free
+    
+    toga_free = forms.NullBooleanField()
+    toga = toga_free
+
     cuirass_free = forms.NullBooleanField()
+    cuirass = cuirass_free 
+    
     heroic_semi_nude_free = forms.NullBooleanField()
+    heroic_semi_nude = heroic_semi_nude_free
+
     seated_free = forms.NullBooleanField()
+    seated = seated_free
+
     paludamentum_free = forms.NullBooleanField()
+    paludamentum = paludamentum_free
+
     sword_belt_free = forms.NullBooleanField()
+    sword_belt = sword_belt_free
+
+    contabulata_free = forms.NullBooleanField()
+    contabulata = contabulata_free
+
+    headgear_free = forms.NullBooleanField()
+    headgear = headgear_free
+
     capite_velato_free = forms.NullBooleanField()
+    capite_velato = capite_velato_free
+
     corona_laurea_free = forms.NullBooleanField()
+    corona_laurea = corona_laurea_free
+
     corona_civica_free = forms.NullBooleanField()
+    corona_civica = corona_civica_free
+
     corona_radiata_free = forms.NullBooleanField()
+    corona_radiata = corona_radiata_free
     
-    # hier booleans
-    
-    # hoe zit het met typeahead?
-    typeaheads = ["locations", "wreathnames", "iconographies", "attributes"] # werkt nog niet, hoe zit het oin PASSIM? Erwin vragen
-
-   # libname_ta  = forms.CharField(label=_("Library"), required=False, 
-    
-    # widget=forms.TextInput(attrs={'class': 'typeahead searching libraries input-sm', 'placeholder': 'Name of library...',  'style': 'width: 100%;'}))
-    
-
-    # zie Author als voorbeeld Equal goldlistview keyS keyfk check it out
-
     # =========== Portrait-specific ===========================
     
     class Meta:
@@ -168,32 +324,15 @@ class PortraitForm(forms.ModelForm):
 
         model = Portrait
         fields = ['name', 'origstr',  'startdate', 'enddate', 'reference', 'lsa'] # eea lijkt te werken
-        widgets={'name':             forms.TextInput(attrs={'placeholder': 'Name of the portrait...', 'style': 'width: 100%;', 'class': 'searching'}),
-                 #'name':             forms.RadioSelect(attrs={'style': 'width: 100%;'}),
-                 #'disputed':         forms.NullBooleanSelect(),
-                 #'location':         forms.TextInput(attrs={'style': 'width: 100%;'}),
-                 #'location':         forms.SelectMultiple(attrs={'style': 'width: 100%;'}),
-                 #'recarvedboo':      forms.NullBooleanSelect(),
+        widgets={'name':             forms.TextInput(attrs={'placeholder': 'Modern location, museum or inventory number', 'style': 'width: 100%;', 'class': 'searching'}),
                  'origstr':          forms.TextInput(attrs={'placeholder': 'Original id of the portrait...', 'style': 'width: 100%;'}),
-                 'startdate':        forms.TextInput(attrs={'placeholder': 'Earliest possible year...','style': 'width: 20%;'}), # aan te passen, "vanaf een jaar" dus de input dient als startpunt om te bepalen
+                 'startdate':        forms.TextInput(attrs={'placeholder': 'Earliest possible year...','style': 'width: 20%;'}), 
+                                                          # aan te passen, "vanaf een jaar" dus de input dient als startpunt om te bepalen
                                                           # vanaf welk jaartal de portraits meegenomen moeten worden, dus "50" is alles vanaf 50
                                                           # range of years, SelectDateWidget? Date Range in Passim?
                  'enddate':          forms.TextInput(attrs={'placeholder': 'Latest possible year...','style': 'width: 20%;'}), 
-                 #'statue':           forms.NullBooleanSelect(),
-                 #'bust':             forms.Select(), # deze doet het wel maar bij andere werkt het niet
-                 #'toga':             forms.NullBooleanSelect(),
-                 #'cuirass':          forms.NullBooleanSelect(),
-                 #'heroic_semi_nude': forms.NullBooleanSelect(),
-                 #'seated':           forms.NullBooleanSelect(),
-                 #'paludamentum':     forms.NullBooleanSelect(),
-                 #'sword_belt':       forms.NullBooleanSelect(),
-                 #'capite_velato':    forms.NullBooleanSelect(),
-                 #'corona_laurea':    forms.NullBooleanSelect(),
-                 #'corona_civica':    forms.NullBooleanSelect(),
-                 #'corona_radiata':   forms.NullBooleanSelect(),
-                 'reference':         forms.TextInput(attrs={'placeholder': 'Reference contains...', 'style': 'width: 100%;'}),                 
-                 'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),
-                 
+                 'reference':        forms.TextInput(attrs={'placeholder': 'Reference contains...', 'style': 'width: 100%;'}),                 
+                 'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),                 
                  } 
 
     def __init__(self, *args, **kwargs):
@@ -201,10 +340,8 @@ class PortraitForm(forms.ModelForm):
         super(PortraitForm, self).__init__(*args, **kwargs)
         oErr = ErrHandle()
         try:
-            # Set other parameters
-            # Ok, hij doet de laatste steeds
-            
-            self.fields['name'].required = False            
+            # Set other parameters            
+            self.fields['name'].required = False                        
             self.fields['disputed_free'].required = None
             self.fields['part_group_free'].required = None
             self.fields['buste_free'].required = None
@@ -213,6 +350,8 @@ class PortraitForm(forms.ModelForm):
             self.fields['enddate'].required = False
             self.fields['buste_free'].required = False
             self.fields['statue_free'].required = None
+            self.fields['beard_free'].required = None
+            self.fields['equestrian_free'].required = None
             self.fields['corona_laurea_free'].required = None
             self.fields['corona_civica_free'].required = None
             self.fields['corona_radiata_free'].required = None                 
@@ -222,27 +361,36 @@ class PortraitForm(forms.ModelForm):
             self.fields['seated_free'].required = None
             self.fields['paludamentum_free'].required = None
             self.fields['sword_belt_free'].required = None
+            self.fields['contabulata_free'].required = None
+            self.fields['headgear_free'].required = None
             self.fields['capite_velato_free'].required = None            
             self.fields['lsa'].required = False
             
             # in fields staat eea verzameld maar hier gaat het niet goed
+            self.fields['origidlist'].queryset = Portrait.objects.all().order_by('origstr')
+            self.fields['namelist'].queryset = Portrait.objects.all().order_by('name')
             self.fields['emplist'].queryset = Emperor.objects.all().order_by('name')
-            self.fields['matlist'].queryset = Material.objects.all().order_by('name') # er gaat iets met die queryset? Lijkt er wel in te staan.
+            self.fields['matlist'].queryset = Material.objects.all().order_by('name') 
+            self.fields['recarvedlist'].queryset = Recarved.objects.all().order_by('name')
             self.fields['provlist'].queryset = Province.objects.all().order_by('name')
-            self.fields['contlist'].queryset = Context.objects.all().order_by('name')
             
-          
-            # Get the instance
+            # When the current locations are in the database:
+            # self.fields['curloclist'].queryset = CurrentLocation.objects.all().order_by('name') # MODEL aanpassen!
+            
+            self.fields['contlist'].queryset = Context.objects.all().order_by('name')
+            self.fields['iconlist'].queryset = Iconography.objects.all().order_by('name')
+            self.fields['attrlist'].queryset = Attributes.objects.all().order_by('name')
+            self.fields['wreathlist'].queryset = Wreathcrown.objects.all().order_by('name')            
+            self.fields['referenceslist'].queryset = Portrait.objects.all().order_by('reference')  
+               
+            # Get the instance, moet ik hier meer mee doen?
             if 'instance' in kwargs:
                 instance = kwargs['instance']
-                                          
-                # Check if there is an emperor specified TH: hier verder iets mee doen?? MAANDAG
-                # Erwin vragen, 
-                             
+                            
                 emperor = instance.emperor
                 if emperor != None:
                     self.fields['empname'].initial = emperor.name
-
+                
                 elif instance != None:
                     pass
         except:

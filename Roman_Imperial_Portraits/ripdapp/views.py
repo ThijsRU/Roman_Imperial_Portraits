@@ -14,7 +14,7 @@ from ripdapp.forms import SignUpForm
 from ripdapp.models import Portrait, Emperor, Context, Location, Province, Material, PortraitMaterial, Arachne, \
     Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Type, PortraitType, Subtype, PortraitSubtype, \
     Alternative, PortraitAlternative, Recarved, PortraitRecarved, Together, PortraitTogether, Attributes, PortraitAttributes, \
-    Iconography, PortraitIconography, Path, Photographer 
+    Iconography, PortraitIconography, Path, Photographer, Table_1, Table_2, Table_3, CurrentLocation
 
 from Roman_Imperial_Portraits.settings import PICTURES_DIR
 
@@ -135,7 +135,7 @@ def references(request):
     # Specify the template
     template_name = "references.html"
 
-    context =  {'title':'References',
+    context =  {'title':'References and Links',
                 'message':'Roman Imperial Portraits Database (RIPD)'}
 
     return render(request, template_name, context)
@@ -147,10 +147,227 @@ def links(request):
     # Specify the template
     template_name = "links.html"
 
-    context =  {'title':'Links',
+    context =  {'title':'Additional material',
                 'message':'Roman Imperial Portraits Database (RIPD)'}
 
     return render(request, template_name, context)
+
+
+def update_from_excel_coordinates(request): # OK misschien niet nodig, wellicht handiger om het vanuit de grote import te doen, 
+    #daar is de findspot met de coordinates al geregeld
+    """Check if contents can be updated from the MEDIA excel file"""
+
+    # The file should contain 
+    
+    # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+
+    # Read the Excel file with pandas from MEDIA_DIR   
+    data_coord = os.path.abspath(os.path.join(MEDIA_DIR, 'Locations_coordinates.xlsx'))
+    df = pd.read_excel(data_coor, engine='openpyxl')
+
+    # Replaces NaN with empty: ""
+    df = df.fillna('')  
+
+    # Iterate over all rows in the data frame
+    for index, row in df.iterrows():
+        print(row ['ID'], row['Name'], row['Code'], row['Coordinates'])
+        
+        id = row['ID']
+        name = row['Name']
+        code = row['Portraits']        
+        base = row['Bases']
+        if base == "":
+            base = None
+       
+        # Create a new Table_1 object if there is a new one 
+        tab1_obj = Table_1.objects.filter(id=id).first()
+        if tab1_obj == None:
+            # Now we can create a completely fresh record 
+            tab1_obj = Table_1.objects.create() 
+            tab1_obj.id = id
+
+            # Fill in the name of the emperor for each emperor in the table     
+            tab1_obj.name = emp
+
+            # Fill in the number of portraits for each emperor in the table     
+            tab1_obj.port_number = por
+
+            # Fill in the number of bases for each emperor in the table
+            tab1_obj.base_number = base
+
+        # Save the results
+        tab1_obj.save()
+    
+    # What we return is simply the home page
+    return redirect('home')
+
+def update_from_excel_table1(request):
+    """Check if contents can be updated from the MEDIA excel file"""
+    
+    # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+
+    # Read the Excel file with pandas from MEDIA_DIR   
+    data_table_1 = os.path.abspath(os.path.join(MEDIA_DIR, 'Table_1_mod.xlsx'))
+    df = pd.read_excel(data_table_1, engine='openpyxl')
+
+    # Replaces NaN with empty: ""
+    df = df.fillna('')  
+
+    # Iterate over all rows in the data frame
+    for index, row in df.iterrows():
+        print(row ['ID'], row['Emperor'], row['Portraits'], row['Bases'])
+        
+        id = row['ID']
+        emp = row['Emperor']
+        por = row['Portraits']        
+        base = row['Bases']
+        if base == "":
+            base = None
+       
+        # Create a new Table_1 object if there is a new one 
+        tab1_obj = Table_1.objects.filter(id=id).first()
+        if tab1_obj == None:
+            # Now we can create a completely fresh record 
+            tab1_obj = Table_1.objects.create() 
+            tab1_obj.id = id
+
+            # Fill in the name of the emperor for each emperor in the table     
+            tab1_obj.name = emp
+
+            # Fill in the number of portraits for each emperor in the table     
+            tab1_obj.port_number = por
+
+            # Fill in the number of bases for each emperor in the table
+            tab1_obj.base_number = base
+
+        # Save the results
+        tab1_obj.save()
+    
+    # What we return is simply the home page
+    return redirect('home')
+
+def update_from_excel_table2(request):
+    """Check if contents can be updated from the MEDIA excel file"""
+    
+    # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+
+    # Read the Excel file with pandas from MEDIA_DIR   
+    data_table_2 = os.path.abspath(os.path.join(MEDIA_DIR, 'Table_2_mod.xlsx'))
+    df = pd.read_excel(data_table_2, engine='openpyxl')
+
+    # Replaces NaN with empty: ""
+    df = df.fillna('')  
+
+    # Iterate over all rows in the data frame
+    for index, row in df.iterrows():
+        print(row ['ID'], row['Emperor'], row['Original'], row['Sum'])
+        
+        id = row['ID']
+        emp = row['Emperor']
+        if emp == "":
+            emp = None
+        orig = row['Original']
+        if orig == "":
+            orig = None
+        sum = row['Sum']
+       
+       # Create a new Table_2 object if there is a new one 
+        tab2_obj = Table_2.objects.filter(id=id).first()
+        if tab2_obj == None:
+            # Now we can create a completely fresh record 
+            tab2_obj = Table_2.objects.create() 
+            tab2_obj.id = id
+
+            # Fill in the name of the emperor for each emperor in the table     
+            tab2_obj.name = emp
+
+            # Fill in the number of portraits for each emperor in the table     
+            tab2_obj.original = orig
+
+            # Fill in the number of bases for each emperor in the table
+            tab2_obj.sum = sum
+
+        # Save the results
+        tab2_obj.save()
+    
+    # What we return is simply the home page
+    return redirect('home')
+
+
+def update_from_excel_table3(request):
+    """Check if contents can be updated from the MEDIA excel file"""
+    
+    # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+    
+     # Read the Excel file with pandas from MEDIA_DIR   
+    data_table_3 = os.path.abspath(os.path.join(MEDIA_DIR, 'Table_3_mod.xlsx'))
+    df = pd.read_excel(data_table_3, engine='openpyxl')
+
+    # Replaces NaN with empty: ""
+    df = df.fillna('')  
+
+    # Make sure there are no ".0" added to the numbers in the third column. 
+    #Later?
+
+
+    # Iterate over all rows in the data frame
+    for index, row in df.iterrows():
+        print(row ['ID'], row['Emperor'], row['Toga'], row['Cuirass'], row['Heroic'], row['Total'], row['Toga_%'], row['Cuirass_%'], row['Heroic_%'])
+        
+        id = row['ID']
+        emp = row['Emperor']
+        toga = row['Toga']        
+        cuir = row['Cuirass']
+        hero = row['Heroic']
+        total = row['Total']
+        toga_per = row['Toga_%']        
+        cuir_per = row['Cuirass_%']
+        hero_per = row['Heroic_%']
+               
+        # Create a new Table_3 object if there is a new one 
+        tab3_obj = Table_3.objects.filter(id=id).first()
+        if tab3_obj == None:
+            # Now we can create a completely fresh record 
+            tab3_obj = Table_3.objects.create() 
+            tab3_obj.id = id
+
+            # Fill in the name of the emperor for each emperor in the table     
+            tab3_obj.name = emp
+
+            # Fill in the number of togas for each emperor in the table     
+            tab3_obj.toga_number = toga
+
+            # Fill in the number of cuirasses for each emperor in the table
+            tab3_obj.cuirass_number = cuir
+
+            # Fill in the number of heroics for each emperor in the table
+            tab3_obj.heroic_number = hero
+
+            # Fill in the number of totals for each emperor in the table
+            tab3_obj.total = total
+
+            # Fill in the number of togas for each emperor in the table     
+            tab3_obj.toga_percentage = toga_per
+
+            # Fill in the number of cuirasses for each emperor in the table
+            tab3_obj.cuirass_percentage = cuir_per
+
+            # Fill in the number of heroics for each emperor in the table
+            tab3_obj.heroic_percentage = hero_per
+
+        # Save the results
+        tab3_obj.save()
+
+    # What we return is simply the home page
+    return redirect('home')
 
 def update_from_excel(request):
     """Check if contents can be updated from the MEDIA excel file"""
@@ -201,6 +418,23 @@ def update_from_excel(request):
             lat = ""
             long = ""
         
+        # Current location       
+        location_current = row['Place_current']         
+
+        # Current coordinates
+        coordinates_current = row['Coordinates_current']
+        
+        # Split up the current coordinates
+        if coordinates_current != None and coordinates_current !="":
+            coord_list_current = coordinates_current.split(",")
+            # Store separately
+            lat_cur = coord_list_current[0]
+            long_cur = coord_list_current[1]
+        else:
+            # in case of "Unknown"
+            lat = ""
+            long = ""
+
         # Portrait type
         porttype = row['Portrait_type']
 
@@ -569,6 +803,38 @@ def update_from_excel(request):
             # If the name of the location exists only a link should be made to this name from the Portrait table
             port_obj.location = locationfound
         
+        # Current location
+        
+        # Here the name of the current location of the statue and its attributes will be stored if the name does not yet exist
+        # and a link will be made between the Portrait table and the CurrentLocation table
+        # Please watch out for the unknowns        
+            
+        # Try to find if the name of the current location already exists in the CurrentLocation table:
+               
+        location_currentfound = CurrentLocation.objects.filter(name__iexact=location_current).first()
+        if location_currentfound == None:
+            # If the name does not already exist, it needs to be added to the database and the coordinates if available also need to best
+            if location_current == "Unknown" or lat == "":
+                # In case the location is "Unknown" then there are no coordinates available
+                location_current = CurrentLocation.objects.create(name = location_current)
+            else:                     
+                # In other cases the coordinates should be known
+                location_current = CurrentLocation.objects.create(name = location_current, lat_coord = lat_cur, long_coord = long_cur)
+            # And a link should be made between this new location and the portrait
+            port_obj.currentlocation = location_current
+        else:
+            # If the name of the location exists only a link should be made to this name from the Portrait table
+            port_obj.currentlocation = location_currentfound
+
+        # Let op, hier moet eea aan import worden aangepast, de dataset gaat niet aangepast worden maar het moet wel mogelijk worden om per 
+        # portrait meerdere photographers mogelijk te maken.
+
+        # Plus er moet een manier worden bedacht om nieuwe foto's en fotografen automatisch toe te voegen. Hoe werkt het nu ook al weer?
+
+        # Is het niet mogelijk om 
+
+        # Photographer en Path samen met PathPhotographer
+
         # Photographer
         if photographer != None and photographer != "":
             # Try to find if the name of the photographer already exists in the Photographer table:
@@ -578,21 +844,7 @@ def update_from_excel(request):
                 photographer2 = Photographer.objects.create(name = photographer)
             else:
                 photographer2 = grapherfound
-
-                       
-        # Arachne
-        if arachne_list != "":
-            for arachne in arachne_list:  
-                # Try to find if the id of the arachne already exists in the Arachne table:
-                arachnefound = Arachne.objects.filter(arachne__iexact=arachne).first()
-                if arachnefound == None:
-                    # If the id does not already exist, it needs to be added to the database
-                    # And a link should be made between this new arachne code and the corresponding portrait id
-                    Arachne.objects.create(arachne = arachne, portrait = port_obj)
                         
-                else:
-                    pass 
-        
         # Path
         if path_list != "": 
             for path in path_list:  
@@ -609,7 +861,20 @@ def update_from_excel(request):
 
                 else:
                     pass 
+        
+        # Arachne
+        if arachne_list != "":
+            for arachne in arachne_list:  
+                # Try to find if the id of the arachne already exists in the Arachne table:
+                arachnefound = Arachne.objects.filter(arachne__iexact=arachne).first()
+                if arachnefound == None:
+                    # If the id does not already exist, it needs to be added to the database
+                    # And a link should be made between this new arachne code and the corresponding portrait id
+                    Arachne.objects.create(arachne = arachne, portrait = port_obj)
                         
+                else:
+                    pass              
+        
         # Material
         if material_list != "":
             for material in material_list:  

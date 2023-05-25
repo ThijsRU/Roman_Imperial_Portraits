@@ -1,8 +1,7 @@
 {% load staticfiles %}
 
 <div class="top-bar">
-  <span>Roman Imperial Portraits Database:</span>
-  <span>{{title}} <i>(Beta version)</i></span>
+  <span>Roman Imperial Portraits Database</span>  
 </div>
 
 <div class="navbar navbar-custom navbar-fixed-top">
@@ -27,8 +26,8 @@
         <li><a href="{% url 'home' %}">Welcome</a></li>
         <li><a href="{% url 'about' %}">About</a></li> 
         <li><a href="{% url 'portrait_list' %}">Browse & Advanced Search</a></li>        
-        <li><a href="{% url 'references' %}">References</a></li>
-        <li><a href="{% url 'links' %}">Links</a></li>
+        <li><a href="{% url 'references' %}">References and Links</a></li>
+        <li><a href="{% url 'links' %}">Additional material</a></li>     
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" 
               aria-haspopup="true" aria-expanded="false">Extra... <span class="caret"></span></a>
@@ -44,8 +43,16 @@
               <li><a href="{% url 'signup' %}">Sign up</a></li>
             {% endif %}
             {% if user.is_superuser %}
-              <li role="separator" class="divider"></li>
+              <li role="separator" class="divider"></li>              
               <li><a href="{% url 'tools_update' %}">Update from Excel</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'tools_update_coordinates' %}">Update from Excel, locations and coordinates</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'tools_update_table1' %}">Update from Excel, Table 1</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'tools_update_table2' %}">Update from Excel, Table 2</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="{% url 'tools_update_table3' %}">Update from Excel, Table 3</a></li>
             {% endif %}
           </ul>
         </li>

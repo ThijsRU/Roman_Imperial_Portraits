@@ -38,7 +38,12 @@ urlpatterns = [
     url(r'^about$', ripdapp.views.about, name='about'),
     url(r'^references$', ripdapp.views.references, name='references'),
     url(r'^links$', ripdapp.views.links, name='links'),
-    url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'),
+    url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'), 
+    url(r'^tools/update_coordinates$', ripdapp.views.update_from_excel_coordinates, name='tools_update_coordinates'), 
+    url(r'^tools/update_table1$', ripdapp.views.update_from_excel_table1, name='tools_update_table1'),  
+    url(r'^tools/update_table2$', ripdapp.views.update_from_excel_table2, name='tools_update_table2'),   
+    url(r'^tools/update_table3$', ripdapp.views.update_from_excel_table3, name='tools_update_table3'),
+
     url(r'^portrait/list', PortraitListView.as_view(), name='portrait_list'),
     url(r'^portrait/details(?:/(?P<pk>\d+))?/$', PortraitDetails.as_view(), name='portrait_details'),
     url(r'^portrait/edit(?:/(?P<pk>\d+))?/$', PortraitEdit.as_view(), name='portrait_edit'),

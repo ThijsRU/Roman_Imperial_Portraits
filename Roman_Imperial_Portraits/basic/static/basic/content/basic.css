@@ -103,3 +103,7 @@ td.ruler {
     font-size: small;
     font-family: monospace;
 }
+
+.details-label {
+    font-style: italic;
+}

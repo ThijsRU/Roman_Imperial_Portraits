@@ -72,30 +72,32 @@
               {% if filters %}
                 <span class="">
                   <!-- Show a help button that will open a model popup -->
-                  <a class="btn btn-xs jumbo-5" role="button" 
+                  <a class="btn btn-x jumbo-5" role="button" 
                      data-toggle="modal" data-target="#modal-filterhelp" title="How can I filter?">
                     <span class="glyphicon glyphicon-question-sign"></span>
                   </a>
                 </span>
                 <span class="">
                   <!-- NEW: use filtering instead of 'searching' -->
-                  <a class="btn btn-xs jumbo-4" data-toggle="collapse" data-target="#tab_filter" role="button" title="Define your filter(s)...">
-                    <span class="glyphicon glyphicon-filter"></span>
+                  <a class="btn btn-x jumbo-4" data-toggle="collapse" data-target="#tab_filter" role="button" title="Define your filter(s)...">
+                    <span class="glyphicon glyphicon-search"></span>
                   </a>
 
                 </span>
               {% endif %}
               <!-- Always: show/hide the row to show/hide columns -->
               <span class="">
-                  <a class="btn btn-xs jumbo-1" data-toggle="collapse" data-target="#tab_colwrap" role="button" title="Show/hide column(s)...">
+                  <a class="btn btn-x jumbo-1" data-toggle="collapse" data-target="#tab_colwrap" role="button" title="Show/hide column(s)...">
                     <span class="glyphicon glyphicon-tasks"></span>
                   </a>
               </span>
             </div>
           </div>
         </div>
-
-        <form  id="basiclist_filter" method='post' action="{{basic_list}}" >
+        <div class="col-md-3">
+          <!-- Row with buttons-->
+          
+          <form  id="basiclist_filter" method='post' action="{{basic_list}}" >
           {% csrf_token %}
           <!-- entrypoint for search_paged_start -->
           <div class="hidden search_paged_start">
@@ -122,13 +124,14 @@
 
           <!-- Filter tab -->
           {% if filters %}
-            <div class="inert {% if has_filter %}in{% else %}in collapse_issue_77{{% endif %}" id="tab_filter">
+            <div class="inert {% if has_filter %}in{% else %}in collapse_issue_77{% endif %}" id="tab_filter">
               <div class="panel panel-default">
                 <!-- Filter interface -->
                 <div class="row" id="filter_badges">
                   <div class="col-md-2">
                     <h4>Selected filters</h4>
                   </div>
+                  
                   <div class="col-md-10">
                     <!-- Main filters -->
                     <div>
@@ -145,56 +148,7 @@
               
                 <div class="row" id="basiclist_filter_specs">
                   <!-- The column with the different filter sections -->
-                  <div class="col-md-10">
-                    <div class="panel panel-default ">
-
-                      <!-- Intro -->
-                      <div><h5>{{titlesg}} filters: </h5></div>
-
-                      <!-- Show the different filters in the list -->
-                      {% for filter in filters %}
-                        {% if not filter.head_id  %}
-                          <div id="{{filter.id}}" class="{% if not filter.hasvalue %}hidden{% endif %}">
-                            <table style="width: 100%;">
-                              <tr class="form-row">
-                                <td style="min-width: 130px;" valign="top">
-                                  {{filter.name}}
-                                  {% if filter.help != "" and filter.helptext != "" %}
-                                    <a role="button" data-toggle="collapse" data-target="#basic_h_{{filter.help}}">
-                                      <span class="glyphicon glyphicon-question-sign" style="color: blue;"></span>
-                                    </a>
-                                  {% endif %}
-                                </td>
-                                <td style="width: 100%;">
-                                  {% if filter.help != "" and filter.helptext != "" %}
-                                    <div id="basic_h_{{filter.help}}" class="collapse">
-                                      {{filter.helptext|safe}}
-                                    </div>
-                                  {% endif %}
-                                  <div>
-                                    {% for fitem in filter.fitems %}
-                                      {% if fitem.dbfield %}<span class="keyword-key hidden filter-dbfield">{{fitem.dbfield}}</span>{% endif %}
-                                      {% if fitem.keyS %}
-                                        <span class="filter-keys">{{fitem.keyS}}</span>
-                                        {% if fitem.has_keylist %}
-                                          <span> or select: </span>
-                                          <span class="filter-keylist">{{fitem.keyList}}</span>
-                                        {% endif %}
-                                      {% elif fitem.has_keylist %}
-                                          <span class="filter-keylist">{{fitem.keyList}}</span>
-                                      {% endif %}
-                                    {% endfor %}
-                                  </div>
-                                </td>
-                              </tr>
-                            </table>
-                          </div>
-                        {% endif %}
-                      {% endfor %}
-
-
-                    </div>
-                  </div>
+                  
 
                   <!-- Basket operation buttons -->
                   {% if entrycount > 0 and basket_update %}
@@ -296,7 +250,7 @@
           {% endif %}
 
         </form>
-
+        </div>
         <!-- Custom button processing -->
         {% if custombuttons and is_app_editor %}
           {% for citem in custombuttons %}
@@ -351,9 +305,10 @@
             </div>
           {% endfor %}
         {% endif %}
-
+        
+        <div class="col-md-9">
         <!-- List tab -->
-        <div class="" id="tab_list">
+          <div class="" id="tab_list">
           <div class="panel panel-default">
 
             <h3>
@@ -509,7 +464,7 @@
             {% endif %}
           </div>
         </div>
-
+        </div>
       </div>
 
     
