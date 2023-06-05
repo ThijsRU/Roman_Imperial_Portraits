@@ -883,16 +883,18 @@ class BasicList(ListView):
             bHasValue = False
             # Add filter section name
             section_name = section['section']
-            if section_name != "" and section_name not in fsections:
+            if section_name != "" and section_name not in fsections:                
                 oFsection = dict(name=section_name, has_value=False)
                 # fsections.append(dict(name=section_name))
             # Copy the relevant search filter
             for item in section['filterlist']:
+                print(item)
                 bHasItemValue = False
                 # Find the corresponding item in the filters
                 id = "filter_{}".format(item['filter'])
-                for filteritem in self.filters:
-                    if id == filteritem['id']:
+                for filteritem in self.filters:     
+                    print(filteritem)
+                    if id == filteritem['id']: # hiergaat het mis, id is nooit id
                         try:
                             # Build a new [fitem]
                             fitem = {}
@@ -919,7 +921,7 @@ class BasicList(ListView):
                                 else:
                                     # There is a keyS without corresponding fkfield or dbfield
                                     pass
-                            # Append the [fitem] to the [fitems]                            
+                            # Append the [fitem] to the [fitems] TH: gebeurt dit wel?                           
                             filteritem['fitems'].append(fitem)
                             filteritem['count'] = len(filteritem['fitems'])
                             filteritem['help'] = ""

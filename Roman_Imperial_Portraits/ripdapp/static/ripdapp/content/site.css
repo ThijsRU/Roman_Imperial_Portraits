@@ -89,11 +89,14 @@ input[type="checkbox"].input-validation-error {
 a.list-group-item-info:hover {
   background-color: lightgoldenrodyellow !important;
 }
+
+
+
 table tbody tr:hover {
-  /* 
+  
   background-color: lightblue !important;
-  cursor: pointer;*/
-  /*  */
+  cursor: pointer;
+
 }
 table tbody tr td.clickable:hover, table tbody tr.clickable td:hover, div.clickable:hover, span.clickable:hover, th div a.clickable:hover {
   cursor: pointer;
@@ -206,7 +209,7 @@ div.inline-group a.add-related {
 }
     .navbar-custom .navbar-nav > li > a:hover,
     .navbar-custom .navbar-nav > li > a:focus {
-        color: blue;
+        #color: blue;
         background-color: darkgray;
     }
 .navbar-custom .navbar-nav > .active > a, 
@@ -295,6 +298,19 @@ p {
   border-bottom-right-radius: 2px;
 }
 
+.ripd-filter {
+    margin-bottom: 10px; 
+}
+
+.ripd-filter ul {
+    list-style-type: none;
+    margin-top: 10px;
+    margin-left: -40px;
+}
+
+.ripd-filter table tr td, ripd-filter label {
+    font-size: small;
+}
 
 .view-row p {
     margin: 0 0 0 0;
@@ -1211,7 +1227,13 @@ table.compact-table td:hover {
   min-width: 92px;
 }
 
-
+.filter-section {
+    font-weight: bold;
+    font-size: larger;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
 
 .keyword {
     color: darkblue;
@@ -1276,13 +1298,10 @@ table.compact-table td:hover {
     background-color: lightpink;
 }
 
-
-
 .lsa {
     color: darkblue;
     background-color: lightcyan;
 }
-
 
 .sermon-nickname {
   color: darkred;

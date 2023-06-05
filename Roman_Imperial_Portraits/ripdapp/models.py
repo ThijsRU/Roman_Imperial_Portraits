@@ -920,7 +920,6 @@ class Photographer(models.Model):
 
 class Path(models.Model):
     """One or paths (to photos) that are be linked to a portrait""" 
-    # VIEW ARACHNE
     # [0-1] The path      
     path = models.CharField("Path name", max_length=LONG_STRING)
     # The id of the portrait that belongs to the Arachne code
@@ -933,7 +932,7 @@ class Path(models.Model):
     def __str__(self):
         return self.path
 
-# Add class PathPhotographer(models.Model):
+# Add class PathPhotographer(models.Model): KAN WEG, dit niet nodig denk ik
     # [1] The portrait item
     # path = models.ForeignKey(Path, on_delete = models.CASCADE, related_name= "path_photographer")
     # [1] The photographer item

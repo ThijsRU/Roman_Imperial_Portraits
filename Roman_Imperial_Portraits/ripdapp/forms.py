@@ -89,16 +89,16 @@ class ProvinceWidget(ModelSelect2MultipleWidget):
 
 # Wanneer current location erin staat:
 
-#class CurrentLocationWidget(ModelSelect2MultipleWidget):
-#    model = CurrentLocation # MODEL aanpassen!
-#    search_fields = [ 'name__icontains' ]
+class CurrentLocationWidget(ModelSelect2MultipleWidget):
+    model = CurrentLocation 
+    search_fields = [ 'name__icontains' ]
    
-#    def label_from_instance(self, obj): 
-#        return obj.name
+    def label_from_instance(self, obj): 
+        return obj.name
 
-#    def get_queryset(self):
-#        qs = CurrentLocation.objects.all().order_by('name') # MODEL aanpassen!     
-#        return qs
+    def get_queryset(self):
+        qs = CurrentLocation.objects.all().order_by('name')    
+        return qs
 
 class ContextWidget(ModelSelect2MultipleWidget):
     model = Context
@@ -170,16 +170,16 @@ class PortraitForm(forms.ModelForm):
     """One form to handle the Portrait searching and details view"""  
     
     origidlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 100%;', 'class': 'searching'})) 
+                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 77%;', 'class': 'searching'})) 
 
     empname = forms.CharField(label="Emperor", required=False, 
-                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 77%;'}))
     
     date_from   = forms.IntegerField(label=_("Date start"), required = False,
-                widget=forms.TextInput(attrs={'placeholder': _('Starting from year...'),  'style': 'width: 100%;', 'class': 'searching'}))
+                widget=forms.TextInput(attrs={'placeholder': _('Starting from (year)...'),  'style': 'width: 100%;', 'class': 'searching'}))
     
     date_until  = forms.IntegerField(label=_("Date until"), required = False,
-                widget=forms.TextInput(attrs={'placeholder': _('Until the year...'),  'style': 'width: 100%;', 'class': 'searching'}))
+                widget=forms.TextInput(attrs={'placeholder': _('Until (year)...'),  'style': 'width: 100%;', 'class': 'searching'}))
 
     ####### These are added because there need to be a 'fieldkey' viewsbasic.py
     material = forms.CharField(label="Material", required=False, 
@@ -210,54 +210,54 @@ class PortraitForm(forms.ModelForm):
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
     photo_path = forms.CharField(label="Height", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
-
     recarvedstatue = forms.CharField(label="Height", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
 
     #####
 
     namelist  = ModelMultipleChoiceField(queryset=None, required=False, 
-                widget=NameWidget(attrs={'data-placeholder': 'Select modern location, museum or inventory number...', 'style': 'width: 100%;', 'class': 'searching'}))
+                widget=NameWidget(attrs={'data-placeholder': 'Select location, museum and number...', 'style': 'width: 77%;', 'class': 'searching'}))
    
     emplist = ModelMultipleChoiceField(queryset=None, required=False, 
-              widget=EmperorWidget(attrs={'data-placeholder': 'Select an emperors...', 'style': 'width: 100%;', 'class': 'searching'}))
+              widget=EmperorWidget(attrs={'data-placeholder': 'Select multiple emperors...', 'style': 'width: 77%;', 'class': 'searching'}))
         
     matlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 100%;', 'class': 'searching'}))  
+                               widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 77%;', 'class': 'searching'}))  
     
     recarvedlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                                widget=RecarvedWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 100%;', 'class': 'searching'}))
+                                widget=RecarvedWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 77%;', 'class': 'searching'}))
                
     locname = forms.CharField(label="Location", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching locations input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
     
-    # When the current locations are in the database:
-    # curlocname of curloclist? Ik zou zeggen de laatste
-    # curloclist = ModelMultipleChoiceField(queryset=None, required=False, 
-    #                           widget=CurrentLocationWidget(attrs={'data-placeholder': 'Select multiple current locations...', 'style': 'width: 100%;', 'class': 'searching'}))
     
-                
+    curlocname = forms.CharField(label="Location", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching current locations input-sm', 'placeholder': 'Name of the current location...',  'style': 'width: 100%;'}))
+    
+    curloclist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=CurrentLocationWidget(attrs={'data-placeholder': 'Select multiple current locations...', 'style': 'width: 77%;', 'class': 'searching'}))
+                    
     provlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=ProvinceWidget(attrs={'data-placeholder': 'Select multiple provinces...', 'style': 'width: 100%;', 'class': 'searching'}))
+                               widget=ProvinceWidget(attrs={'data-placeholder': 'Select multiple provinces...', 'style': 'width: 77%;', 'class': 'searching'}))
       
     contlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                                widget=ContextWidget(attrs={'data-placeholder': 'Select multiple contexts...', 'style': 'width: 100%;', 'class': 'searching'}))
+                                widget=ContextWidget(attrs={'data-placeholder': 'Select multiple contexts...', 'style': 'width: 77%;', 'class': 'searching'}))
         
     iconlist = ModelMultipleChoiceField(queryset=None, required=False, 
-              widget=IconWidget(attrs={'data-placeholder': 'Select multiple icons...', 'style': 'width: 100%;', 'class': 'searching'}))
+              widget=IconWidget(attrs={'data-placeholder': 'Select multiple icons...', 'style': 'width: 77%;', 'class': 'searching'}))
         
     attrlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                                widget=AttributeWidget(attrs={'data-placeholder': 'Select multiple attributes...', 'style': 'width: 100%;', 'class': 'searching'}))
+                                widget=AttributeWidget(attrs={'data-placeholder': 'Select multiple attributes...', 'style': 'width: 77%;', 'class': 'searching'}))
         
     wreathlist = ModelMultipleChoiceField(queryset=None, required=False, 
-              widget=WreathWidget(attrs={'data-placeholder': 'Select multiple wreaths or crowns...', 'style': 'width: 100%;', 'class': 'searching'}))
+              widget=WreathWidget(attrs={'data-placeholder': 'Select multiple wreaths or crowns...', 'style': 'width: 77%;', 'class': 'searching'}))
     
     arachid = forms.CharField(label="Arachne", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'Arachne id of the portrait...',  'style': 'width: 100%;'}))
     
     # Werkt nog niet goed, EK vragen. Sowieso moeten de lege niet getoond worden.
     referenceslist = ModelMultipleChoiceField(queryset=None, required=False, 
-              widget=ReferencesWidget(attrs={'data-placeholder': 'Select multiple references...', 'style': 'width: 100%;', 'class': 'searching'}))
+              widget=ReferencesWidget(attrs={'data-placeholder': 'Select multiple references...', 'style': 'width: 77%;', 'class': 'searching'}))
     
     # This is to circumvent the standard filter option for the Booleans: False
     disputed_free = forms.NullBooleanField()
@@ -332,7 +332,8 @@ class PortraitForm(forms.ModelForm):
                                                           # range of years, SelectDateWidget? Date Range in Passim?
                  'enddate':          forms.TextInput(attrs={'placeholder': 'Latest possible year...','style': 'width: 20%;'}), 
                  'reference':        forms.TextInput(attrs={'placeholder': 'Reference contains...', 'style': 'width: 100%;'}),                 
-                 'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),                 
+                 'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),
+                 #'arachne':          forms.TextInput(attrs={'placeholder': 'Arachne id of the portrait...', 'style': 'width: 100%;'}), 
                  } 
 
     def __init__(self, *args, **kwargs):
@@ -373,10 +374,7 @@ class PortraitForm(forms.ModelForm):
             self.fields['matlist'].queryset = Material.objects.all().order_by('name') 
             self.fields['recarvedlist'].queryset = Recarved.objects.all().order_by('name')
             self.fields['provlist'].queryset = Province.objects.all().order_by('name')
-            
-            # When the current locations are in the database:
-            # self.fields['curloclist'].queryset = CurrentLocation.objects.all().order_by('name') # MODEL aanpassen!
-            
+            self.fields['curloclist'].queryset = CurrentLocation.objects.all().order_by('name')             
             self.fields['contlist'].queryset = Context.objects.all().order_by('name')
             self.fields['iconlist'].queryset = Iconography.objects.all().order_by('name')
             self.fields['attrlist'].queryset = Attributes.objects.all().order_by('name')

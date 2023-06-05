@@ -34,7 +34,6 @@ import pandas as pd
 from Roman_Imperial_Portraits.settings import MEDIA_DIR # ander niveau
 
 
-
 def index(request):
     """Show the homepage"""
 
@@ -141,15 +140,33 @@ def references(request):
     return render(request, template_name, context)
 
 def links(request):
-    """The about page of the Roman Imperial Portraits Database"""
+    """The Additional material page of the Roman Imperial Portraits Database"""
     assert isinstance(request, HttpRequest)
 
     # Specify the template
     template_name = "links.html"
 
-    context =  {'title':'Additional material',
-                'message':'Roman Imperial Portraits Database (RIPD)'}
+    # Table 1. Number of extant imperial portraits and bases
+    table_1_query = Table_1.objects.all()
+    # Modify NULL / None in field base_number
+    for item in table_1_query:
+        if item.base_number == None:
+            item.base_number = ""            
+    
+    # Table 2. Number of extant recarved imperial portraits
+    table_2_query = Table_2.objects.all()
+     # Modify NULL / None in field in field name
+    for item in table_2_query:
+        if item.name == None:
+            item.name = ""
+            
+    # Table 3. Number of extant imperial portraits in toga, cuirass, and heroic nudity, in absolute and relative numbers, 
+        # excluding statue bodies that were found without their original portrait
+    table_3_query = Table_3.objects.all()
 
+    context =  {'title':'Additional material',
+                'message':'Roman Imperial Portraits Database (RIPD)', 'table_1_query': table_1_query, 'table_2_query': table_2_query, 'table_3_query': table_3_query}    
+    
     return render(request, template_name, context)
 
 
@@ -165,40 +182,12 @@ def update_from_excel_coordinates(request): # OK misschien niet nodig, wellicht 
 
     # Read the Excel file with pandas from MEDIA_DIR   
     data_coord = os.path.abspath(os.path.join(MEDIA_DIR, 'Locations_coordinates.xlsx'))
-    df = pd.read_excel(data_coor, engine='openpyxl')
+    df = pd.read_excel(data_coord, engine='openpyxl')
 
     # Replaces NaN with empty: ""
     df = df.fillna('')  
 
-    # Iterate over all rows in the data frame
-    for index, row in df.iterrows():
-        print(row ['ID'], row['Name'], row['Code'], row['Coordinates'])
-        
-        id = row['ID']
-        name = row['Name']
-        code = row['Portraits']        
-        base = row['Bases']
-        if base == "":
-            base = None
-       
-        # Create a new Table_1 object if there is a new one 
-        tab1_obj = Table_1.objects.filter(id=id).first()
-        if tab1_obj == None:
-            # Now we can create a completely fresh record 
-            tab1_obj = Table_1.objects.create() 
-            tab1_obj.id = id
-
-            # Fill in the name of the emperor for each emperor in the table     
-            tab1_obj.name = emp
-
-            # Fill in the number of portraits for each emperor in the table     
-            tab1_obj.port_number = por
-
-            # Fill in the number of bases for each emperor in the table
-            tab1_obj.base_number = base
-
-        # Save the results
-        tab1_obj.save()
+  
     
     # What we return is simply the home page
     return redirect('home')
@@ -299,7 +288,6 @@ def update_from_excel_table2(request):
     # What we return is simply the home page
     return redirect('home')
 
-
 def update_from_excel_table3(request):
     """Check if contents can be updated from the MEDIA excel file"""
     
@@ -366,6 +354,82 @@ def update_from_excel_table3(request):
         # Save the results
         tab3_obj.save()
 
+    # What we return is simply the home page
+    return redirect('home')
+
+
+def update_cur_loc_coord_excel(request):
+        # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+    
+     # Read the Excel file with pandas from MEDIA_DIR   
+    curr_loc = os.path.abspath(os.path.join(MEDIA_DIR, 'RIPD_current_locations.xlsx'))
+    df = pd.read_excel(curr_loc, engine='openpyxl')
+
+    # Replaces NaN with empty: ""
+    df = df.fillna('')  
+    
+    # Iterate over all rows in the data frame
+    for index, row in df.iterrows():
+        print(row ['ID'], row['Place_current'], row['Coordinates_current'])
+        
+        orig = row['ID']
+        location_current = row['Place_current']
+
+        # Current Coordinates
+        coordinates_current = row['Coordinates_current']        
+        
+        # Split up the current coordinates
+        if coordinates_current != None and coordinates_current !="":
+            coord_list_current = coordinates_current.split(",")
+            # Store separately
+            lat_cur = coord_list_current[0]
+            print(lat_cur)
+            long_cur = coord_list_current[1]
+            print(long_cur)
+        else:
+            # in case of "Unknown"
+            lat_cur = ""
+            long_cur = ""
+
+    # STORE current loc and coordinates (uiteraard maar 1 keer
+
+    # Now alle fields from each record can be stored
+
+        # Create a new portrait (if there is a new one!) 
+        port_obj = Portrait.objects.filter(origstr=orig).first()
+        if port_obj == None:
+            # Now we can create a completely fresh portrait 
+            port_obj = Portrait.objects.create() 
+            port_obj.origstr = orig
+        
+        # Current location
+        
+        # Here the name of the current location of the statue and its attributes will be stored if the name does not yet exist
+        # and a link will be made between the Portrait table and the CurrentLocation table
+        # Please watch out for the unknowns        
+            
+        # Try to find if the name of the current location already exists in the CurrentLocation table:
+               
+        location_currentfound = CurrentLocation.objects.filter(name__iexact=location_current).first()
+        if location_currentfound == None:
+            # If the name does not already exist, it needs to be added to the database and the coordinates if available also need to best
+            if location_current == "Unknown" or lat_cur == "":
+                # In case the location is "Unknown" then there are no coordinates available
+                location_current = CurrentLocation.objects.create(name = location_current)
+            else:                     
+                # In other cases the coordinates should be known
+                location_current = CurrentLocation.objects.create(name = location_current, lat_coord = lat_cur, long_coord = long_cur)
+            # And a link should be made between this new location and the portrait
+            port_obj.currentlocation = location_current
+        else:
+            # If the name of the location exists only a link should be made to this name from the Portrait table
+            port_obj.currentlocation = location_currentfound
+
+        # Save the results
+        port_obj.save()
+    
     # What we return is simply the home page
     return redirect('home')
 
@@ -685,7 +749,7 @@ def update_from_excel(request):
         recarv = row['Recarved']	
         iddisp = row['Identity_disputed']
          
-       # Now alle fields from each record can be stored
+        # Now alle fields from each record can be stored
 
         # Create a new portrait if there is a new one 
         port_obj = Portrait.objects.filter(origstr=orig).first()

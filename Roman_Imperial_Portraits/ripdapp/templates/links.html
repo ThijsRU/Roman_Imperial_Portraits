@@ -2,27 +2,45 @@
 
 {% block content %}
 
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+
+</style>
+
 <div class="container body-content">
 
-    <h3>{{ title }} for the {{ message }}</h3>
-    
+    <h3>{{ title }} for the {{ message }}</h3>    
     <br/>
+    <h4>Figure 1. Total number of Roman imperial portraits, per emperor.</h4>
     <br/>
-    <br/>
-
     <div class="col-sm-12 display-lg">
-    <!-- Image -->
+        <!-- Image -->
         <a href="https://doi.org/10.5281/zenodo.6534518" target="_blank">
             <img src="/media/material/Figure_1.png" style='max-width: 600px; width: auto; height: auto;' title="Source: Zenodo"/>        
         </a>
     </div>
     <br/>
+    <br/>
     <p>Figure 1: Total number of Roman imperial portraits, per emperor (N=2135), excluding imperial portraits of unknown emperors. © S. Heijnen, Download here:
     <a href="https://doi.org/10.5281/zenodo.6534518">https://doi.org/10.5281/zenodo.6534518</a>.</p> 
     <br/>
     <br/>
+    <h4>Figure 2. Number of imperial portraits per year of reign.</h4>
+    <br/>
+    <br/>
     <div class="col-sm-12 display-lg">
-    <!-- Image -->
+        <!-- Image -->
         <a href="https://doi.org/10.5281/zenodo.6563952" target="_blank">
             <img src="/media/material/Figure_2.png" style='max-width: 600px; width: auto; height: auto;' title="Source: Zenodo"/>        
         </a>
@@ -33,10 +51,10 @@
     a year and imperial portraits that circulated prior to the emperor's accession. © S. Heijnen, Download here:
     <a href="https://doi.org/10.5281/zenodo.6563952">https://doi.org/10.5281/zenodo.6563952</a>.</p> 
     <br/>
-
-
+    <h4>Figure 3. Map of the Mediterranean with find spots of imperial portraits.</h4>
+    <br/>
     <div class="col-sm-12 display-lg">
-    <!-- Image -->
+        <!-- Image -->
         <a href="https://doi.org/10.5281/zenodo.6563964" target="_blank">
             <img src="/media/material/Figure_3.jpg" style='max-width: 600px; width: auto; height: auto;' title="Source: Zenodo"/>        
         </a>
@@ -46,7 +64,9 @@
     <p>Figure 3: Map of the Mediterranean region, showing the find spots of imperial portraits. © T. Hermsen & S. Heijnen, Download here:
     <a href="https://doi.org/10.5281/zenodo.6563964">https://doi.org/10.5281/zenodo.6563964</a>.</p>
     <br/>
-
+    <br/>
+    <h4>Figure 4. Modes of representation of the Roman emperor in the Julio-Claudian – Constantinian period.</h4>
+    <br/>
     <div class="col-sm-12 display-lg">
     <!-- Image -->
         <a>
@@ -59,35 +79,80 @@
         without their original portrait, in: S. Heijnen, <i>Portraying Change. The Representation of Roman Emperors in Freestanding Sculpture (ca. 50 BC - ca. 400 AD)</i>, 2021, p. 109.
     <br/>
     <br/>
-
-
-
-
-
-
-
-    <p>Table 1: Number of extant imperial portraits and bases. Bases by Højte (2005), Petruccioli (2012), Spranger (2014), and LSA.</p>
-    <a id="downloadmenu" role="button" class="btn jumbo-1 btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" 
-                        onclick="" >
-                  Download Table 1<span class="caret"></span>
-    </a>
-    <br/>
-    <br/>
-    <p>Table 2: Number of extant recarved imperial portraits.</p>
-    <a id="downloadmenu" role="button" class="btn jumbo-1 btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" 
-                        onclick="" >
-                  Download Table 2<span class="caret"></span>
-    </a>
-    <br/>
-    <br/>
-    <p>Table 3: Table VI: Number of extant imperial portraits in toga, cuirass, and heroic nudity, in absolute and relative numbers, excluding statue bodies that were found without their original portrait.</p>
-    <a id="downloadmenu" role="button" class="btn jumbo-1 btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" 
-                        onclick="" >
-                  Download Table 3<span class="caret"></span>
-    </a>
+    <!-- Table 1 -->
+    <h4>Table 1: Number of extant imperial portraits and bases. Bases by Højte (2005), Petruccioli (2012), Spranger (2014), and LSA.</h4>
+    <br/>           
+            <table tbody tr:hover>
+              <tr>                
+                <th>Emperor</th>
+                <th>Portraits</th>
+                <th>Bases</th>
+              </tr>
     
-  
-    </ul>
+              {% for item in table_1_query %}
+              <tr>                 
+                <td>{{ item.name }}</td>
+                <td>{{ item.port_number }}</td>
+                <td>{{ item.base_number }}</td>
+              </tr>
+              {% endfor %}
+            </table tbody tr:hover>        
+    
+    <!-- Table 2 -->
+    <br/>
+    <br/>
+    <h4>Table 2: Number of extant recarved imperial portraits.</h4>
+    <br/>
+    <table>
+      <tr>        
+        <th>Emperor</th>
+        <th>Original</th>
+        <th>Sum</th>
+      </tr>    
+      {% for item in table_2_query %}
+      <tr>         
+        <td>{{ item.name }}</td>
+        <td>{{ item.original }}</td>
+        <td>{{ item.sum }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+   
+    <!-- Table 3 -->
+    <br/>
+    <br/>
+    <h4>Table 3: Number of extant imperial portraits in toga, cuirass, and heroic nudity, in absolute and relative numbers, 
+        excluding statue bodies that were found without their original portrait.</h4>
+    <br/>
+    <table>
+      <tr>        
+        <th>Emperor</th>
+        <th>Toga</th>
+        <th>Cuirass</th>
+        <th>Heroic</th>
+        <th>Total</th>
+        <th>Toga %</th>
+        <th>Cuirass %</th>
+        <th>Heroic %</th>
+      </tr>    
+      {% for item in table_3_query %}
+      <tr>         
+        <td>{{ item.name }}</td>
+        <td>{{ item.toga_number }}</td>
+        <td>{{ item.cuirass_number }}</td>
+        <td>{{ item.heroic_number }}</td>
+        <td>{{ item.total }}</td>
+        <td>{{ item.toga_percentage }}</td>
+        <td>{{ item.cuirass_percentage }}</td>
+        <td>{{ item.heroic_percentage }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    
+    
+     
+
 
 
 </div>
