@@ -13,13 +13,14 @@
 .top-bar {
     position: fixed;
     top: 0px;
-    height: 50px;
+    height: 100px;
     text-align: center;
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 5px;
-    font-size: 25px;
+    font-size: 30px;
     font-style: italic;
+    font-weight: bold;
     color: white;
     background-color: darkred;
     right: 0;
@@ -27,7 +28,7 @@
     z-index: 1030;
 }
 .navbar-fixed-top {
-    top: 50px;
+    top: 60px;
 }
 /*
 .navbar-custom {
@@ -102,7 +103,7 @@ table tbody tr td.clickable:hover, table tbody tr.clickable td:hover, div.clicka
   cursor: pointer;
 }
 table tbody tr td.clickable:hover, table tbody tr.clickable td:hover, table tbody tr td span.clickable:hover, th div a.clickable:hover {
-  background-color: lightgoldenrodyellow ;
+    background-color: lightgoldenrodyellow;
 }
 
 th div a.clickable.ordered {
@@ -146,6 +147,10 @@ div.inline-group a.add-related {
     padding-right: 15px;
 }
 
+.paragraph {
+    font-size: 19px;
+    font-style: italic;
+}
 
 .panel-plain {
     margin-left: 0px !important;
@@ -204,7 +209,7 @@ div.inline-group a.add-related {
 /* link */
 .navbar-custom .navbar-nav > li > a {
     color: white;
-    font-size: 16px;
+    font-size: 17px;
     
 }
     .navbar-custom .navbar-nav > li > a:hover,
@@ -268,9 +273,10 @@ div.inline-group a.add-related {
 }
 
 /* BASE.css */
-p { 
+p {
     padding: 0;
     line-height: 140%;
+    font-size: 16px;
 }
 
 /* Extra small pagination */
@@ -1293,10 +1299,7 @@ table.compact-table td:hover {
     background-color: darkgoldenrod;
 }
 
-.arachne {
-    color: darkblue;
-    background-color: lightpink;
-}
+
 
 .lsa {
     color: darkblue;

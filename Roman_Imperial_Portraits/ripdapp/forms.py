@@ -170,7 +170,7 @@ class PortraitForm(forms.ModelForm):
     """One form to handle the Portrait searching and details view"""  
     
     origidlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 77%;', 'class': 'searching'})) 
+                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 85%;', 'class': 'searching'})) 
 
     empname = forms.CharField(label="Emperor", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 77%;'}))
