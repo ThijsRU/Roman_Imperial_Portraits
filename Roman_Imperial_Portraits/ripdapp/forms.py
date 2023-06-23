@@ -89,6 +89,18 @@ class ProvinceWidget(ModelSelect2MultipleWidget):
 
 # Wanneer current location erin staat:
 
+class AncientLocationWidget(ModelSelect2MultipleWidget):
+    model = Location 
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Location.objects.all().order_by('name')    
+        return qs
+
+
 class CurrentLocationWidget(ModelSelect2MultipleWidget):
     model = CurrentLocation 
     search_fields = [ 'name__icontains' ]
@@ -170,7 +182,7 @@ class PortraitForm(forms.ModelForm):
     """One form to handle the Portrait searching and details view"""  
     
     origidlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 85%;', 'class': 'searching'})) 
+                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 100%;', 'class': 'searching'})) 
 
     empname = forms.CharField(label="Emperor", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 77%;'}))
@@ -216,7 +228,7 @@ class PortraitForm(forms.ModelForm):
     #####
 
     namelist  = ModelMultipleChoiceField(queryset=None, required=False, 
-                widget=NameWidget(attrs={'data-placeholder': 'Select location, museum and number...', 'style': 'width: 77%;', 'class': 'searching'}))
+                widget=NameWidget(attrs={'data-placeholder': 'Select location, museum and number...', 'style': 'width: 100%;', 'class': 'searching'}))
    
     emplist = ModelMultipleChoiceField(queryset=None, required=False, 
               widget=EmperorWidget(attrs={'data-placeholder': 'Select multiple emperors...', 'style': 'width: 77%;', 'class': 'searching'}))
@@ -225,12 +237,14 @@ class PortraitForm(forms.ModelForm):
                                widget=MaterialWidget(attrs={'data-placeholder': 'Select multiple materials...', 'style': 'width: 77%;', 'class': 'searching'}))  
     
     recarvedlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                                widget=RecarvedWidget(attrs={'data-placeholder': 'Select one context...', 'style': 'width: 77%;', 'class': 'searching'}))
+                                widget=RecarvedWidget(attrs={'data-placeholder': 'Select context(s)...', 'style': 'width: 77%;', 'class': 'searching'}))
                
     locname = forms.CharField(label="Location", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching locations input-sm', 'placeholder': 'Name of the ancient city...',  'style': 'width: 100%;'}))
     
-    
+    ancloclist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=AncientLocationWidget(attrs={'data-placeholder': 'Select multiple names of ancient cities...', 'style': 'width: 77%;', 'class': 'searching'}))
+        
     curlocname = forms.CharField(label="Location", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching current locations input-sm', 'placeholder': 'Name of the current location...',  'style': 'width: 100%;'}))
     
@@ -374,6 +388,7 @@ class PortraitForm(forms.ModelForm):
             self.fields['matlist'].queryset = Material.objects.all().order_by('name') 
             self.fields['recarvedlist'].queryset = Recarved.objects.all().order_by('name')
             self.fields['provlist'].queryset = Province.objects.all().order_by('name')
+            self.fields['ancloclist'].queryset = Location.objects.all().order_by('name')             
             self.fields['curloclist'].queryset = CurrentLocation.objects.all().order_by('name')             
             self.fields['contlist'].queryset = Context.objects.all().order_by('name')
             self.fields['iconlist'].queryset = Iconography.objects.all().order_by('name')

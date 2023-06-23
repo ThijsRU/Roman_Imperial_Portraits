@@ -691,7 +691,7 @@ class Portrait(models.Model):
         lHtml = []
         name = self.name
         # Give the name of the portrait a nice look THIS works
-        lHtml.append("<span class='lsa'>{}</span> ".format(name))
+        lHtml.append("<span>{}</span> ".format(name))
         sBack = ", ".join(lHtml)
         return sBack
 
@@ -703,7 +703,7 @@ class Portrait(models.Model):
             lsa = self.lsa
             lsa_str= str(self.lsa)
             url_complete = (url_LSA+lsa_str)
-            lHtml.append("<span class='lsa'><a href='{}' title='Link to portrait in LSA database'>{}</a></span> ".format(url_complete, lsa))
+            lHtml.append("<span><a href='{}' title='Link to portrait in LSA database'>{}</a></span> ".format(url_complete, lsa))
             sBack = ", ".join(lHtml)
         else:
             # If there is no context linked to a portrait
@@ -730,12 +730,25 @@ class Portrait(models.Model):
         sBack = ", ".join(lHtml)
         return sBack
 
+    def get_photopath_first(self):
+        lHtml = []
+        # Visit all photo items (no tiffs) get the first one
+        qs = self.path_portrait.all()
+        # Only go forward when there is an image available
+        if len(qs) > 0:
+            # Select the first on                
+            item1 = qs.first()
+            # Add the path to the html
+            lHtml.append("<img src='/{}' style='max-width: 200px; width: auto; height: auto;'/>".format(item1)) 
+            sBack = "\n".join(lHtml)
+            return sBack
+
     def get_photopath(self):
         lHtml = []
         # Visit all photo items (no tiffs)      
         for item in self.path_portrait.all().order_by('folder'):    
             # Add path to list
-            lHtml.append("<img src='/{}' style='max-width: 200px; width: auto; height: auto;'/>".format(item.path))
+            lHtml.append("<img src='/{}' style='max-width: 150px; width: auto; height: auto;'/>".format(item.path))
         sBack = "\n".join(lHtml)
         return sBack
            
@@ -809,7 +822,7 @@ class Portrait(models.Model):
         lHtml = []
         # Visit all type items
         for type in self.type.all().order_by('name'):            
-            lHtml.append("<span class='manuscript-idno'>{}</span> ".format(type.name))
+            lHtml.append("<span>{}</span> ".format(type.name))
         sBack = ", ".join(lHtml)
         return sBack  
 

@@ -7,6 +7,8 @@ from django.urls import reverse, reverse_lazy
 from django.contrib import admin
 import django.contrib.auth.views
 
+from django.views.decorators.csrf import csrf_exempt
+
 from django.conf import settings # for showing pictures in Browse
 from django.conf.urls.static import static # for showing pictures in Browse
 
@@ -48,6 +50,8 @@ urlpatterns = [
     url(r'^portrait/list', PortraitListView.as_view(), name='portrait_list'),
     url(r'^portrait/details(?:/(?P<pk>\d+))?/$', PortraitDetails.as_view(), name='portrait_details'),
     url(r'^portrait/edit(?:/(?P<pk>\d+))?/$', PortraitEdit.as_view(), name='portrait_edit'),
+
+    url(r'^portrait/map/', csrf_exempt(PortraitMapView.as_view()), name='portrait_map'),
 
     # Definitions are kind of separate
     url(r'^definitions$', RedirectView.as_view(url='/'+pfx+'admin/'), name='definitions'),

@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     # My apps:
     'django_select2',
     'basic',
-    'ripdapp'
+    'ripdapp',
+    'mapview'
 ]
 
 MIDDLEWARE = [

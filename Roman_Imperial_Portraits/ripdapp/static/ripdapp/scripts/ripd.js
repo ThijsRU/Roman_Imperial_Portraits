@@ -312,9 +312,45 @@ var ru = (function ($, ru) {
           });
       },
 
+      /* goto_view
+      *   Open the indicated view
+      *
+      */
+      goto_view: function (elStart, sView) {
+            var height = 0,
+                width = 0,
+                id_mapview = "#basicmap",
+                id_listview = "#basiclist_top";
+            try {
+                switch (sView) {
+                    case "map":   // Open the map-view
+                        $(id_listview).addClass("hidden");
+                        $(id_mapview).removeClass("hidden");
+                        $(".map-list-switch").addClass("map-active");
 
+                        // Calculate and set the height
+                        height = $("footer").position().top - $(".portrait-map").position().top - 10;
+                        width = $(id_mapview).width();
+                        $(".portrait-map").css("height", height + "px");
+                        $(".portrait-map").css("width", width + "px");
 
+                        // And copy the generic search value
+                        $("#generic_search").val($("#generic-search-input").val());
 
+                        // Initiate showing a map
+                        ru.mapview.ripd_map(elStart);
+                        break;
+                    case "list":  // Open the listview
+                        $(id_mapview).addClass("hidden");
+                        $(id_listview).removeClass("hidden");
+                        $(".map-list-switch").removeClass("map-active");
+                        break;
+                }
+
+            } catch (ex) {
+                private_methods.errMsg("goto_view", ex);
+            }
+      },
       /**
        *  view_switch
        *      Switch from one view to the other

@@ -19,6 +19,9 @@
 {% block content %}
 
   <div>
+        <!-- Make sure the mapview is loaded -->
+        {% include 'mapview/map_view_full.html' %}
+
 
     {% if authenticated and permission %}
       <!-- Upper part of the basic list interface -->
@@ -366,7 +369,9 @@
             </div>
           {% endfor %}
         {% endif %}
-        
+      
+              
+
         <div class="col-md-9">
 
         <!-- List tab -->
@@ -512,6 +517,7 @@
                 </div>
               </div>
 
+      
               <!-- Bottom pagination -->
               <div class="pagination">
                   <span class="step-links">
@@ -529,6 +535,19 @@
         </div>
       </div>
 
+      <div id="basicmap" class="container-small hidden">
+
+        <div id="portrait_map" class="portrait-map">
+          <!-- This is where the map comes -->
+        </div>
+
+        <div class="inner-map">
+          <div class="pull-right">
+            {% include 'ripdapp/map_list_switch.html' with mode='map' %}
+          </div>
+        </div>      
+
+      </div>
     
     {% elif authenticated and not permission %}
       <div class="explanation">

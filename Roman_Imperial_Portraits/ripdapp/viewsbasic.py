@@ -2,6 +2,8 @@
 Definition of 'viewsbasic' for the RIPD app: the views that make use of the basic app
 """
 import os, sys
+import copy
+
 from django.contrib import admin
 from django.contrib.auth import login, authenticate
 from django.db.models import Q
@@ -9,11 +11,17 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
 from datetime import datetime
 from django.utils.translation import gettext as _
-
 from basic.utils import ErrHandle
+from django.template.loader import render_to_string
 
 # RIPD: basic app
 from basic.views import BasicList, BasicDetails
+
+# RIPD: mapview app
+from mapview.views import MapView 
+
+# RIPD: ripd app
+#from ripdapp.adaptations import listview_adaptation
 
 # RIPD: forms and models
 from ripdapp.forms import SignUpForm, PortraitForm
@@ -146,7 +154,7 @@ class PortraitEdit(BasicDetails):
         #add_if_available(context['mainitems'], "plain", "Photo folder: ", instance.get_photofolder(), 'photo_folder') # Hierna? mis?
                 
         add_if_available(context['mainitems'], "plain", "Photo by © : ", instance.get_photographer(), 'photographer') 
-        add_if_available(context['mainitems'], "plain", "Photo: ", instance.get_photopath(), 'photo_path') 
+        add_if_available(context['mainitems'], "plain", "Photo: ", instance.get_photopath_first(), 'photo_path') 
 
         # class ManuscriptEdit(BasicDetails):
         # https://github.com/ErwinKomen/RU-passim/blob/master/passim/passim/seeker/views.py#L8399
@@ -209,24 +217,25 @@ class PortraitDetails(PortraitEdit):
                 {'type': 'safeline',    'label': "Toga: ", 'value': instance.get_toga()},
                 {'type': 'safeline',    'label': "Capite velato: ", 'value': instance.get_capite_velato()},
                 {'type': 'safeline',    'label': "Cuirass: ", 'value': instance.get_cuirass()},
-
                 {'type': 'safeline',    'label': "Iconography cuirass: ", 'value': instance.get_iconography()},
                 {'type': 'safeline',    'label': "Heroic nudity: ", 'value': instance.get_heroic_semi_nude()},
                 {'type': 'safeline',    'label': "Enthroned: ", 'value': instance.get_seated()},
                 {'type': 'safeline',    'label': "Equestrian: ", 'value': instance.get_equestrian()},
-
                 {'type': 'safeline',    'label': "Beard: ", 'value': instance.get_beard()},
                 {'type': 'safeline',    'label': "Paludamentum: ", 'value': instance.get_paludamentum()},
                 {'type': 'safeline',    'label': "Sword belt: ", 'value': instance.get_sword_belt()},
                 {'type': 'safeline',    'label': "Contabulata: ", 'value': instance.get_contabulata()},
-
                 {'type': 'safeline',    'label': "Headgear: ", 'value': instance.get_headgear()},
                 {'type': 'safeline',    'label': "Corona laurea: ", 'value': instance.get_corona_laurea()},
                 {'type': 'safeline',    'label': "Corona civica: ", 'value': instance.get_corona_civica()},
                 {'type': 'safeline',    'label': "Corona radiata: ", 'value': instance.get_corona_radiata()},
                 {'type': 'safeline',    'label': "Other: ", 'value': instance.get_wreathcrown()},
                 {'type': 'safeline',    'label': "Additional attributes: ", 'value': instance.get_attributes()},
-                ]}]
+                ]},
+            {'name': 'All photos', 'id': 'portrait_photos', 'fields': [
+                {'type': 'safeline',    'label': "Photos by © : ", 'value': instance.get_photographer()},
+                {'type': 'safeline',    'label': "Photos: ", 'value': instance.get_photopath()}                
+                ]}]               
              
         # Lists of related objects
         related_objects = []
@@ -239,7 +248,7 @@ class PortraitDetails(PortraitEdit):
     
 
 class PortraitListView(BasicList):
-    """Search and list Christian feasts"""
+    """Search and list Roman portraits"""
 
     model = Portrait
     listform = PortraitForm
@@ -285,7 +294,7 @@ class PortraitListView(BasicList):
             {"name": _("Recarved"),         "id": "filter_recarvedboo",    "enabled": False, "section": "recarved", "show": "label"}, 
             {"name": _("Original identity"),"id": "filter_orig_identity",  "enabled": False, "section": "recarved", "show": "none"},                        
             {"name": _("Date range"),       "id": "filter_daterange",      "enabled": False, "section": "date", "show": "label"},           
-            {"name": _("Ancient city"),     "id": "filter_ancient_city",     "enabled": False, "section": "provenance", "show": "none"}, 
+            {"name": _("Ancient city"),     "id": "filter_ancient_location", "enabled": False, "section": "provenance", "show": "none"}, 
             {"name": _("Current location"), "id": "filter_current_location", "enabled": False, "section": "provenance", "show": "none"}, 
             {"name": _("Statue group"),     "id": "filter_statue_group",     "enabled": False, "section": "provenance", "show": "label"}, 
             {"name": _("Province"),         "id": "filter_province",         "enabled": False, "section": "provenance", "show": "none"}, 
@@ -321,7 +330,8 @@ class PortraitListView(BasicList):
             {'filter': 'orig_identity',  'fkfield': 'recarved_from', 'keyList': 'recarvedlist', 'infield': 'name'}, 
             {'filter': 'daterange',      'dbfield': 'startdate', 'keyS': 'date_from'},
             {'filter': 'daterange',      'dbfield': 'enddate',   'keyS': 'date_until'}, 
-            {'filter': 'ancient_city',   'fkfield': 'location',  'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"},
+            #{'filter': 'ancient_city',   'fkfield': 'location',  'keyS': 'locname', 'keyId': 'location', 'keyFk': "name"},
+            {'filter': 'ancient_location','fkfield': 'location', 'keyList': 'ancloclist', 'infield': 'name'},     
             {'filter': 'current_location','fkfield': 'currentlocation', 'keyList': 'curloclist', 'infield': 'name'},     
             {'filter': 'statue_group',    'dbfield': 'part_group', 'keyS': 'part_group_free'},          
             {'filter': 'province',        'fkfield': 'location__province', 'keyList': 'provlist', 'infield': 'name'},     
@@ -366,16 +376,16 @@ class PortraitListView(BasicList):
             context['filter_sections'] = self.filter_sections
 
             # Possibly take over generic_search
-            #context['generic_search'] = self.qd.get("wer-generic", "")
+            context['generic_search'] = self.qd.get("wer-generic", "")
 
             # Calculate how many items will be shown on the map
-            #qs_mapview = self.qs.exclude(locatie__x_coordinaat="onbekend")
-            #context['mapcount'] = qs_mapview.count()
+            qs_mapview = self.qs.exclude(location__long_coord=None)
+            context['mapcount'] = qs_mapview.count()
 
             # Add a user_button definition
             context['mode'] = "list"
-            #context['language'] = self.language
-            #context['user_button'] = render_to_string("seeker/map_list_switch.html", context, self.request)
+            #context['language'] = self.language # hier werkt iets niet weer uitzetten?
+            context['user_button'] = render_to_string("ripdapp/map_list_switch.html", context, self.request)
 
             context['no_result_count'] = True
 
@@ -383,7 +393,7 @@ class PortraitListView(BasicList):
 
         except:
             msg = oErr.get_error_message()
-            oErr.DoError("PortraitListview/add_to_context")
+            oErr.DoError("PortraitListView/add_to_context")
 
         return context
 
@@ -465,51 +475,119 @@ class PortraitListView(BasicList):
         return fields, lstExclude, qAlternative
 
 
-#class Table1Edit(BasicDetails):
-#    """Table 1: Number of extant imperial portraits and bases."""
+class PortraitMapView(MapView):
+    model = Portrait
+    modEntry = Portrait #?
+    frmSearch = PortraitForm
+    order_by = []
+    use_object = False
+    label = ""
+    language = ""
+    param_list = ""
+    prefix = "prt"
+    filterQ = None
 
-#    model = Table_1
-#    mForm = PortraitForm
-#    prefix = 'tab1'
-#    title = "Portrait"
-#    title_sg = "Portrait"
-#    rtype = "json"
-#    history_button = False 
-#    mainitems = []
+    def initialize(self):
+        super(PortraitMapView, self).initialize()
 
-#    def add_to_context(self, context, instance):
-#        """Add to the existing context"""
+        #language  = self.request.LANGUAGE_CODE 
+        #self.language = "en" if "en" in language else language
 
-#        #if instance.settype == "hc" and context['is_app_editor'] and self.manu == None and self.codico == None:
-#        context['mainitems'].append(
-#        {'type': 'safe', 'label': "Show/hide:", 'value': self.get_hc_buttons(instance),
-#         'title': 'Optionally show Table 1 '})
-                
-#        # Signal that we have select2
-#        context['has_select2'] = True
+        # Entries with a 'form' value Vanaf hier gaat er iets mis, checken wat waar wordt opgepikt.
+        self.entry_list = []
+        self.add_entry('origstr',  'str', 'origstr',        'ripd original id')
+        self.add_entry('findspot', 'fk',  'location', 'findspot', fkfield= 'name')
 
-#        #Return the context we have made
-#        return context
+        #self.add_entry('country',  'fk',  'location__province',  'province', fkfield= 'name')
+        
+        # Add a Q-filter: exclude those where location is 'None' 
+        self.filterQ = ~Q(location__long_coord__isnull=True)
+        #self.filterQ = ~Q(location__long_coord="None")
 
-#    def get_table_buttons(self, instance):
-#        """Get buttons to show/hide the three tables of the Additional materials section)"""
+        # This determines the location on the map 
+        self.add_entry('point_x',   'str', 'location__lat_coord')
+        self.add_entry('point_y',   'str', 'location__long_coord')
+        self.add_entry('location_id','str', 'location__id') # is dat nodig? of locatie name?
+        #self.add_entry('soort',     'fk', 'soort', fkfield = "eng" if self.language=="en" else "naam")
 
-#        sBack = ""
-#        lHtml = []
-#        abbr = None
-#        button_list = [
-#            {'label': 'Table_1','id': 'basic_table1_set', 'show': False}, # aanpassen basic_super_set
-#            {'label': 'Table_2','id': 'basic_table2_set', 'show': True},
-#            {'label': 'Table_3','id': 'basic_table3_set', 'show': True},
-#            ]
-#        oErr = ErrHandle()
-#        try:
-#            for oButton in button_list:
-#                lHtml.append("<a role='button' class='btn btn-xs jumbo-1' data-toggle='collapse' data-target='#{}' >{}</a>".format(
-#                    oButton['id'], oButton['label']))
-#            sBack = "<span>&nbsp;</span>".join(lHtml)
-#        except:
-#            msg = oErr.get_error_message()
-#            oErr.DoError("Table1/get_hc_buttons") # ??
+        # Get a version of the current listview TH: hier gaat het mis volgens mij, er is geen current listview, 
+        # via adaptations.py in stalla maar wat gebeurt daar?
+        lv = PortraitListView() 
+        lv.initializations() # specifieke initialisaties vnaportrait listview
+        #lv.language = self.language
+        qs = lv.get_queryset(self.request) # 
+        self.qs = qs.exclude(Q(location__long_coord__isnull=True))
+        # Also get the parameters
+        self.param_list = lv.param_list
+        usersearch_id = lv.usersearch_id
+        
+    def get_popup(self, dialect):
+        """Create a popup from the 'key' values defined in [initialize()]"""
 
-#        return sBack
+        pop_up = '<p class="h6">{}</p>'.format(dialect['origstr'])
+        pop_up += '<hr style="border: 1px solid green" />'
+        pop_up += '<p style="font-size: medium;"><span style="color: purple;">{}</span> </p>'.format(dialect['findspot'])
+        return pop_up
+
+    def get_group_popup(self, oPoint):
+        """Create a popup from the 'key' values defined in [initialize()]"""
+
+        # Figure out what the link would be to this list of items
+        params = ""
+        if self.param_list != None:
+            params = "&{}".format( "&".join(self.param_list))
+        url = "{}?{}-location={}{}".format(reverse('portrait_list'), self.prefix, oPoint['locid'], params)
+        # Create the popup
+        pop_up = '<p class="h4">{}</p>'.format(oPoint['findspot'])
+        pop_up += '<hr style="border: 1px solid green" />'
+        popup_title_1 = _("Show")
+        popup_title_2 = _("objects in the list")
+        pop_up += '<p style="font-size: large;"><a href="{}" title="{} {} {}"><span style="color: purple;">{}</span> in: {}</a></p>'.format(
+            url, popup_title_1, oPoint['count'],popup_title_2, oPoint['count'], oPoint['findspot'])
+        return pop_up
+
+    def group_entries(self, lst_this):
+        """Allow changing the list of entries TH: AANPASSEN"""
+
+        oErr = ErrHandle()
+        exclude_fields = ['point', 'point_x', 'point_y', 'pop_up', 'locatie', 'country', 'city']
+        try:
+            # We need to create a new list, based on the 'point' parameter TH aanpassen !! HIER VERDER
+            set_point = {}
+            for oEntry in lst_this:
+                point = oEntry['point']
+                if not point in set_point:
+                    # Create a new entry 
+                    set_point[point] = dict(count=0, items=[], point=point, 
+                                            trefwoord=oEntry['findspot'],
+                                            #locatie=oEntry['locatie'],
+                                            locid=oEntry['location_id'],
+                                            #country=oEntry['country'],
+                                            findspot=oEntry['findspot']
+                                            )
+                # Retrieve the item from the set
+                oPoint = set_point[point]
+                # Add this entry
+                oPoint['count'] += 1
+                oItem = {}
+                for k,v in oEntry.items():
+                    if not k in exclude_fields:
+                        oItem[k] = v
+                oPoint['items'].append(oItem)
+
+            # Review them again
+            lst_back = []
+            for point, oEntry in set_point.items():
+                # Create the popup
+                oEntry['pop_up'] = self.get_group_popup(oEntry)
+                # Add it to the list we return
+                lst_back.append(oEntry)
+
+            total_count = len(lst_back)
+            # Return the new list TH hierna mis
+            lst_this = copy.copy(lst_back)
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("group_entries")
+
+        return lst_this

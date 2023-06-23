@@ -1082,7 +1082,18 @@ class BasicList(ListView):
 
     def get_queryset(self, request = None):
 
-        if request == None: request = self.request
+        if request == None: 
+            request = self.request
+        
+        # Get the parameters passed on with the GET or the POST request
+        if self.qd == None:
+            # Get the parameters passed on with the GET or the POST request
+            get = request.GET if request.method == "GET" else request.POST
+            get = get.copy()
+            self.qd = get
+        # Now make use of these
+        #get = self.qd
+
         ## Get the parameters passed on with the GET or the POST request
         #get = request.GET if request.method == "GET" else request.POST
         #get = get.copy()
@@ -1090,7 +1101,7 @@ class BasicList(ListView):
         #self.qd = get
         get = self.qd
 
-        # Immediately take care of the rangeslider stuff
+        # Immediately take care of the rangeslider stuff TH hier mis, iets met items
         lst_remove = []
         for k,v in self.qd.items():
             if "-rangeslider" in k: lst_remove.append(k)
