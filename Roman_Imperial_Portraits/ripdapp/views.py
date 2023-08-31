@@ -170,6 +170,49 @@ def links(request):
     return render(request, template_name, context)
 
 
+def update_from_excel_photofolder(request):
+    """Add the id's of the photo folder to the Portrait table"""
+    
+    # Can only be done by a super-user
+    if request.user.is_superuser:
+        pass
+
+    data_photo = os.path.abspath(os.path.join(MEDIA_DIR, 'database.xlsx'))
+    df = pd.read_excel(data_photo, engine='openpyxl')
+
+    # Replaces NaN with empty: ""
+    df = df.fillna('')  
+
+    # Iterate over all rows in the data frame
+    for index, row in df.iterrows():
+        #print(row['ID'], row['Name'], row['PHOTO_ID'])
+        
+        orig = row['ID']
+        name = row['Name']
+        folder = row['PHOTO_ID']
+
+        # verder?? zie update_cur_loc_coord_excel
+
+        # eerst kopie van db maken, had ik eerder aan moeten denken voor ik met die foto's ging klooien...
+
+        # Now alle fields from each record can be stored
+
+        # Create a new portrait (if there is a new one!) 
+        port_obj = Portrait.objects.filter(origstr=orig).first()
+        if port_obj == None:
+            # Now we can create a completely fresh portrait 
+            port_obj = Portrait.objects.create() 
+            port_obj.origstr = orig
+        
+        port_obj.folder = folder
+        print(orig, name, folder)
+        # Save the results
+        port_obj.save()
+    
+    # What we return is simply the home page
+    return redirect('home')
+
+
 def update_from_excel_coordinates(request): # OK misschien niet nodig, wellicht handiger om het vanuit de grote import te doen, 
     #daar is de findspot met de coordinates al geregeld
     """Check if contents can be updated from the MEDIA excel file"""
@@ -185,9 +228,7 @@ def update_from_excel_coordinates(request): # OK misschien niet nodig, wellicht 
     df = pd.read_excel(data_coord, engine='openpyxl')
 
     # Replaces NaN with empty: ""
-    df = df.fillna('')  
-
-  
+    df = df.fillna('')   
     
     # What we return is simply the home page
     return redirect('home')
@@ -759,7 +800,8 @@ def update_from_excel(request):
             port_obj.origstr = orig
         
         # Store range of fields in Portrait table    
-        # Maybe add folder of the photo's
+        # Maybe add folder of the photo's TH: hey goed idee! 
+        # Tja, het idee was natuurlijk om alles nog een keer opnieuw in te lezen...
         port_obj.name = name
         port_obj.startdate = start
         port_obj.enddate = end

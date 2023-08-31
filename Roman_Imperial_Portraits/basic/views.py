@@ -769,9 +769,9 @@ class BasicList(ListView):
             if self.use_team_group:
                 frm = self.listform(initial, prefix=self.prefix, username=self.request.user.username, team_group=app_editor, userplus=app_userplus)
             else:
-                frm = self.listform(initial, prefix=self.prefix)
-            if frm.is_valid():
-                context['{}Form'.format(self.prefix)] = frm
+                frm = self.listform(initial, prefix=self.prefix) # klopt het met de prefix?
+            if frm.is_valid(): # Hier is het mis bij Path, niet bij Photographer
+                context['{}Form'.format(self.prefix)] = frm # bij Photographer komt er een lijst met namen mee hover context bij Path ook in de context maar 
                 # Get any possible typeahead parameters
                 lst_form_ta = getattr(frm, "typeaheads", None)
                 if lst_form_ta != None:
@@ -950,12 +950,17 @@ class BasicList(ListView):
         # Get help for filtering
         context['filterhelp_contents'] = self.get_filterhelp()
 
-        # Check if user may upload
+        # Check if user may upload TH: hier eea aanpassen?
         context['is_authenticated'] = user_is_authenticated(self.request) or self.authenticated
         context['authenticated'] = context['is_authenticated'] 
-        context['is_app_uploader'] = user_is_ingroup(self.request, app_uploader)
-        context['is_app_editor'] = user_is_ingroup(self.request, app_editor)
-        context['is_app_userplus'] = user_is_ingroup(self.request, app_userplus)
+        #context['is_app_uploader'] = user_is_ingroup(self.request, app_uploader)
+        #context['is_app_editor'] = user_is_ingroup(self.request, app_editor)
+        #context['is_app_userplus'] = user_is_ingroup(self.request, app_userplus)
+
+        context['is_app_uploader'] = user_is_superuser(self.request)
+        context['is_app_editor'] = user_is_superuser(self.request)
+        context['is_app_userplus'] = user_is_superuser(self.request)
+        
         context['is_app_moderator'] = user_is_superuser(self.request) or user_is_ingroup(self.request, app_moderator)
 
         # Process this visit and get the new breadcrumbs object
@@ -1512,11 +1517,16 @@ class BasicDetails(DetailView):
         oErr = ErrHandle()
 
         # Check this user: is he allowed to UPLOAD data?
-        context['authenticated'] = user_is_authenticated(self.request) or self.authenticated
-        context['is_app_uploader'] = user_is_ingroup(self.request, app_uploader)
-        context['is_app_editor'] = user_is_ingroup(self.request, app_editor)
-        context['is_app_userplus'] = user_is_ingroup(self.request, app_userplus)
-        context['is_app_moderator'] = user_is_superuser(self.request) or user_is_ingroup(self.request, app_moderator)
+        context['authenticated'] = user_is_authenticated(self.request) or self.authenticated # True
+        #context['is_app_uploader'] = user_is_ingroup(self.request, app_uploader) # False
+        #context['is_app_editor'] = user_is_ingroup(self.request, app_editor) # False
+        #context['is_app_userplus'] = user_is_ingroup(self.request, app_userplus) # False
+
+        context['is_app_uploader'] = user_is_superuser(self.request) # user_is_ingroup(self.request, app_uploader) # False
+        context['is_app_editor'] = user_is_superuser(self.request) # user_is_ingroup(self.request, app_editor) # False
+        context['is_app_userplus'] = user_is_superuser(self.request) # user_is_ingroup(self.request, app_userplus) # False
+
+        context['is_app_moderator'] = user_is_superuser(self.request) or user_is_ingroup(self.request, app_moderator) # TH ja
         # context['prevpage'] = get_previous_page(self.request) # self.previous
         context['afternewurl'] = ""
 

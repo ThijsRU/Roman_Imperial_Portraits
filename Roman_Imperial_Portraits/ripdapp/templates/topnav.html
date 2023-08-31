@@ -43,6 +43,12 @@
               <li><a href="{% url 'signup' %}">Sign up</a></li>
             {% endif %}
             {% if user.is_superuser %}
+              <li role="separator" class="divider"></li> 
+              <li><a href="{% url 'tools_update_photofolder' %}">Photo folder update</a></li>              
+              <li role="separator" class="divider"></li> 
+              <li><a href="{% url 'photographer_list' %}">Photographers</a></li>              
+              <li role="separator" class="divider"></li> 
+              <li><a href="{% url 'path_list' %}">Photos</a></li>
               <li role="separator" class="divider"></li>              
               <li><a href="{% url 'tools_update' %}">Update from Excel</a></li>
               <li role="separator" class="divider"></li>

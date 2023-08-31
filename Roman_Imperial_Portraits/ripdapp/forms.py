@@ -54,6 +54,28 @@ class NameWidget(ModelSelect2MultipleWidget):
         qs = Portrait.objects.all().order_by('name').distinct()
         return qs
 
+class PortraitOneWidget(ModelSelect2Widget):
+    model = Portrait
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Portrait.objects.all().order_by('name').distinct()
+        return qs
+
+class PhotographerOneWidget(ModelSelect2Widget):
+    model = Photographer
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):
+        qs = Photographer.objects.all().order_by('name').distinct()
+        return qs
+
 class EmperorWidget(ModelSelect2MultipleWidget):
     model = Emperor
     search_fields = [ 'name__icontains' ]
@@ -69,7 +91,7 @@ class MaterialWidget(ModelSelect2MultipleWidget):
     model = Material
     search_fields = [ 'name__icontains' ]
    
-    def label_from_instance(self, obj): # is er een self? werkt niet zoals bij Passim
+    def label_from_instance(self, obj): 
         return obj.name
 
     def get_queryset(self): # werkt niet       
@@ -87,8 +109,6 @@ class ProvinceWidget(ModelSelect2MultipleWidget):
         qs = Province.objects.all().order_by('name')     
         return qs
 
-# Wanneer current location erin staat:
-
 class AncientLocationWidget(ModelSelect2MultipleWidget):
     model = Location 
     search_fields = [ 'name__icontains' ]
@@ -99,7 +119,6 @@ class AncientLocationWidget(ModelSelect2MultipleWidget):
     def get_queryset(self):
         qs = Location.objects.all().order_by('name')    
         return qs
-
 
 class CurrentLocationWidget(ModelSelect2MultipleWidget):
     model = CurrentLocation 
@@ -178,11 +197,252 @@ class ReferencesWidget(ModelSelect2MultipleWidget):
         qs = Portrait.objects.exclude(reference__exact='').order_by('reference')      
         return qs
 
+# Model PathPhoto:
+#class PhotoNameWidget(ModelSelect2MultipleWidget):
+#    model = Path
+#    search_fields = [ 'path__icontains' ]
+   
+#    def label_from_instance(self, obj): # HIER moet wat aangepast worden, kan dat? HEbben we de name nodig??
+#        return obj.folder
+
+#    def get_queryset(self):
+#        qs = Path.objects.all().order_by('folder').distinct()
+#        return qs
+
+class FolderWidget(ModelSelect2MultipleWidget):
+    model = Path
+    search_fields = [ 'folder__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.folder
+
+    def get_queryset(self):
+        qs = Path.objects.all().order_by('folder').distinct()
+        return qs
+
+class PathIDWidget(ModelSelect2MultipleWidget):
+    model = Path
+    search_fields = [ 'id__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.id
+
+    def get_queryset(self):
+        qs = Path.objects.all().order_by('id').distinct()
+        return qs
+
+class PathWidget(ModelSelect2MultipleWidget):
+    model = Path
+    search_fields = [ 'path__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.path
+
+    def get_queryset(self):
+        qs = Path.objects.all().order_by('path').distinct()
+        return qs
+
+
+
+
+# Model Photographer:
+
+class PhotographerWidget(ModelSelect2MultipleWidget):
+    model = Photographer
+    search_fields = [ 'name__icontains' ]
+   
+    def label_from_instance(self, obj): 
+        return obj.name
+
+    def get_queryset(self):        
+        qs = Photographer.objects.all().order_by('name')        
+        return qs
+
+
+class PhotographerForm(forms.ModelForm):
+    """One form to handle the Photographer searching and details view""" 
+
+    phgrname = forms.CharField(label="Photographer", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching photographer input-sm', 'placeholder': 'Name of the photographer...',  'style': 'width: 77%;'}))
+    
+    phgrlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=PhotographerWidget(attrs={'data-placeholder': 'Select multiple photographers...', 'style': 'width: 77%;', 'class': 'searching'}))
+    
+    class Meta:
+        ATTRS_FOR_FORMS = {'class': 'form-control'};
+
+        model = Photographer
+        fields = ['id', 'name'] 
+        widgets={'name': forms.TextInput(attrs={'placeholder': 'Name of the Photographer...', 'style': 'width: 77%;', 'class': 'searching'}),
+                 'id':   forms.TextInput(attrs={'placeholder': 'Id of the photographer...', 'style': 'width: 100%;'}),                  
+                 }
+
+    def __init__(self, *args, **kwargs):
+        # Start by executing the standard handling
+        super(PhotographerForm, self).__init__(*args, **kwargs)
+        oErr = ErrHandle()
+        try:
+            # Set other parameters            
+            #self.fields['id'].required = False #gaat mis
+            self.fields['name'].required = False # gaat goed            
+            self.fields['phgrlist'].queryset = Photographer.objects.all().order_by('id') # gaat ook goed
+               
+            # Get the instance, moet ik hier meer mee doen?
+            if 'instance' in kwargs:
+                instance = kwargs['instance']                            
+                
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("PhotographerForm")
+
+        # Return the response
+        return None
+
+# AANPASSEN!!!
+
+class PhotoPathForm(forms.ModelForm):
+    """One form to handle the PhotoPath searching and details view""" 
+
+    name = forms.CharField(label="Photo name", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the photo...',  'style': 'width: 100%;'}))
+
+    photoname = forms.CharField(label="Photo name", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the photo...',  'style': 'width: 100%;'}))
+
+    photo_path = forms.CharField(label="Photo path", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the path...',  'style': 'width: 100%;'}))
+    
+    origstr = forms.CharField(label="RIPD id", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching photographer input-sm', 'placeholder': 'ID of the path...',  'style': 'width: 77%;'}))
+        
+    pathid = forms.CharField(label="Path ID", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching photographer input-sm', 'placeholder': 'ID of the path...',  'style': 'width: 77%;'}))
+
+    phidlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=PathIDWidget(attrs={'data-placeholder': 'Select multiple photographers...', 'style': 'width: 77%;', 'class': 'searching'}))
+       
+    #phnamelist = ModelMultipleChoiceField(queryset=None, required=False, 
+    #                                widget=PhotoNameWidget(attrs={'data-placeholder': 'Select multiple names of photos...', 'style': 'width: 77%;', 'class': 'searching'}))
+
+    pathname = forms.CharField(label="Path name", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching photographer input-sm', 'placeholder': 'Path of the photo...',  'style': 'width: 77%;'}))
+
+    phpathlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=PathWidget(attrs={'data-placeholder': 'Select multiple paths of photos...', 'style': 'width: 77%;', 'class': 'searching'}))
+
+    folder = forms.CharField(label="Folder of the photo", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching photographer input-sm', 'placeholder': 'Number of the folder...',  'style': 'width: 77%;'}))
+
+    phfolderlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                                widget=FolderWidget(attrs={'data-placeholder': 'Select multiple photo folder...', 'style': 'width: 77%;', 'class': 'searching'}))
+
+    ## Portrait part
+    origidlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 77%;', 'class': 'searching'})) 
+
+    namelist  = ModelMultipleChoiceField(queryset=None, required=False, 
+                widget=NameWidget(attrs={'data-placeholder': 'Select location, museum and number...', 'style': 'width: 77%;', 'class': 'searching'}))
+       
+    ## Photographer part
+    phgrname = forms.CharField(label="Photographer", required=False, 
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching photographer input-sm', 'placeholder': 'Name of the photographer...',  'style': 'width: 77%;'}))
+    
+    phgrlist = ModelMultipleChoiceField(queryset=None, required=False, 
+                               widget=PhotographerWidget(attrs={'data-placeholder': 'Select multiple photographers...', 'style': 'width: 77%;', 'class': 'searching'}))
+
+    # =========== PhotoPath-specific ===========================
+
+    class Meta:
+        ATTRS_FOR_FORMS = {'class': 'form-control'};
+
+        model = Path
+        fields = ['id', 'path'] # , 'folder'
+        widgets={'id':   forms.TextInput(attrs={'placeholder': 'Id of the photo/path...', 'style': 'width: 77%;'}),                  
+                 'path':  forms.TextInput(attrs={'placeholder': 'Path of the photo...', 'style': 'width: 77%;'}),                  
+                 'folder': forms.TextInput(attrs={'placeholder': 'Folder of the photo...', 'style': 'width: 77%;'}),                  
+                 }
+
+    def __init__(self, *args, **kwargs):
+        # Start by executing the standard handling
+        super(PhotoPathForm, self).__init__(*args, **kwargs)
+        oErr = ErrHandle()
+        try:
+            # Set other parameters              
+            self.fields['path'].required = False #gaat mis ok dit is ook die regel, en waarom gaat het mis?
+                        
+            # Path
+            self.fields['phpathlist'].queryset = Path.objects.all().order_by('id')   # wordt niks opgepikt         
+            self.fields['phidlist'].queryset = Path.objects.all().order_by('id')   # wordt niks opgepikt         
+            self.fields['phfolderlist'].queryset = Path.objects.all().order_by('folder')
+            
+            # Portrait
+            self.fields['origidlist'].queryset = Portrait.objects.all().order_by('origstr')
+            self.fields['namelist'].queryset = Portrait.objects.all().order_by('name')            
+            
+            # Photographer
+            self.fields['phgrlist'].queryset = Photographer.objects.all().order_by('name')
+
+            # Get the instance, moet ik hier meer mee doen?
+            if 'instance' in kwargs:
+                instance = kwargs['instance']                            
+                
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("PhotoPathForm")
+
+        # Return the response
+        return None
+
+
+class AddPhotoForm(forms.ModelForm):
+    # Field to upload a file with the picture
+    picfile = forms.FileField(label="Select the picture file to be uploaded", required=False,
+                              widget=forms.ClearableFileInput(attrs={'multiple': False}))
+    
+    class Meta:
+        ATTRS_FOR_FORMS = {'class': 'form-control'};
+
+        model = Path
+        fields = ['id', 'portrait', 'photographer'] # , 'folder'
+        widgets={'id':   forms.TextInput(attrs={'placeholder': 'Id of the photo/path...', 'style': 'width: 77%;'}),   
+                 'portrait': PortraitOneWidget(attrs={'data-placeholder': 'Select a portrait...', 'style': 'width: 77%;', 'class': 'searching'}),
+                 'photographer': PhotographerOneWidget(attrs={'data-placeholder': 'Select a photographer...', 'style': 'width: 77%;', 'class': 'searching'}),
+                 # folder?
+                 }
+
+    def __init__(self, *args, **kwargs):
+        # Start by executing the standard handling
+        super(AddPhotoForm, self).__init__(*args, **kwargs)
+        oErr = ErrHandle()
+        try:
+
+            self.fields['portrait'].required = False
+            self.fields['photographer'].required = False
+
+            #self.fields['folder'].required = False
+
+            # Get the instance, moet ik hier meer mee doen?
+            if 'instance' in kwargs:
+                instance = kwargs['instance']   
+
+                self.fields['portrait'].initial = instance.portrait
+                self.fields['portrait'].queryset = Portrait.objects.filter(id=instance.portrait.id)
+
+                #self.fields['folder'].queryset = Portrait.objects.filter(id=instance.portrait.id)
+                
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("AddPhotoForm")
+
+        # Return the response
+        return None
+
+  
 class PortraitForm(forms.ModelForm):
     """One form to handle the Portrait searching and details view"""  
     
     origidlist = ModelMultipleChoiceField(queryset=None, required=False, 
-                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 100%;', 'class': 'searching'})) 
+                               widget=OrigIDWidget(attrs={'data-placeholder': 'Select multiple original ids...', 'style': 'width: 77%;', 'class': 'searching'})) 
 
     empname = forms.CharField(label="Emperor", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 77%;'}))
@@ -218,17 +478,20 @@ class PortraitForm(forms.ModelForm):
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))    
     photo_folder = forms.CharField(label="Height", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    
     photographer = forms.CharField(label="Height", required=False, 
-                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+                             widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the photographer...',  'style': 'width: 100%;'}))
+    
     photo_path = forms.CharField(label="Height", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
+    
     recarvedstatue = forms.CharField(label="Height", required=False, 
                              widget=forms.TextInput(attrs={'class': 'typeahead searching emperor input-sm', 'placeholder': 'Name of the emperor...',  'style': 'width: 100%;'}))
 
     #####
 
     namelist  = ModelMultipleChoiceField(queryset=None, required=False, 
-                widget=NameWidget(attrs={'data-placeholder': 'Select location, museum and number...', 'style': 'width: 100%;', 'class': 'searching'}))
+                widget=NameWidget(attrs={'data-placeholder': 'Select location, museum and number...', 'style': 'width: 77%;', 'class': 'searching'}))
    
     emplist = ModelMultipleChoiceField(queryset=None, required=False, 
               widget=EmperorWidget(attrs={'data-placeholder': 'Select multiple emperors...', 'style': 'width: 77%;', 'class': 'searching'}))
@@ -269,6 +532,10 @@ class PortraitForm(forms.ModelForm):
     arachid = forms.CharField(label="Arachne", required=False, 
                               widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'Arachne id of the portrait...',  'style': 'width: 100%;'}))
     
+    lsaid = forms.CharField(label="LSA", required=False, 
+                              widget=forms.TextInput(attrs={'class': 'typeahead searching arachne input-sm', 'placeholder': 'LSA id of the portrait...',  'style': 'width: 100%;'}))
+    
+
     # Werkt nog niet goed, EK vragen. Sowieso moeten de lege niet getoond worden.
     referenceslist = ModelMultipleChoiceField(queryset=None, required=False, 
               widget=ReferencesWidget(attrs={'data-placeholder': 'Select multiple references...', 'style': 'width: 77%;', 'class': 'searching'}))
@@ -346,8 +613,8 @@ class PortraitForm(forms.ModelForm):
                                                           # range of years, SelectDateWidget? Date Range in Passim?
                  'enddate':          forms.TextInput(attrs={'placeholder': 'Latest possible year...','style': 'width: 20%;'}), 
                  'reference':        forms.TextInput(attrs={'placeholder': 'Reference contains...', 'style': 'width: 100%;'}),                 
-                 'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 100%;'}),
-                 #'arachne':          forms.TextInput(attrs={'placeholder': 'Arachne id of the portrait...', 'style': 'width: 100%;'}), 
+                 'lsa':              forms.TextInput(attrs={'placeholder': 'LSA id of the portrait...', 'style': 'width: 77%;'}),
+                 'arachne':         forms.TextInput(attrs={'placeholder': 'Arachne id of the portrait...', 'style': 'width: 100%;'}), 
                  } 
 
     def __init__(self, *args, **kwargs):

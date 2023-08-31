@@ -40,7 +40,8 @@ urlpatterns = [
     url(r'^about$', ripdapp.views.about, name='about'),
     url(r'^references$', ripdapp.views.references, name='references'),
     url(r'^links$', ripdapp.views.links, name='links'),    
-    url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'), 
+    url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'),
+    url(r'^tools/update_photofolders$', ripdapp.views.update_from_excel_photofolder, name='tools_update_photofolder'),
     url(r'^tools/update_coordinates$', ripdapp.views.update_from_excel_coordinates, name='tools_update_coordinates'), 
     url(r'^tools/update_currlocs$', ripdapp.views.update_cur_loc_coord_excel, name='tools_update_cur_loc_coord_excel'), 
     url(r'^tools/update_table1$', ripdapp.views.update_from_excel_table1, name='tools_update_table1'),  
@@ -52,6 +53,18 @@ urlpatterns = [
     url(r'^portrait/edit(?:/(?P<pk>\d+))?/$', PortraitEdit.as_view(), name='portrait_edit'),
 
     url(r'^portrait/map/', csrf_exempt(PortraitMapView.as_view()), name='portrait_map'),
+
+    url(r'^photographer/list', PhotographerListView.as_view(), name='photographer_list'),
+    url(r'^photographer/details(?:/(?P<pk>\d+))?/$', PhotographerDetails.as_view(), name='photographer_details'),
+    url(r'^photographer/edit(?:/(?P<pk>\d+))?/$', PhotographerEdit.as_view(), name='photographer_edit'),
+
+    url(r'^photopath/list', PhotoPathListView.as_view(), name='path_list'),
+    url(r'^photopath/details(?:/(?P<pk>\d+))?/$', PhotoPathDetails.as_view(), name='path_details'),
+    url(r'^photopath/edit(?:/(?P<pk>\d+))?/$', PhotoPathEdit.as_view(), name='path_edit'),
+    url(r'^photo/add/details(?:/(?P<pk>\d+))?/$', AddPhotoDetails.as_view(), name='addphoto_details'),
+    url(r'^photo/add/edit(?:/(?P<pk>\d+))?/$', AddPhotoEdit.as_view(), name='addphoto_edit'),
+
+    
 
     # Definitions are kind of separate
     url(r'^definitions$', RedirectView.as_view(url='/'+pfx+'admin/'), name='definitions'),
@@ -76,7 +89,8 @@ urlpatterns = [
     # Enable the admin:
     url(r'^admin/', admin.site.urls, name='admin_base'),
 
-    # For working with ModelWidgets from the select2 package https://django-select2.readthedocs.io    url(r'^select2/', include('django_select2.urls')),
+    # For working with ModelWidgets from the select2 package https://django-select2.readthedocs.io
+    url(r'^select2/', include('django_select2.urls')),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # for showing pictures in Browse

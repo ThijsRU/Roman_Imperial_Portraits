@@ -181,6 +181,8 @@ class Portrait(models.Model):
     group_reference = models.TextField("Reference statue group", blank=True, null=True)       
     # [0-1] The reason for dating of each portrait
     reason_date = models.TextField("Reason dating", blank=True, null=True)
+    # [1] Number of the photo folder belonging to the portrait TH: C:\Users\u329244\source\repos\writable\media\pictures
+    folder = models.IntegerField("Folder images", blank=True, null=True) #TH: dit kan toch via via worden opgevraagd?
 
     # [0-1] The id of the location where the portrait was found
     location = models.ForeignKey(Location, null=True, blank=True, on_delete = models.CASCADE, related_name="portrait_location")
@@ -745,11 +747,20 @@ class Portrait(models.Model):
 
     def get_photopath(self):
         lHtml = []
-        # Visit all photo items (no tiffs)      
-        for item in self.path_portrait.all().order_by('folder'):    
-            # Add path to list
-            lHtml.append("<img src='/{}' style='max-width: 150px; width: auto; height: auto;'/>".format(item.path))
-        sBack = "\n".join(lHtml)
+        # Visit the first photo path
+        path1 = self.path_portrait.first()
+        # Only move forward if there is a path (and thus picture)
+        if path1 != None:
+            # Visit all photo items (no tiffs)      
+            for item in self.path_portrait.all().order_by('folder'):    
+               # Add path to list
+                lHtml.append("<img src='/{}' style='max-width: 150px; width: auto; height: auto;'/>".format(item.path))
+            sBack = "\n".join(lHtml)
+        
+        else:
+        # No photoavailable: 
+            lHtml.append("No photo available")
+            sBack = "\n".join(lHtml)
         return sBack
            
     def get_photographer(self):
@@ -941,15 +952,80 @@ class Path(models.Model):
     folder = models.IntegerField("Folder name", null=True) 
     # [0-1] The id of the photographer that made the photo (at the end of the path) ERUIT!
     photographer = models.ForeignKey(Photographer, null=True, blank=True, on_delete = models.CASCADE, related_name="path_photographer")
+
+    # [1] The field for the upload a a photo
+    # image_portrait = models.FileField("Images portrait", null=True, blank=True, upload_to = add_image_portrait_path) # functie dat dit regelt zie passim
     
     def __str__(self):
-        return self.path
+        return self.path   # zou er hier een fout zitten? in de namen van de paths?
+        #print(self.path)
 
-# Add class PathPhotographer(models.Model): KAN WEG, dit niet nodig denk ik
-    # [1] The portrait item
-    # path = models.ForeignKey(Path, on_delete = models.CASCADE, related_name= "path_photographer")
-    # [1] The photographer item
-    # photographer = models.ForeignKey(Photographer, on_delete = models.CASCADE, related_name = "path_photographer")
+    def get_folder(self):
+        sBack = "-"
+        if not self.folder is None and self.folder != "":
+            sBack = "{}".format(self.folder)
+        return sBack
+
+    def get_name_photo(self): # gaat het hier mis? 
+        lHtml = []
+        # Find the path where the photo is
+        if self.path:
+            full_path = self.path
+            # Get rid of the 
+            print(full_path)
+            # Get rid of the stuff before the last slash
+            a,b,c,d = full_path.split("/")
+            image_name = d
+            lHtml.append(image_name)
+            sBack = ", ".join(lHtml)
+        else:            
+            lHtml.append("test")
+            sBack = "".join(lHtml)
+        return sBack
+
+    def get_photographer(self):
+        sBack = "-"
+        if not self.photographer is None:
+            sBack = "{}".format(self.photographer.name)
+        return sBack
+
+    def get_photopath_edit(self):
+        lHtml = []
+        # Find the path where the photo is TH: if statement? 
+        if self.path:
+            photo = self.path
+            # Add the path to the html
+            lHtml.append("<img src='/{}' style='max-width: 200px; width: auto; height: auto;'/>".format(photo)) 
+            sBack = "\n".join(lHtml)
+        return sBack
+
+    def get_portrait(self):
+        sBack = "-"
+        if not self.portrait is None:
+            sBack = "{}".format(self.portrait.name)
+        return sBack
+
+
+
+# Hier moet de functie komen vanuit Path
+
+# def add_image_portrait_path(instance, filename):
+#"""Upload image file to the folder of the corresponding portrait"""
+#    
+#    This function is used within the model SermonDescr
+#    NOTE: this must be the relative path w.r.t. MEDIA_ROOT
+#    
+
+#    oErr = ErrHandle()
+#    sBack = ""
+
+
+
+# instance.portrait.folder # Ik zie dat er geen link is tussen folder en portrait, alleen voor de bestaande folders. Check de dataset van Sam. Laatste versie.
+# in de database toevoegen in portrait PHOTO_ID is de naam van de folder, in folder zetten in model Portrait
+
+
+
 
        
 # Here are the tables that link two tables with eachother

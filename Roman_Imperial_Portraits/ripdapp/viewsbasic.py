@@ -24,12 +24,390 @@ from mapview.views import MapView
 #from ripdapp.adaptations import listview_adaptation
 
 # RIPD: forms and models
-from ripdapp.forms import SignUpForm, PortraitForm
+from ripdapp.forms import SignUpForm, PortraitForm, PhotographerForm, PhotoPathForm, AddPhotoForm
 from ripdapp.models import Portrait, Emperor, Context, Location, Province, Material, PortraitMaterial, Arachne, \
     Wreathcrown, PortraitWreathcrown, Iconography, PortraitIconography, Path, Photographer, Information, Table_1, Table_2, Table_3 
 
-from Roman_Imperial_Portraits.settings import PICTURES_DIR
+from Roman_Imperial_Portraits.settings import PICTURES_DIR, MEDIA_DIR
 
+
+class PhotographerEdit(BasicDetails):
+    """The details of one photographer"""
+
+    model = Photographer
+    mForm = PhotographerForm
+    prefix = 'phgr'
+    title = "Photographer"
+    title_sg = "Photographer"
+    rtype = "json"
+    history_button = False 
+    mainitems = []
+
+    def add_to_context(self, context, instance):
+        """Add to the existing context"""
+
+        # Define the main items to show and edit
+        context['mainitems'] = [
+            {'type': 'plain', 'label': "Name:", 'value': instance.name,  'field_key': 'name'}, # en niet phgrname! dit verwijst naar de database, niet het voor de listview
+            ]
+
+        # Signal that we have select2
+        context['has_select2'] = True
+
+        context['after_details'] = render_to_string("ripdapp/photographer_add_photo.html", context, self.request)
+
+        # Return the context we have made
+        return context
+
+
+class PhotographerDetails(PhotographerEdit):
+    """Like PhotographerEdit, but then html output"""
+    rtype = "html"
+
+    
+class PhotographerListView(BasicList):
+    """Search and list Photographers"""
+
+    model = Photographer
+    listform = PhotographerForm
+    prefix = "phgr"
+    has_select2 = True
+    sg_name = "Photographer"
+    plural_name = "Photographers"
+    new_button = True  # Allow adding new photographers
+    order_cols = ['id', 'name']   
+    order_default = order_cols
+    order_heads = [
+        {'name': 'ID',   'order': 'o=1', 'type': 'int', 'field': 'id',   'linkdetails': True},
+        {'name': 'Name', 'order': 'o=2', 'type': 'str', 'field': 'name', 'linkdetails': True, 'main': True},
+        ]
+
+    filter_sections = [
+            {"id": "main",     "section": ""},
+            {"id": "identity", "section": _("Identity")},
+            ]
+    filters = [             
+            #{"name": _("Photographer id"), "id": "filter_id",   "enabled": False, "section": "identity", "show": "none"}, 
+            {"name": _("Name"), "id": "filter_name", "enabled": False, "section": "identity", "show": "none"},
+            ]
+
+    searches = [
+        {'section': '', 'filterlist': [
+            #{'filter': 'id',   'dbfield': 'id',   'keyList': 'phgridlist'},
+            {'filter': 'name', 'dbfield': 'name', 'keyList': 'phgrlist'},
+            ]},
+        ]
+
+    def add_to_context(self, context, initial):
+        oErr = ErrHandle()
+        try:
+
+            filtercount = 0
+            for oItem in self.filters:
+                if oItem['enabled']:
+                    filtercount += 1
+            context['filtercount'] = filtercount
+            for section in self.filter_sections:
+                section['enabled'] = False
+                # See if this needs enabling
+                for oItem in self.filters:
+                    if oItem['section'] == section['id'] and oItem['enabled']:
+                        section['enabled'] = True
+                        break
+            context['filter_sections'] = self.filter_sections
+
+            # Possibly take over generic_search
+            context['generic_search'] = self.qd.get("wer-generic", "")
+                        
+            # Add a user_button definition
+            context['mode'] = "list"
+            context['no_result_count'] = True
+            context['authenticated'] = True
+
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("PortraitListView/add_to_context")
+
+        return context
+
+    def custom_init(self):
+        # Check and set the authentication if needed
+        auth = Information.get_kvalue("authenticated")
+        if auth.lower() in ['true', 'ok', 'set']:
+            self.authenticated = True
+        return None
+
+
+class AddPhotoEdit(BasicDetails):
+    """The view to add a new photo to photographer and portrait"""
+    model = Path
+    mForm = AddPhotoForm #?
+    prefix = 'add'
+    title = "Photo add"
+    title_sg = "Photo add"
+    rtype = "json"
+    basic_name = "addphoto"
+    prefix_type = "simple"      # In order to recognize add-portrait
+    history_button = False 
+    listview = None
+    mainitems = []
+
+    def custom_init(self, instance):
+        self.listview = reverse('path_list')
+        return None
+
+    def add_to_context(self, context, instance):
+        """Add to the existing context"""
+
+        # Define the main items to show and edit
+        context['mainitems'] = [
+            {'type': 'plain', 'label': "Photographer: ",    'value': instance.get_photographer(),   'field_key': 'photographer'},
+            {'type': 'plain', 'label': "Portrait: ",        'value': instance.get_portrait(),       'field_key': 'portrait'},  # hebben we dit nodig?
+            {'type': 'plain', 'label': "Upload",            'value': instance.path,                 'field_key': 'picfile'},
+            {'type': 'plain', 'label': "Folder",            'value': instance.get_folder()                                } # aan te passen als die folders in portrait staan
+            # Show newly updated photo?
+            ]
+              
+        # Signal that we have select2
+        context['has_select2'] = True
+
+        # Return the context we have made
+        return context
+
+    def after_save(self, form, instance):
+        """Actions to be performed after saving"""
+
+        # Moet ik nog een check toevoegen mbt extensie? Alleen jpg en png mogelijk, rest is eerst om te zetten
+
+        # Create list with acceptable extensions for the images of the portraits
+        #ext_list = ['jpg','jpeg','png','JPG']
+
+        # Voor onderen:
+        # Split the file name up
+        #photo_split_list = item.split(".")                
+        # Get extension part of the name of the image
+        # ext = photo_split_list[-1].lower()                    
+        # Check that the extension of the photograph is in the list 
+        #      if ext in ext_list:  
+
+
+        bResult = True
+        msg = ""
+        oErr = ErrHandle()
+        try:
+            if not instance is None:
+                picfile = form.cleaned_data.get("picfile")
+                # Check if a photographer and a portrait have been determined
+                if not instance.portrait is None and not instance.photographer is None and not picfile is None:
+                    # Determine where the picture is going to be
+                    folder = instance.portrait.folder # ok dit lijkt goed te gaan
+
+                    folder = str(folder)
+
+                    name_pic = picfile.name
+
+                    # Upload and save the picture
+                    server_filename = os.path.abspath(os.path.join(MEDIA_DIR, PICTURES_DIR, folder,name_pic)) # Fill in the server file name here
+
+                    # opslaan
+                    # hoe gaat het saven dan precies?
+                    with open(server_filename, "wb") as fp:
+                        for chunk in picfile.chunks():
+                            fp.write(chunk)
+                        #fp.write(picfile)
+
+                    # Now determine what the 'path' is (everything starting from 'media/...'
+                    path_this = ""
+                    name_pic = picfile.name # hier de naam van het image uit halen
+                
+                    path_temp = os.path.join(PICTURES_DIR, folder, name_pic)
+
+                    #path_temp = os.path.join(path, name_pic)                            
+                    # We do not want to store the full path, only from /media onwards, 
+                    # so path_temp needs to be split up                            
+                    path_temp_split = path_temp.split("writable\\")
+                    # Grab the last part
+                    path_temp = path_temp_split[-1]
+                    # Changes slashes to forward
+                    path_this = path_temp.replace('\\', '/')              
+                            
+                    instance.folder = folder
+                    instance.path = path_this
+                    instance.save()
+
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("AddPhotoEdit/after_save")
+
+        return bResult, msg
+
+
+class AddPhotoDetails(AddPhotoEdit):
+    """Like AddPhotoEdit, but then html output"""
+    rtype = "html"
+
+
+class PhotoPathEdit(BasicDetails):
+    """The details of one photo"""
+
+    model = Path
+    mForm = PhotoPathForm
+    prefix = 'path'
+    title = "Photo"
+    title_sg = "Photo"
+    rtype = "json"
+    history_button = False 
+    mainitems = []
+
+    def add_to_context(self, context, instance):
+        """Add to the existing context"""
+
+        # Define the main items to show and edit
+        context['mainitems'] = [
+            {'type': 'plain', 'label': "Path: ",         'value': instance.path,                 'field_key': 'path'},
+            {'type': 'plain', 'label': "Image: ",        'value': instance.get_name_photo(),     'field_key': 'photoname'},  # hebben we dit nodig?
+            {'type': 'plain', 'label': "Folder: ",       'value': instance.folder,               'field_key': 'folder'}, 
+            {'type': 'plain', 'label': "RIPD id: ",      'value': instance.portrait.origstr,     'field_key': 'origstr'},# gaat niet goed als je een nieuwe photo wil toevoegen hoe gaat dat ook alweer?
+            {'type': 'plain', 'label': "Name: ",         'value': instance.portrait.name,        'field_key': 'name'},
+            {'type': 'plain', 'label': "Photographer: ", 'value': instance.photographer.name,    'field_key': 'name'},
+            {'type': 'plain', 'label': "Photo: ",        'value': instance.get_photopath_edit(), 'field_key': 'photo_path'}, # moet dit met een functu
+            # Hoe de upload doen? in html? zie online voorbeelden, wellicht in basic aanpassen?
+            ]
+              
+        # Signal that we have select2
+        context['has_select2'] = True
+
+        # Return the context we have made
+        return context
+
+class PhotoPathDetails(PhotoPathEdit):
+    """Like PhotographerEdit, but then html output"""
+    rtype = "html"
+
+
+
+class PhotoPathListView(BasicList):
+    """Search and list of Photos"""
+
+    model = Path
+    listform = PhotoPathForm
+    prefix = "path"
+    has_select2 = True
+    sg_name = "Photo"
+    plural_name = "Photos"
+    new_button = True  # Allow adding new photo's
+    order_cols = ['id', 'path', 'folder', 'portrait__origstr', 'photographer__name' ]
+    order_default = order_cols
+    order_heads = [
+        {'name': 'Photo',       'order': '',    'type': 'int', 'custom': 'picture',      'linkdetails': True},
+        {'name': 'ID',          'order': 'o=1', 'type': 'int', 'field':  'id',           'linkdetails': True},
+        {'name': 'Path',        'order': 'o=2', 'type': 'str', 'field':  'path',         'linkdetails': True, 'main': True},
+        {'name': 'Image name',  'order': 'o=3', 'type': 'str', 'custom': 'image_name',   'linkdetails': True, 'main': True},
+        {'name': 'Folder',      'order': 'o=4', 'type': 'int', 'field':  'folder',       'linkdetails': True, 'main': True},
+        {'name': 'Photographer','order': 'o=5', 'type': 'str', 'custom': 'photographer', 'linkdetails': True, 'main': True},
+        {'name': 'RIPD id',     'order': '',    'type': 'str', 'custom': 'ripd_id',      'linkdetails': True, 'main': True},
+        {'name': 'Name',        'order': '',    'type': 'str', 'custom': 'name',         'linkdetails': True, 'main': True},        
+        ]
+
+    filter_sections = [
+            {"id": "main",      "section": ""},            
+            {"id": "identity",  "section": _("Identity")},
+            {"id": "photo",     "section": _("Photo")},            
+            ]
+    filters = [
+            {"name": _("RIPD id"),      "id": "filter_ripdid",      "enabled": False, "section": "identity", "show": "none"},
+            {"name": _("Name"),         "id": "filter_name",        "enabled": False, "section": "identity", "show": "none"},            
+            #{"name": _("Photo id"),     "id": "filter_id",          "enabled": False, "section": "photo", "show": "none"},
+            #{"name": _("Photo name"),   "id": "filter_photoname",   "enabled": False, "section": "photo", "show": "none"},
+            {"name": _("Photo path"),   "id": "filter_photopath",   "enabled": False, "section": "photo", "show": "none"},            
+            {"name": _("Folder"),       "id": "filter_folder",      "enabled": False, "section": "photo", "show": "none"},
+            {"name": _("Photographer"), "id": "filter_photographer","enabled": False, "section": "photo", "show": "none"},            
+            ]
+
+    searches = [
+        {'section': '', 'filterlist': [
+            {'filter': 'ripdid',       'fkfield': 'portrait',     'keyList': 'origidlist','infield': 'origstr'}, # werkt niet
+            {'filter': 'name',         'fkfield': 'portrait',     'keyList': 'namelist',  'infield': 'name'}, # werkt niet
+            #{'filter': 'id',          'dbfield': 'id',           'keyList': 'phidlist' },
+            #{'filter': 'photoname',   'dbfield': 'path',         'keyList': 'phnamelist' }, 
+            {'filter': 'photopath',    'dbfield': 'path',         'keyList': 'phpathlist' },             
+            {'filter': 'folder',       'dbfield': 'folder',       'keyList': 'phfolderlist' }, 
+            {'filter': 'photographer', 'fkfield': 'photographer', 'keyList': 'phgrlist',  'infield': 'name'},    
+            
+            ]},
+        ]
+
+    def add_to_context(self, context, initial):
+        oErr = ErrHandle()
+        try:
+
+            filtercount = 0
+            for oItem in self.filters:
+                if oItem['enabled']:
+                    filtercount += 1
+            context['filtercount'] = filtercount
+            for section in self.filter_sections:
+                section['enabled'] = False
+                # See if this needs enabling
+                for oItem in self.filters:
+                    if oItem['section'] == section['id'] and oItem['enabled']:
+                        section['enabled'] = True
+                        break
+            context['filter_sections'] = self.filter_sections
+
+            # Possibly take over generic_search
+            context['generic_search'] = self.qd.get("wer-generic", "")
+                        
+            # Add a user_button definition
+            context['mode'] = "list"
+            context['no_result_count'] = True
+            context['authenticated'] = True
+
+        except:
+            msg = oErr.get_error_message()
+            oErr.DoError("PortraitListView/add_to_context")
+
+        return context
+    
+    def custom_init(self):
+        # Check and set the authentication if needed
+        auth = Information.get_kvalue("authenticated")
+        if auth.lower() in ['true', 'ok', 'set']:
+            self.authenticated = True
+        return None
+
+    def get_field_value(self, instance, custom):
+        sBack = ""
+        sTitle = ""                       
+        
+        if custom == "picture":            
+            # If there are images available, get the first one            
+            html = []
+            html.append("<img src='/{}' style='max-width: 75px; width: auto; height: auto;'/>".format(instance.path)) 
+            sBack = "\n".join(html)
+        elif custom == "image_name":
+            html = []
+            print(instance.path)
+            image_name = instance.path
+            # Get rid of the stuff before the last slash
+            a,b,c,d = image_name.split("/")
+            image_name = d
+            html.append("<span>{}</span>".format(image_name))  
+            sBack = ", ".join(html)
+        elif custom == "ripd_id":
+            html = []
+            html.append("<span>{}</span>".format(instance.portrait.origstr))  
+            sBack = ", ".join(html)
+        elif custom == "name":
+            html = []
+            html.append("<span>{}</span>".format(instance.portrait.name))  
+            sBack = ", ".join(html)
+        elif custom == "photographer":
+            html = []
+            html.append("<span>{}</span>".format(instance.photographer.name))  
+            sBack = ", ".join(html)        
+        # Return the stuff needed
+        return sBack, sTitle
 
 class PortraitEdit(BasicDetails):
     """The details of one emperor portrait"""
@@ -58,8 +436,8 @@ class PortraitEdit(BasicDetails):
         # Here the most fields and tables related to each portrait are collected 
         # and added to the context, but only when there is data available
         def add_if_available(arThis, type, label, value, field_key):
-            print(label) #to test if the labels and values are ok
-            print(value) 
+            #print(label) #to test if the labels and values are ok
+            #print(value) 
             # TH: hier afvangen wat niet getoond moet worden, is dat alvast te testen?
             
             # Filter out the fields without data
@@ -94,20 +472,23 @@ class PortraitEdit(BasicDetails):
 
         # Define the main items to show        
         context['mainitems'] = [            
-            {'type': 'plain', 'label': "RIPD id: ", 'value': instance.origstr, 'field_key': 'origstr'},
-            {'type': 'plain', 'label': "Emperor: ", 'value': instance.emperor.name, 'field_key': 'empname'},   #get_emperor_markdown()        
-            #{'type': 'plain', 'label': "Emperor: ", 'value': instance.get_emperor_markdown(), 'field_key': 'empname'},   #get_emperor_markdown()        
+            {'type': 'plain', 'label': "RIPD id: ",       'value': instance.origstr,           'field_key': 'origstr'},
+            {'type': 'plain', 'label': "Name: ",          'value': instance.get_name_markdown, 'field_key': 'name'},
+            {'type': 'plain', 'label': "Emperor: ",       'value': instance.emperor.name,      'field_key': 'empname'}, # get_emperor_markdown()                  
             {'type': 'plain', 'label': "Portrait type: ", 'value': instance.get_types()}, 
+            
+            #{'type': 'plain', 'label': "Subtype: ", 'value': instance.get_subtypes(), 'field_key': 'subtypes'},             
+            #{'type': 'plain', 'label': "Photo by © : ", 'value': instance.get_photographer(), 'field_key': 'photographer'},
             ] # waarom niet alles zo? Of selectie wat hier moet komen en de rest in diesections? waarom werken die niet?
 
-        # One by one evaluate the remaining items
-        #add_if_available(context['mainitems'], "plain", "Alternative: ", instance.get_alternatives(), 'alternatives')
+        # One by one evaluate the remaining items  
+
         add_if_available(context['mainitems'], "plain", "Subtype: ", instance.get_subtypes(), 'subtypes') 
         add_if_available(context['mainitems'], "plain", "Identity disputed: ", instance.get_disputed, 'disputed')         
         add_if_available(context['mainitems'], "plain", "Re-carved: ", instance.get_recarved, 'recarvedboo')
         add_if_available(context['mainitems'], "plain", "Original identity: ", instance.get_recarvedstatue(), 'recarvedstatue') 
                  
-        add_if_available(context['mainitems'], "plain", "RIPD id: ", instance.origstr, 'origstr')  
+        #add_if_available(context['mainitems'], "plain", "RIPD id: ", instance.origstr, 'origstr')  
         add_if_available(context['mainitems'], "plain", "Reference(s): ", instance.reference, 'reference') 
         
         #add_if_available(context['mainitems'], "plain", "Arachne: ", instance.get_arachne(), 'arachid')  
@@ -122,8 +503,7 @@ class PortraitEdit(BasicDetails):
         #add_if_available(context['mainitems'], "plain", "Height: ", instance.height, 'height') 
         #add_if_available(context['mainitems'], "plain", "Height specified: ", instance.height_comment, 'height_comment') 
         #add_if_available(context['mainitems'], "plain", "Miniature: ", instance.miniature, 'miniature')
-                
-        #add_if_available(context['mainitems'], "plain", "Name: ", instance.get_name_markdown, 'name')
+        
         #add_if_available(context['mainitems'], "plain", "Ancient city: ", instance.location.name, 'location')
         #add_if_available(context['mainitems'], "plain", "Province: ", instance.get_province(), 'province')         
         #add_if_available(context['mainitems'], "plain", "Context: ", instance.get_context(), 'context') 
@@ -156,6 +536,18 @@ class PortraitEdit(BasicDetails):
         add_if_available(context['mainitems'], "plain", "Photo by © : ", instance.get_photographer(), 'photographer') 
         add_if_available(context['mainitems'], "plain", "Photo: ", instance.get_photopath_first(), 'photo_path') 
 
+        # Add a button for the administrator
+        # This should be in 'after_details', because it contains its own separate form
+        context['add_to_details'] = render_to_string("ripdapp/photo_add.html", context, self.request)
+        #user = self.request.user
+        #if user.is_superuser:
+        #    # Add a button to add a picture
+        #    url = reverse('addphoto_details')
+        #    sHtml = "<a role='button' class='btn btn-sm' href='{}'>Add picture</a>".format(url)
+        #    oAddDefinition = dict(type="plain", label="", value=sHtml)
+        #    context['mainitems'].append(oAddDefinition)
+                
+
         # class ManuscriptEdit(BasicDetails):
         # https://github.com/ErwinKomen/RU-passim/blob/master/passim/passim/seeker/views.py#L8399
 
@@ -174,10 +566,6 @@ class PortraitDetails(PortraitEdit):
         # First get the 'standard' context from TestsetEdit
 
         context = super(PortraitDetails, self).add_to_context(context, instance) 
-
-
-
-
 
         # Sections: References / Date / Material and Height / Statue group / Location / Attributes
         # TH: alles bij elkaar lijkt mij
@@ -256,19 +644,19 @@ class PortraitListView(BasicList):
     has_select2 = True
     sg_name = "Portrait"
     plural_name = "Portraits"
-    new_button = False  # Do *NOT* allow adding portraits right now...
+    new_button = False  # Do *NOT* allow adding portraits right now...maar wel voor de varianten bij Photographer en PhotoListView
     order_cols = ['id', 'name', 'emperor__name', 'material__name', 'location__name','height', 'startdate', 'enddate']   
     order_default = order_cols
     order_heads = [
         # Regel met plaatje, name empty, order idem, type str custom, zie onder custom: 'picture'
-        {'name': 'Photo', 'order': '', 'type': 'int', 'custom': 'picture', 'linkdetails': True},
-        {'name': 'ID', 'order': 'o=1', 'type': 'int', 'field': 'id', 'linkdetails': True},
-        {'name': 'Current location', 'order': 'o=2', 'type': 'str', 'field': 'name', 'linkdetails': True, 'main': True},
-        {'name': 'Emperor', 'order': '', 'type': 'str', 'custom': 'emp_name'},
-        {'name': 'Material', 'order': '', 'type': 'str', 'custom': 'mat_name'},
-        {'name': 'Ancient city', 'order': '', 'type': 'str', 'custom': 'location'},        
-        {'name': 'From', 'order': '', 'type': 'int', 'field': 'startdate'},
-        {'name': 'Until', 'order': '', 'type': 'int', 'field': 'enddate'},
+        {'name': 'Photo',            'order': '',    'type': 'int', 'custom': 'picture', 'linkdetails': True},
+        {'name': 'ID',               'order': 'o=1', 'type': 'int', 'field':  'id',      'linkdetails': True},
+        {'name': 'Current location', 'order': 'o=2', 'type': 'str', 'field':  'name',    'linkdetails': True, 'main': True},
+        {'name': 'Emperor',          'order': '',    'type': 'str', 'custom': 'emp_name'},
+        {'name': 'Material',         'order': '',    'type': 'str', 'custom': 'mat_name'},
+        {'name': 'Ancient city',     'order': '',    'type': 'str', 'custom': 'location'},        
+        {'name': 'From',             'order': '',    'type': 'int', 'field':  'startdate'},
+        {'name': 'Until',            'order': '',    'type': 'int', 'field':  'enddate'},
         ]
     
     filter_sections = [
@@ -335,7 +723,7 @@ class PortraitListView(BasicList):
             {'filter': 'current_location','fkfield': 'currentlocation', 'keyList': 'curloclist', 'infield': 'name'},     
             {'filter': 'statue_group',    'dbfield': 'part_group', 'keyS': 'part_group_free'},          
             {'filter': 'province',        'fkfield': 'location__province', 'keyList': 'provlist', 'infield': 'name'},     
-            {'filter': 'context',         'fkfield': 'context', 'keyList': 'contlist', 'infield': 'name'},
+            {'filter': 'context',         'fkfield': 'context',           'keyList': 'contlist', 'infield': 'name'},
             {'filter': 'toga',            'dbfield': 'toga',             'keyS': 'toga_free'},
             {'filter': 'cuirass',         'dbfield': 'cuirass',          'keyS': 'cuirass_free'},
             {'filter': 'heroic_semi_nude','dbfield': 'heroic_semi_nude', 'keyS': 'heroic_semi_nude_free'},
@@ -351,7 +739,7 @@ class PortraitListView(BasicList):
             {'filter': 'wreath_crown',    'fkfield': 'wreathcrown',      'keyList': 'wreathlist', 'infield': 'name'}, 
             {'filter': 'reference',       'dbfield': 'reference',        'keyList': 'referenceslist'}, # 'keyS': 'reference'                       
             {'filter': 'arachne',         'fkfield': 'arachne_portrait', 'keyS': 'arachid', 'keyId': 'arachne', 'keyFk': "arachne"},
-            {'filter': 'lsa',             'dbfield': 'lsa',              'keyS': 'lsa'},
+            {'filter': 'lsa',             'dbfield': 'lsa',              'keyS': 'lsaid'},
             ]},
         ]
 
