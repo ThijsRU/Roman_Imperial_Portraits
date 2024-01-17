@@ -34,10 +34,10 @@ admin.site.site_title = "ripd Admin"
 
 urlpatterns = [
     # Standard pages
-    url(r'^$', ripdapp.views.index, name='index'),
+    url(r'^$', ripdapp.views.about, name='about'), # about ipv index.html
     url(r'^favicon\.ico$',RedirectView.as_view(url='/static/ripdapp/content/favicon.ico')),
-    url(r'^home$', ripdapp.views.index, name='home'), # home twee keer
-    url(r'^about$', ripdapp.views.about, name='about'),
+    url(r'^home$', ripdapp.views.about, name='home'), # home twee keer
+    url(r'^about$', ripdapp.views.about, name='home'),
     url(r'^references$', ripdapp.views.references, name='references'),
     url(r'^links$', ripdapp.views.links, name='links'),    
     url(r'^tools/update$', ripdapp.views.update_from_excel, name='tools_update'),
