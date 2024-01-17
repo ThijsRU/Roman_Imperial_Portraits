@@ -22,9 +22,8 @@
       <ul class="nav navbar-nav navbar-center">
         {% if user.is_superuser %}
           <li><a href="{% url 'definitions' %}">Definitions</a></li>
-        {% endif %}
-        <li><a href="{% url 'home' %}">Welcome</a></li>
-        <li><a href="{% url 'about' %}">About</a></li> 
+        {% endif %}        
+        <li><a href="{% url 'about' %}">Home</a></li> 
         <li><a href="{% url 'portrait_list' %}">Browse & Advanced Search</a></li>        
         <li><a href="{% url 'references' %}">References and Links</a></li>
         <li><a href="{% url 'links' %}">Additional material</a></li>     

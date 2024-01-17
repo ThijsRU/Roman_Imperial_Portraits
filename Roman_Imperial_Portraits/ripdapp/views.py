@@ -41,24 +41,16 @@ def index(request):
 
     # Specify the template
     template_name = "ripdapp/index.html"
+    
     # Define the initial context
     context =  {'title':'Homepage',
                 'year': datetime.now().year,
                 'current_time': datetime.now().strftime("%A, %d %B, %Y at %X"),
                 'pfx': '',
-                'site_url': admin.site.site_url}
-    # OLD CODE
-    # now = datetime.now()
-    #
-    #html_content = "<html><head><title>Hello, Django</title></head><body>"
-    #html_content += "<strong>Hello Django!</strong> on " + now.strftime("%A, %d %B, %Y at %X")
-    #html_content += "</body></html>"
-
-    #return HttpResponse(html_content)
+                'site_url': admin.site.site_url}    
 
     # Render and return the page
     return render(request, template_name, context)
-
 
 def login_as_user(request, user_id):
     assert isinstance(request, HttpRequest)
@@ -122,7 +114,11 @@ def about(request):
     template_name = "ripdapp/about.html"
 
     context =  {'title':'About',
-                'message':'Roman Imperial Portraits Database (RIPD)'}
+                'message':'Roman Imperial Portraits Database (RIPD)',
+                'year': datetime.now().year,
+                'current_time': datetime.now().strftime("%A, %d %B, %Y at %X"),
+                'pfx': '',
+                'site_url': admin.site.site_url} 
 
     return render(request, template_name, context)
 
@@ -205,7 +201,7 @@ def update_from_excel_photofolder(request):
             port_obj.origstr = orig
         
         port_obj.folder = folder
-        print(orig, name, folder)
+        #print(orig, name, folder)
         # Save the results
         port_obj.save()
     

@@ -34,6 +34,7 @@ from datetime import datetime
 
 # provide error handling
 from .utils import ErrHandle
+from .utils import ErrHandle
 
 from basic.models import UserSearch
 
@@ -888,12 +889,12 @@ class BasicList(ListView):
                 # fsections.append(dict(name=section_name))
             # Copy the relevant search filter
             for item in section['filterlist']:
-                print(item)
+                #print(item)
                 bHasItemValue = False
                 # Find the corresponding item in the filters
                 id = "filter_{}".format(item['filter'])
                 for filteritem in self.filters:     
-                    print(filteritem)
+                  # print(filteritem)
                     if id == filteritem['id']: # hiergaat het mis, id is nooit id
                         try:
                             # Build a new [fitem]

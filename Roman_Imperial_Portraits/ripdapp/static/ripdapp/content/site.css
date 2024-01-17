@@ -136,6 +136,7 @@ div.inline-group a.add-related {
     margin-right: 15px;
     padding-left: 15px;
     padding-right: 15px;
+    padding-bottom: 15px;
 }
 
 .section {
@@ -148,7 +149,7 @@ div.inline-group a.add-related {
 }
 
 .paragraph {
-    font-size: 19px;
+    font-size: 20px;
     font-style: italic;
 }
 
@@ -1186,6 +1187,17 @@ table.compact-table td:hover {
     font-family: monospace;
     font-size: smaller;
 }
+
+/*  HOME RIPD particular stuff */
+
+
+.home {
+    font-size: 18px;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+
 
 /* PASSIM particular stuff */
 

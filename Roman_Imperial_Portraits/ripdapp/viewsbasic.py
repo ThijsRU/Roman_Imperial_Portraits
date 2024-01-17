@@ -387,7 +387,7 @@ class PhotoPathListView(BasicList):
             sBack = "\n".join(html)
         elif custom == "image_name":
             html = []
-            print(instance.path)
+            #print(instance.path)
             image_name = instance.path
             # Get rid of the stuff before the last slash
             a,b,c,d = image_name.split("/")
@@ -456,7 +456,7 @@ class PortraitEdit(BasicDetails):
                     list = ["Toga: ","Headgear: ", "Identity disputed: ", "Re-carved: ", "Miniature: ", "Statue: ", "Bust: ", "Capite velato: ", 
                             "Cuirass: ", "Heroic nudity: ", "Enthroned: ", "Equestrian: ", "Beard: ", "Paludamentum: ", "Sword belt: ", 
                             "Contabulata: ", "Headgear: ", "Corona laurea: ", "Corona civica: ", "Corona radiata: "]
-                    print(label, value) 
+                    #print(label, value) 
                     value = "NO"  
                     if label in list:                        
                         #pass --> TH dit dit omzetten wanneer de lijst van Sam er is, zal wel schema zijn
@@ -568,7 +568,7 @@ class PortraitDetails(PortraitEdit):
         context = super(PortraitDetails, self).add_to_context(context, instance) 
 
         # Sections: References / Date / Material and Height / Statue group / Location / Attributes
-        # TH: alles bij elkaar lijkt mij
+
         context['sections'] = [
             {'name': 'References', 'id': 'portrait_references', 'fields': [
                 {'type': 'safeline',    'label': "References: ", 'value': instance.get_reference()},

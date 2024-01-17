@@ -311,8 +311,10 @@ class Portrait(models.Model):
 
     def get_arachne(self):
         lHtml = []
-        url_arachne = "https://arachne.dainst.org/entity/"
+        #url_arachne = "https://arachne.dainst.org/entity/"
         
+        url_arachne = "https://arachne.dainst.org/search?fq=facet_kategorie:%22Einzelobjekte%22&fl=20&q=internalId:"
+
         # Check if there is an or there are attribute item(s) for this portrait 
         arachne_check = self.arachne_portrait.all().order_by('arachne')
         if len(arachne_check) > 0:
@@ -323,7 +325,7 @@ class Portrait(models.Model):
                 arachne_copy = arachne.arachne                
                 arachne_str = str(arachne_copy)                 
                 url_complete = (url_arachne+arachne_str)
-                lHtml.append("<span class='arachne'><a href='{}' title='Link to portrait in DAI database Arachne'>{}</a></span> ".format(url_complete, arachne.arachne))            
+                lHtml.append("<span class='arachne'><a href='{}' title='Link to portrait in DAI database Arachne'>{}</a></span>".format(url_complete, arachne.arachne))            
                 sBack = ", ".join(lHtml)
         else:
             lHtml.append("No Arachne id available")
@@ -972,7 +974,7 @@ class Path(models.Model):
         if self.path:
             full_path = self.path
             # Get rid of the 
-            print(full_path)
+            #print(full_path)
             # Get rid of the stuff before the last slash
             a,b,c,d = full_path.split("/")
             image_name = d

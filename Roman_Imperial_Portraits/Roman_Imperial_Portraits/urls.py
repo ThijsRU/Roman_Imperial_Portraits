@@ -36,7 +36,7 @@ urlpatterns = [
     # Standard pages
     url(r'^$', ripdapp.views.index, name='index'),
     url(r'^favicon\.ico$',RedirectView.as_view(url='/static/ripdapp/content/favicon.ico')),
-    url(r'^home$', ripdapp.views.index, name='home'),
+    url(r'^home$', ripdapp.views.index, name='home'), # home twee keer
     url(r'^about$', ripdapp.views.about, name='about'),
     url(r'^references$', ripdapp.views.references, name='references'),
     url(r'^links$', ripdapp.views.links, name='links'),    
