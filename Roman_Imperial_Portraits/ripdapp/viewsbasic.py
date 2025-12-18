@@ -943,6 +943,7 @@ class PortraitMapView(MapView):
             # We need to create a new list, based on the 'point' parameter TH aanpassen !! HIER VERDER
             set_point = {}
             for oEntry in lst_this:
+                print(oEntry)
                 point = oEntry['point']
                 if not point in set_point:
                     # Create a new entry 

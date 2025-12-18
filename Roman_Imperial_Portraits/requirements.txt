@@ -1,2 +1,13 @@
-django >=1.9, <2
-django_select2
+Django
+django-appconf
+django-select2
+et-xmlfile
+numpy
+openpyxl
+Package
+pandas
+pip
+python-dateutil
+pytz
+setuptools
+six

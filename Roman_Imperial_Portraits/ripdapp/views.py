@@ -400,7 +400,7 @@ def update_cur_loc_coord_excel(request):
     if request.user.is_superuser:
         pass
     
-     # Read the Excel file with pandas from MEDIA_DIR   
+    # Read the Excel file with pandas from MEDIA_DIR   
     curr_loc = os.path.abspath(os.path.join(MEDIA_DIR, 'RIPD_current_locations.xlsx'))
     df = pd.read_excel(curr_loc, engine='openpyxl')
 
@@ -430,7 +430,7 @@ def update_cur_loc_coord_excel(request):
             lat_cur = ""
             long_cur = ""
 
-    # STORE current loc and coordinates (uiteraard maar 1 keer
+    # STORE current loc and coordinates (uiteraard maar 1 keer)
 
     # Now alle fields from each record can be stored
 
